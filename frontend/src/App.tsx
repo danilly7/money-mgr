@@ -1,10 +1,9 @@
-import './App.css'
 
 function App() {
 
   return (
     <>
-     <p>hiii</p>
+     <p className='text-red-600 m-10 text-2xl'>hiii</p>
     </>
   )
 }

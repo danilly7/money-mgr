@@ -1,0 +1,4 @@
+/* src/index.css o el archivo de tu elección */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
