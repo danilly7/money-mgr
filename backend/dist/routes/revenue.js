@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const revenue_1 = require("../controllers/revenue");
+const revenueRouter = (0, express_1.Router)();
+revenueRouter.get('/', revenue_1.getRevenue);
+revenueRouter.get('/:id', revenue_1.getDailyRevenue);
+revenueRouter.delete('/:id', revenue_1.deleteDailyRevenue);
+revenueRouter.post('/', revenue_1.postDailyRevenue);
+revenueRouter.put('/:id', revenue_1.updateDailyRevenue);
+exports.default = revenueRouter;
