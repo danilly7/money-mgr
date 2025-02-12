@@ -8,7 +8,7 @@ interface RouteRendererProps {
 const RouteRenderer: React.FC<RouteRendererProps> = ({ routes }) => {
   const renderRoutes = (routes: RouteObject[]) => {
     return routes.map((route, index) => {
-      //si la ruta tiene hijos, renderizamos el `element` de la ruta padre y las rutas hijas
+      //si la ruta tiene hijos, renderizamos el elemento de la ruta padre y las rutas hijas
       if (route.children) {
         return (
           <Route

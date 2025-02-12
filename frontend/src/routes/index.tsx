@@ -55,12 +55,12 @@ export const routes: RouteObject[] = [
                     {
                         path: "categories",
                         element: <Categories />
-                        //faltn los children
+                        //faltan los children
                     },
                     {
                         path: "user",
                         element: <User />
-                        //faltn los children
+                        //faltan los children
                     },
                 ],
             },
