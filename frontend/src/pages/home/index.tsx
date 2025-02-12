@@ -1,7 +1,7 @@
 const Home = () => {
     const loremText = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque, sint nisi consequatur error eveniet, similique temporibus, eius accusamus est voluptas quos velit laboriosam modi ut expedita doloribus incidunt veritatis. Veritatis.";
 
-    const repeatCount = 55;
+    const repeatCount = 40;
 
     const repeatedText = new Array(repeatCount).fill(loremText);
 

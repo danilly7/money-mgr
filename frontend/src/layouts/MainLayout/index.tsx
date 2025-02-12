@@ -8,7 +8,7 @@ const MainLayout = () => {
     <>
       <Header />
       <main>
-        <div className="bg-slate-200 flex flex-col min-h-screen flex-grow">
+        <div className="flex flex-col min-h-screen flex-grow">
           <Outlet />
         </div>
       </main>
