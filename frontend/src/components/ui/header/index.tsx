@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom"
-import { UserIcon, BurguerIcon, CancelIcon } from "../icons";
+import { UserIcon} from "../icons/UserIcon";
+import { BurguerIcon } from "../icons/BurguerIcon";
+import { CancelIcon } from "../icons/CancelIcon";
 
 export const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
