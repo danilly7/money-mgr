@@ -45,18 +45,20 @@ const Login = () => {
     };
 
     if (userLoggedIn) {
-        return <Navigate to="/starships" />;
+        return <Navigate to="/" />;
     }
 
     return (
         <div className="flex items-center justify-center min-h-screen text-black text-center p-8">
-            <div className="w-full max-w-md lg:max-w-2xl mx-4">
+            <div className="w-full max-w-md  mx-4">
                 <div className="p-4 mb-6 flex justify-center">
-                    <img
-                        src="/public/logo.png"
-                        alt="Logo"
-                        className="w-8"
-                    />
+                    <Link to='/welcome'>
+                        <img
+                            src="/public/logo.png"
+                            alt="Logo"
+                            className="w-8"
+                        />
+                    </Link>
                 </div>
                 <div className="p-8 bg-personalizedPurple border-4 border-black rounded-lg shadow-lg">
                     <h2 className="text-3xl font-semibold text-black mb-6">Login</h2>
@@ -93,7 +95,7 @@ const Login = () => {
                     <p className="text-red-900 text-center mt-4">{errorMessage}</p>
                     <p className="text-center mt-6">
                         Don't have an account?{" "}
-                        <Link to="/register" className="text-white font-semibold hover:underline">
+                        <Link to="/welcome/register" className="text-white font-semibold hover:underline">
                             Register
                         </Link>
                     </p>
