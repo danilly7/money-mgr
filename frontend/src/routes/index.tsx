@@ -9,6 +9,7 @@ const Home = lazy(() => import('../pages/home'));
 const Welcome = lazy(() => import('../pages/welcome'));
 const Accounts = lazy(() => import('../pages/accounts'));
 const Categories = lazy(() => import('../pages/categories'));
+const User = lazy(() => import('../pages/user'));
 const ErrorPage = lazy(() => import('../pages/error/index'));
 
 const Login = lazy(() => import('../components/welcome/login'));
@@ -54,6 +55,11 @@ export const routes: RouteObject[] = [
                     {
                         path: "categories",
                         element: <Categories />
+                        //faltn los children
+                    },
+                    {
+                        path: "user",
+                        element: <User />
                         //faltn los children
                     },
                 ],

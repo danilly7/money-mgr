@@ -6,9 +6,11 @@ const MainLayout = () => {
   return (
     <>
       <Header />
-      <div className="bg-slate-200 flex flex-col min-h-screen flex-grow">
-        <Outlet />
-      </div>
+      <main>
+        <div className="bg-slate-200 flex flex-col min-h-screen flex-grow">
+          <Outlet />
+        </div>
+      </main>
       <Footer />
     </>
   );

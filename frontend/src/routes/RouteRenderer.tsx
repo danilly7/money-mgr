@@ -6,22 +6,33 @@ interface RouteRendererProps {
 };
 
 const RouteRenderer: React.FC<RouteRendererProps> = ({ routes }) => {
-  return (
-    <Routes>
-      {routes.map((route, index) => (
-        <Route key={index} path={route.path} element={route.element}>
-          {route.children &&
-            route.children.map((childRoute, childIndex) => (
-              <Route
-                key={childIndex}
-                path={childRoute.path}
-                element={childRoute.element}
-              />
-            ))}
-        </Route>
-      ))}
-    </Routes>
-  );
+  const renderRoutes = (routes: RouteObject[]) => {
+    return routes.map((route, index) => {
+      //si la ruta tiene hijos, renderizamos el `element` de la ruta padre y las rutas hijas
+      if (route.children) {
+        return (
+          <Route
+            key={index}
+            path={route.path}
+            element={route.element} //elemento padre
+          >
+            {renderRoutes(route.children)} {/* rutas hijas */}
+          </Route>
+        );
+      }
+
+      //si la ruta no tiene hijos, se renderiza normal
+      return (
+        <Route
+          key={index}
+          path={route.path}
+          element={route.element}
+        />
+      );
+    });
+  };
+
+  return <Routes>{renderRoutes(routes)}</Routes>;
 };
 
 export default RouteRenderer;

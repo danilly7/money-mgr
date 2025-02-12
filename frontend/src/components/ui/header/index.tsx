@@ -65,7 +65,7 @@ export const Header = () => {
                     </li>
                     <li>
                         <NavLink
-                            to='/welcome'
+                            to='/user'
                             className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             <UserIcon />
@@ -105,7 +105,7 @@ export const Header = () => {
                     </li>
                     <li>
                         <NavLink
-                            to='/welcome'
+                            to='/user'
                             className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
