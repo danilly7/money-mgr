@@ -5,7 +5,7 @@ const RequireAuth = () => {
   const { currentUser } = useAuth();//usuario desde el contexto
 
   if (!currentUser) {
-    return <Navigate to="/welcome/login" replace />;
+    return <Navigate to="/welcome" replace />;
   }
 
   return <Outlet />;
