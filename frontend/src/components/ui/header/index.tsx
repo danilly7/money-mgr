@@ -16,14 +16,13 @@ export const Header = () => {
     };
 
     return (
-
-        <div className="flex flex-row items-center justify-between p-4 bg-gray-800 relative">
+        <div className="flex flex-row items-center justify-between p-4 bg-personalizedPurple relative border-4 border-black">
             <div className="flex flex-row items-center space-x-4">
                 <Link to='/'>
                     <img src="/favicon.ico" alt="Logo" className="h-8" />
                 </Link>
-                <h1 className=" text-white text-2xl font-semibold">
-                    <Link to='/'>Money mgr</Link>
+                <h1 className="text-white text-2xl">
+                    <Link to='/'>Moneymgr</Link>
                 </h1>
             </div>
 
@@ -32,11 +31,10 @@ export const Header = () => {
                 onClick={toggleMenu}
             >
                 {isMenuOpen ? (
-                    <CancelIcon className="text-personalizedPurple" />
+                    <CancelIcon className="text-black" />
                 ) : (
-                    <BurguerIcon className="text-personalizedPurple" />
+                    <BurguerIcon className="text-black" />
                 )}
-
             </button>
 
             <nav className="hidden sm:flex sm:flex-row items-end">
@@ -44,7 +42,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/'
-                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Home
                         </NavLink>
@@ -52,7 +50,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/accounts'
-                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Accounts
                         </NavLink>
@@ -60,7 +58,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/categories'
-                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Categories
                         </NavLink>
@@ -68,20 +66,20 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/welcome'
-                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
-                            <UserIcon className="text-personalizedPurple" />
+                            <UserIcon />
                         </NavLink>
                     </li>
                 </ul>
             </nav>
 
-            <nav className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'} absolute top-full left-0 w-full bg-gray-700 rounded-b-lg z-20`}>
+            <nav className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'} absolute top-full left-0 w-full bg-personalizedPurple rounded-b-lg z-20`}>
                 <ul className="flex flex-col items-center space-y-4 text-white text-xl py-4">
                     <li>
                         <NavLink
                             to='/'
-                            className={({ isActive }) => isActive ? 'font-semibold' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
                             Home
@@ -90,7 +88,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/accounts'
-                            className={({ isActive }) => isActive ? 'font-semibold' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
                             Accounts
@@ -99,7 +97,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/categories'
-                            className={({ isActive }) => isActive ? 'font-semibold' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
                             Categories
@@ -108,7 +106,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/welcome'
-                            className={({ isActive }) => isActive ? 'font-semibold' : undefined}
+                            className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
                             <UserIcon />
@@ -117,5 +115,5 @@ export const Header = () => {
                 </ul>
             </nav>
         </div>
-    )
+    );
 };
