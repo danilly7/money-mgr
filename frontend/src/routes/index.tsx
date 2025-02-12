@@ -1,14 +1,14 @@
 import { lazy } from 'react';
 import { RouteObject } from 'react-router-dom';
 
-const Home = lazy(() => import('../pages/home/main'));
-const Welcome = lazy(() => import('../pages/welcome/main'));
-const Accounts = lazy(() => import('../pages/accounts/main'));
-const Categories = lazy(() => import('../pages/categories/main'));
+const Home = lazy(() => import('../pages/home'));
+const Welcome = lazy(() => import('../pages/welcome'));
+const Accounts = lazy(() => import('../pages/accounts'));
+const Categories = lazy(() => import('../pages/categories'));
 const ErrorPage = lazy(() => import('../pages/error/index'));
 
-const Login = lazy(() => import('../pages/welcome/login'));
-const Register = lazy(() => import('../pages/welcome/register'));
+const Login = lazy(() => import('../components/welcome/login'));
+const Register = lazy(() => import('../components/welcome/register'));
 
 export const routes: RouteObject[] = [
     {
