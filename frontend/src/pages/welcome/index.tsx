@@ -22,7 +22,7 @@ const Welcome = () => {
             <p className="mt-12 text-lg">Mi casa es su casa</p>
             <p className="text-lg">Welcome to <span className="text-personalizedPurple font-semibold">Moneymgr</span></p>
             <img
-                src="/public/logo.png"
+                src="/logo.png"
                 alt="Logo"
                 className="w-8 m-4"
             />

@@ -47,7 +47,7 @@ const Register = () => {
                 <div className="p-4 mb-6 flex justify-center">
                 <Link to='/welcome'>
                         <img
-                            src="/public/logo.png"
+                            src="/logo.png"
                             alt="Logo"
                             className="w-8"
                         />
