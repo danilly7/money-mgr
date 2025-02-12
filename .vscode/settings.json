@@ -2,6 +2,7 @@
     "conventionalCommits.scopes": [
         "frontend",
         "backend",
-        "ui"
+        "ui",
+        "auth"
     ]
 }
