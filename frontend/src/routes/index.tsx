@@ -1,6 +1,10 @@
 import { lazy } from 'react';
 import { RouteObject } from 'react-router-dom';
 
+const AuthLayout = lazy(() => import('../layouts/AuthLayout'));
+const MainLayout = lazy(() => import('../layouts/MainLayout'));
+const RequireAuth = lazy(() => import('../components/welcome/required-auth'));
+
 const Home = lazy(() => import('../pages/home'));
 const Welcome = lazy(() => import('../pages/welcome'));
 const Accounts = lazy(() => import('../pages/accounts'));
@@ -12,14 +16,13 @@ const Register = lazy(() => import('../components/welcome/register'));
 
 export const routes: RouteObject[] = [
     {
-        path: '/',
-        element: <Home />,
-        //faltan los children
-    },
-    {
         path: '/welcome',
-        element: <Welcome />,
+        element: <AuthLayout />,
         children: [
+            {
+                path: '',
+                element: <Welcome />,
+            },
             {
                 path: 'login',
                 element: <Login />,
@@ -31,14 +34,31 @@ export const routes: RouteObject[] = [
         ],
     },
     {
-        path: '/accounts',
-        element: <Accounts />,
-        //faltan los children
-    },
-    {
-        path: '/categories',
-        element: <Categories />,
-        //faltan los children
+        path: '/',
+        element: <RequireAuth />,
+        children: [
+            {
+                path: "",
+                element: <MainLayout />,
+                children: [
+                    {
+                        path: "",
+                        element: <Home />
+                        //faltan los children
+                    },
+                    {
+                        path: "accounts",
+                        element: <Accounts />
+                        //faltan los children
+                    },
+                    {
+                        path: "categories",
+                        element: <Categories />
+                        //faltn los children
+                    },
+                ],
+            },
+        ],
     },
     {
         path: '*',

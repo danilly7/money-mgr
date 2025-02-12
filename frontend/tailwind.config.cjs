@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        personalizedGreen: "#EBD198",
+        personalizedGreen: "#5BD198",
         personalizedOrange: "#FDAF5D",
         personalizedPurple: "#967EFB",
         personalizedPink: "#D669CB",
