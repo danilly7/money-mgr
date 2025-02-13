@@ -13,6 +13,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST || 'localhost',
     dialect: (process.env.DB_DIALECT as any) || 'mysql',
     logging: false,
+    timezone: 'Europe/Madrid', //esto es para las fechas de transactions y transfers. Evitamos problemas a medianoche
   }
 );
 

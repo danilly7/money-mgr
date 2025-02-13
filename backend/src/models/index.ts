@@ -1,7 +1,8 @@
-import Competitor from "./competitors";
-import DailyRev from "./daily_revenue";
-import Event from "./event_calendar";
+import Account from "./account";
+import Category from "./category";
+import Transaction from "./transaction";
+import Transfer from "./transfer";
 
-const models = {Competitor, DailyRev, Event};
+const models = {Account, Category, Transaction, Transfer};
 
 export default models;
