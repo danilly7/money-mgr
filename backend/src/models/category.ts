@@ -11,13 +11,12 @@ const Category = sequelize.define('category', {
         type: DataTypes.STRING(255),
         allowNull: false,
         unique: true,
+        validate: {
+            notEmpty: true,
+        },
     },
     type: {
         type: DataTypes.ENUM("income", "expense"), //aquí ya divido
-        allowNull: false,
-    },
-    transaction_id: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
 }, {

@@ -20,10 +20,9 @@ const User = sequelize.define('user', {
         type: DataTypes.STRING(255),
         allowNull: false,
         unique: true,
-    },
-    account_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
+        validate: {
+            isEmail: true,
+        },
     },
 }, {
     tableName: 'users',
@@ -31,3 +30,6 @@ const User = sequelize.define('user', {
 });
 
 export default User;
+
+//aquí no ponemos account_id, pq puede tener varias cuentas.
+//en cambio en accounts sí que veremos user_id, pq la relación es más directa.

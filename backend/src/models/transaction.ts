@@ -7,10 +7,6 @@ const Transaction = sequelize.define('transaction', {
         primaryKey: true,
         autoIncrement: true,
     },
-    type_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
     amount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -29,7 +25,7 @@ const Transaction = sequelize.define('transaction', {
     date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.fn('CURDATE'), //current day
+        defaultValue: DataTypes.NOW, //compatibilidad con más bbdd
     },
     comment: {
         type: DataTypes.STRING(255),
