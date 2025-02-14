@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../db/connection';
 
-interface AccountAttributes { //lo tipo pq lo necesito para el controller.
+interface AccountAttributes {
     id: number;
     name: string;
     balance: number;
