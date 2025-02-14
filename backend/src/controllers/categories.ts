@@ -6,7 +6,6 @@ const { Category } = models;
 export const getCategories = async (req: Request, res: Response) => { //pedimos todas, no hay paginación
     try {
         const categories = await Category.findAll();
-
         res.json(categories);
     } catch (error) {
         console.error(error);
@@ -66,9 +65,8 @@ export const updateCategory = async (req: Request, res: Response) => {
             return res.status(404).json({ msg: `Category with id ${id} not found` });
         }
 
-        category.set({ name, type });
+        await category.update({ name, type });
 
-        await category.save();
         res.json(category);
     } catch (error) {
         console.error(error);
