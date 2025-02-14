@@ -1,9 +1,15 @@
 import { Request, Response } from 'express';
 import models from '../models';
 
-const { Transfer } = models;
+const { Transfer, Account } = models;
 
 export const getTransfers = async (req: Request, res: Response) => {
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
+
     let { page = 1, limit = 10 } = req.query; //ojo aquí hay paginación
 
     page = Math.max(Number(page), 1);
@@ -12,7 +18,22 @@ export const getTransfers = async (req: Request, res: Response) => {
     const offset = (page - 1) * limit;
 
     try {
-        const result = await Transfer.findAndCountAll({ limit, offset });
+        const result = await Transfer.findAndCountAll({
+            limit,
+            offset,
+            include: [
+                {
+                    model: Account,
+                    as: 'originAccount',
+                    attributes: ['id', 'name', 'balance'],
+                },
+                {
+                    model: Account,
+                    as: 'destinationAccount',
+                    attributes: ['id', 'name', 'balance'],
+                },
+            ],
+        });
 
         res.json({
             total: result.count,
@@ -30,13 +51,33 @@ export const getTransfers = async (req: Request, res: Response) => {
 
 export const getTransfer = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (isNaN(Number(id))) {
         return res.status(400).json({ msg: 'Invalid transfer ID' });
     }
 
     try {
-        const transfer = await Transfer.findByPk(id);
+        const transfer = await Transfer.findByPk(id, {
+            include: [
+                {
+                    model: Account,
+                    as: 'originAccount',
+                    attributes: ['id', 'name', 'balance'],
+                    where: { user_id }
+                },
+                {
+                    model: Account,
+                    as: 'destinationAccount',
+                    attributes: ['id', 'name', 'balance'],
+                    where: { user_id }
+                },
+            ],
+        });
 
         if (transfer) {
             res.json(transfer);
@@ -55,6 +96,11 @@ export const getTransfer = async (req: Request, res: Response) => {
 
 export const postTransfer = async (req: Request, res: Response) => {
     const { amount, origin_account_id, destination_account_id, date, comment } = req.body;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (!amount || !origin_account_id || !destination_account_id || origin_account_id === destination_account_id) {
         return res.status(400).json({ msg: 'All fields except comment are required, and origin and destination must be different' });
@@ -72,11 +118,12 @@ export const postTransfer = async (req: Request, res: Response) => {
             return res.status(404).json({ msg: 'One or both accounts do not exist' });
         }
 
-        if (originAccount.user_id !== destinationAccount.user_id) {
-            return res.status(403).json({ msg: 'Both accounts must belong to the same user' });
+        if (originAccount.user_id !== user_id || destinationAccount.user_id !== user_id) {
+            return res.status(403).json({ msg: 'Both accounts must belong to the authenticated user' });
         }
 
         const transfer = await Transfer.create({ amount, origin_account_id, destination_account_id, date, comment });
+       
         res.json(transfer);
     } catch (error) {
         console.error(error);
@@ -89,6 +136,11 @@ export const postTransfer = async (req: Request, res: Response) => {
 export const updateTransfer = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { amount, origin_account_id, destination_account_id, date, comment } = req.body;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (!amount && !origin_account_id && !destination_account_id && !date) {
         return res.status(400).json({ msg: 'At least one field is required to update' });
@@ -113,14 +165,13 @@ export const updateTransfer = async (req: Request, res: Response) => {
                 return res.status(404).json({ msg: 'One or both accounts do not exist' });
             }
 
-            if (originAccount.user_id !== destinationAccount.user_id) {
-                return res.status(403).json({ msg: 'Both accounts must belong to the same user' });
+            if (originAccount.user_id !== user_id || destinationAccount.user_id !== user_id) {
+                return res.status(403).json({ msg: 'Both accounts must belong to the authenticated user' });
             }
         }
 
-        transfer.set({ amount, origin_account_id, destination_account_id, date, comment });
+        await transfer.update({ amount, origin_account_id, destination_account_id, date, comment });
 
-        await transfer.save();
         res.json(transfer);
     } catch (error) {
         console.error(error);
@@ -132,12 +183,28 @@ export const updateTransfer = async (req: Request, res: Response) => {
 
 export const deleteTransfer = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     try {
         const transfer = await Transfer.findByPk(id);
 
         if (!transfer) {
             return res.status(404).json({ msg: `Transfer with id ${id} does NOT exist` });
+        }
+
+        const originAccount = await models.Account.findByPk(transfer.origin_account_id);
+        const destinationAccount = await models.Account.findByPk(transfer.destination_account_id);
+
+        if (!originAccount || !destinationAccount) {
+            return res.status(404).json({ msg: 'One or both accounts do not exist' });
+        }
+
+        if (originAccount.user_id !== user_id || destinationAccount.user_id !== user_id) {
+            return res.status(403).json({ msg: 'Both accounts must belong to the authenticated user' });
         }
 
         await transfer.destroy();

@@ -1,26 +1,13 @@
-import {Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../db/connection';
-import Account from './account';
 
-interface TransferAttributes {
-    id: number;
-    amount: number;
-    origin_account_id: number;
-    destination_account_id: number;
-    date: string;
-    comment?: string;
-}
-
-class Transfer extends Model<TransferAttributes> implements TransferAttributes {
-    public id!: number;
+class Transfer extends Model<InferAttributes<Transfer>, InferCreationAttributes<Transfer>> {
+    public id!: CreationOptional<number>;
     public amount!: number;
     public origin_account_id!: number;
     public destination_account_id!: number;
-    public date!: string;
+    public date!: Date;
     public comment?: string;
-
-    public originAccount!: Account;  //relación c/cuenta de origen
-    public destinationAccount!: Account; //relación c/cuenta de destino
 }
 
 Transfer.init(
