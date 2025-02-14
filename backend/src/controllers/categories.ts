@@ -4,6 +4,12 @@ import models from '../models';
 const { Category } = models;
 
 export const getCategories = async (req: Request, res: Response) => { //pedimos todas, no hay paginación
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
+    
     try {
         const categories = await Category.findAll();
         res.json(categories);
@@ -15,6 +21,11 @@ export const getCategories = async (req: Request, res: Response) => { //pedimos 
 
 export const getCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (isNaN(Number(id))) {
         return res.status(400).json({ msg: 'Invalid category ID' });
@@ -36,6 +47,11 @@ export const getCategory = async (req: Request, res: Response) => {
 
 export const postCategory = async (req: Request, res: Response) => {
     const { name, type } = req.body;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (!name || !type) {
         return res.status(400).json({ msg: 'Name and type are required' });
@@ -53,6 +69,11 @@ export const postCategory = async (req: Request, res: Response) => {
 export const updateCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, type } = req.body;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (!name && !type) {
         return res.status(400).json({ msg: 'At least one field (name or type) is required to update' });
@@ -76,6 +97,11 @@ export const updateCategory = async (req: Request, res: Response) => {
 
 export const deleteCategory = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     try {
         const category = await Category.findByPk(id);

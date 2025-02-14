@@ -4,6 +4,12 @@ import models from '../models';
 const { Transaction, Category, Account } = models;
 
 export const getTransactions = async (req: Request, res: Response) => {
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
+
     let { page = 1, limit = 10 } = req.query; //ojo paginación
 
     page = Math.max(Number(page), 1);
@@ -23,6 +29,7 @@ export const getTransactions = async (req: Request, res: Response) => {
                 {
                     model: Account,
                     attributes: ['id_account', 'name', 'balance'],
+                    where: { user_id }, 
                 },
             ],
         });
@@ -41,6 +48,11 @@ export const getTransactions = async (req: Request, res: Response) => {
 
 export const getTransaction = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (isNaN(Number(id))) {
         return res.status(400).json({ msg: 'Invalid transaction ID' });
@@ -56,6 +68,7 @@ export const getTransaction = async (req: Request, res: Response) => {
                 {
                     model: Account,
                     attributes: ['id_account', 'name', 'balance'],
+                    where: { user_id },
                 },
             ],
         });
@@ -73,7 +86,7 @@ export const getTransaction = async (req: Request, res: Response) => {
 
 export const postTransaction = async (req: Request, res: Response) => {
     const { amount, account_id, category_id, date, comment } = req.body;
-    const user_id = req.user?.id; //ojo el tema de la autentificación
+    const user_id = req.user?.id;
 
     if (!user_id) {
         return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
@@ -89,7 +102,7 @@ export const postTransaction = async (req: Request, res: Response) => {
 
     try {
         const account = await Account.findOne({
-            where: { id: account_id, user_id }, //preguntamos si esta cuenta es de este usuario
+            where: { id: account_id, user_id },
         });
 
         if (!account) {
@@ -107,7 +120,7 @@ export const postTransaction = async (req: Request, res: Response) => {
 export const updateTransaction = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { amount, account_id, category_id, date, comment } = req.body;
-    const user_id = req.user?.id; //aquí tmb hay autentificación
+    const user_id = req.user?.id;
 
     if (!user_id) {
         return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
@@ -129,7 +142,7 @@ export const updateTransaction = async (req: Request, res: Response) => {
         }
 
         if (account_id) {
-            const account = await Account.findOne({ //es esta tu cuenta? se le pregunta al usuario
+            const account = await Account.findOne({ 
                 where: { id: account_id, user_id },
             });
 
@@ -149,6 +162,11 @@ export const updateTransaction = async (req: Request, res: Response) => {
 
 export const deleteTransaction = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     try {
         const transaction = await Transaction.findByPk(id);
