@@ -1,16 +1,8 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../db/connection';
 
-interface AccountAttributes {
-    id: number;
-    name: string;
-    balance: number;
-    visibility: boolean;
-    user_id: number;
-}
-
-class Account extends Model<AccountAttributes> implements AccountAttributes {
-    public id!: number;
+class Account extends Model<InferAttributes<Account>, InferCreationAttributes<Account>> {
+    public id!: CreationOptional<number>;
     public name!: string;
     public balance!: number;
     public visibility!: boolean;
