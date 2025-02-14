@@ -40,6 +40,15 @@ export const getAccountById = async (req: Request, res: Response) => {
 
 export const postAccount = async (req: Request, res: Response) => {
     const { name, balance, visibility, user_id } = req.body;
+    const authenticatedUserId = req.user?.id;
+
+    if (!authenticatedUserId) {
+        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+    }
+
+    if (user_id !== authenticatedUserId) {
+        return res.status(403).json({ message: "Forbidden: You cannot create an account for another user" });
+    }
     
     if (!name || user_id === undefined) {
         return res.status(400).json({ message: "Name and user_id are required" });
@@ -57,15 +66,24 @@ export const postAccount = async (req: Request, res: Response) => {
 export const updateAccount = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, balance, visibility } = req.body; //id_user no lo ponemos en el req body así no hay opción de update
+    const authenticatedUserId = req.user?.id;
+
+    if (!authenticatedUserId) {
+        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+    }
 
     if (!name && !balance && !visibility) {
         return res.status(400).json({ msg: 'At least one field is required to update' });
     }
 
     try {
-        const account = await Account.findByPk(id);
+        const account = await Account.findByPk(id, { include: [{ model: User, as: "user" }] });
         if (!account) {
             return res.status(404).json({ message: `Account with id ${id} not found` });
+        }
+
+        if (account.user_id !== authenticatedUserId) {
+            return res.status(403).json({ message: "Forbidden: You can only update your own accounts" });
         }
 
         await account.update({ name, balance, visibility }); //no user_id pq no quiero que se pueda update
@@ -79,12 +97,21 @@ export const updateAccount = async (req: Request, res: Response) => {
 
 export const deleteAccount = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const authenticatedUserId = req.user?.id;
+
+    if (!authenticatedUserId) {
+        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+    }
 
     try {
-        const account = await Account.findByPk(id);
+        const account = await Account.findByPk(id, { include: [{ model: User, as: "user" }] });
 
         if (!account) {
             return res.status(404).json({ message: `Account with id ${id} not found` });
+        }
+
+        if (account.user_id !== authenticatedUserId) {
+            return res.status(403).json({ message: "Forbidden: You can only delete your own accounts" });
         }
 
         await account.destroy();
