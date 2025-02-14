@@ -26,11 +26,13 @@ export const getTransfers = async (req: Request, res: Response) => {
                     model: Account,
                     as: 'originAccount',
                     attributes: ['id', 'name', 'balance'],
+                    where: { user_id }
                 },
                 {
                     model: Account,
                     as: 'destinationAccount',
                     attributes: ['id', 'name', 'balance'],
+                    where: { user_id }
                 },
             ],
         });

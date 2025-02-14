@@ -3,11 +3,23 @@ import models from "../models";
 
 const { Account, User } = models;
 
-export const getAllAccounts = async (_req: Request, res: Response) => { //aquí pido todos, no hay paginación
+export const getAllAccounts = async (req: Request, res: Response) => { //aquí pido todos, no hay paginación
+    const authenticatedUserId = req.user?.id;
+
+    if (!authenticatedUserId) {
+        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+    }
+
     try {
         const accounts = await Account.findAll({
+            where: { user_id: authenticatedUserId },
             include: [{ model: User, as: "user" }], //recordar que Account belongsTo User!!
         });
+
+        if (!accounts || accounts.length === 0) {
+            return res.status(404).json({ message: "No accounts found for this user" });
+        }
+
         res.json(accounts);
     } catch (error) {
         console.error(error);
@@ -17,13 +29,19 @@ export const getAllAccounts = async (_req: Request, res: Response) => { //aquí 
 
 export const getAccountById = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const authenticatedUserId = req.user?.id;
+
+    if (!authenticatedUserId) {
+        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+    }
 
     if (isNaN(Number(id))) {
         return res.status(400).json({ msg: 'Invalid account ID' });
     }
 
     try {
-        const account = await Account.findByPk(id, {
+        const account = await Account.findOne({
+            where: { id, user_id: authenticatedUserId },
             include: [{ model: User, as: "user" }],
         });
 
