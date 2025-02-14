@@ -1,27 +1,13 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../db/connection';
-import Account from './account';
-import Category from './category';
 
-interface TransactionAttributes {
-    id: number;
-    amount: number;
-    account_id: number;
-    category_id: number;
-    date: string;
-    comment?: string;
-}
-
-class Transaction extends Model<TransactionAttributes> implements TransactionAttributes {
-    public id!: number;
+class Transaction extends Model<InferAttributes<Transaction>, InferCreationAttributes<Transaction>> {
+    public id!: CreationOptional<number>;
     public amount!: number;
     public account_id!: number;
     public category_id!: number;
-    public date!: string;
+    public date!: Date;
     public comment?: string;
-
-    public account!: Account; //relación c/cuenta
-    public category!: Category; //relación c/categoría
 }
 
 Transaction.init(
