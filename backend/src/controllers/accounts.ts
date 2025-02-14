@@ -11,16 +11,19 @@ export const getAllAccounts = async (req: Request, res: Response) => { //aquí p
     }
 
     try {
-        const accounts = await Account.findAll({
+        const result = await Account.findAndCountAll({
             where: { user_id: authenticatedUserId },
-            include: [{ model: User, as: "user" }], //recordar que Account belongsTo User!!
+            include: [{ model: User, as: "user" }],
         });
 
-        if (!accounts || accounts.length === 0) {
+        if (result.count === 0) {
             return res.status(404).json({ message: "No accounts found for this user" });
         }
 
-        res.json(accounts);
+        res.json({
+            count: result.count,
+            accounts: result.rows,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Ups, there was an error when trying to get the accounts" });

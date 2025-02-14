@@ -11,8 +11,8 @@ export const getCategories = async (req: Request, res: Response) => { //pedimos 
     }
     
     try {
-        const categories = await Category.findAll();
-        res.json(categories);
+        const result = await Category.findAndCountAll();
+        res.json({ count: result.count, users: result.rows })
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Ups, there was an error when trying to get the categories' });
