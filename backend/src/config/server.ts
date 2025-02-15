@@ -5,6 +5,7 @@ import { testConnection } from '../db/connection';
 import accountsRouter from '../routes/account-routes';
 import categoriesRouter from '../routes/categories-routes';
 import * as admin from 'firebase-admin';
+import transactionsRouter from '../routes/transactions-routes';
 
 export class Server {
     private app: Application;
@@ -58,9 +59,9 @@ export class Server {
             })
         });
 
-        // Manejo de rutas con try-catch para capturar errores inesperados
         this.app.use('/api/accounts', accountsRouter);
         this.app.use('/api/categories', categoriesRouter);
+        this.app.use('/api/transactions', transactionsRouter);
     }
 
     middlewares() {

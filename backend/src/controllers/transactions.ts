@@ -3,11 +3,12 @@ import models from '../models';
 
 const { Transaction, Category, Account } = models;
 
-export const getTransactions = async (req: Request, res: Response) => {
+export const getAllTransactions = async (req: Request, res: Response): Promise<void> => { 
     const user_id = req.user?.id;
 
     if (!user_id) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     let { page = 1, limit = 10 } = req.query; //ojo paginación
@@ -53,16 +54,18 @@ export const getTransactions = async (req: Request, res: Response) => {
     }
 };
 
-export const getTransaction = async (req: Request, res: Response) => {
+export const getTransactionById = async (req: Request, res: Response): Promise<void> => { 
     const { id } = req.params;
     const user_id = req.user?.id;
 
     if (!user_id) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     if (isNaN(Number(id))) {
-        return res.status(400).json({ msg: 'Invalid transaction ID' });
+        res.status(400).json({ msg: 'Invalid transaction ID' });
+        return;
     }
 
     try {
@@ -88,7 +91,8 @@ export const getTransaction = async (req: Request, res: Response) => {
         });
 
         if (!transaction) {
-            return res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            return;
         }
 
         res.json(transaction);
@@ -98,20 +102,23 @@ export const getTransaction = async (req: Request, res: Response) => {
     }
 };
 
-export const postTransaction = async (req: Request, res: Response) => {
+export const postTransaction = async (req: Request, res: Response): Promise<void> => { 
     const { amount, account_id, category_id, date, comment } = req.body;
     const user_id = req.user?.id;
 
     if (!user_id) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     if (!amount || !account_id || !category_id || !date) {
-        return res.status(400).json({ msg: 'All fields except comment are required' });
+        res.status(400).json({ msg: 'All fields except comment are required' });
+        return;
     }
 
     if (amount <= 0) {
-        return res.status(400).json({ msg: 'Amount must be greater than 0' });
+        res.status(400).json({ msg: 'Amount must be greater than 0' });
+        return;
     }
 
     try {
@@ -120,7 +127,8 @@ export const postTransaction = async (req: Request, res: Response) => {
         });
 
         if (!account) {
-            return res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+            res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+            return;
         }
 
         const transaction = await Transaction.create({ amount, account_id, category_id, date, comment });
@@ -131,28 +139,32 @@ export const postTransaction = async (req: Request, res: Response) => {
     }
 };
 
-export const updateTransaction = async (req: Request, res: Response) => {
+export const updateTransaction = async (req: Request, res: Response): Promise<void> => { 
     const { id } = req.params;
     const { amount, account_id, category_id, date, comment } = req.body;
     const user_id = req.user?.id;
 
     if (!user_id) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     if (!amount && !account_id && !category_id && !date) {
-        return res.status(400).json({ msg: 'At least one field is required to update' });
+        res.status(400).json({ msg: 'At least one field is required to update' });
+        return;
     }
 
     if (amount && amount <= 0) {
-        return res.status(400).json({ msg: 'Amount must be greater than 0' });
+        res.status(400).json({ msg: 'Amount must be greater than 0' });
+        return;
     }
 
     try {
         const transaction = await Transaction.findByPk(id);
 
         if (!transaction) {
-            return res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            return;
         }
 
         if (account_id) {
@@ -161,7 +173,8 @@ export const updateTransaction = async (req: Request, res: Response) => {
             });
 
             if (!account) {
-                return res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+                res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+                return;
             }
         }
 
@@ -174,19 +187,21 @@ export const updateTransaction = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteTransaction = async (req: Request, res: Response) => {
+export const deleteTransaction = async (req: Request, res: Response): Promise<void> => { 
     const { id } = req.params;
     const user_id = req.user?.id;
 
     if (!user_id) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     try {
         const transaction = await Transaction.findByPk(id);
 
         if (!transaction) {
-            return res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            res.status(404).json({ msg: `Transaction with id ${id} not found` });
+            return;
         }
 
         const { account_id } = transaction;
@@ -196,7 +211,8 @@ export const deleteTransaction = async (req: Request, res: Response) => {
         });
 
         if (!account) {
-            return res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+            res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
+            return;
         }
 
         await transaction.destroy();
