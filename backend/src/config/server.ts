@@ -1,10 +1,9 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import revenueRouter from '../routes/revenue';
-import calendarRouter from '../routes/calendar';
-import competitorRouter from '../routes/competitors';
 import { insertInitialData } from '../utils/start_data';
-import {testConnection } from '../db/connection';
+import { testConnection } from '../db/connection';
+import accountsRouter from '../routes/account-routes';
+import * as admin from 'firebase-admin';
 
 export class Server {
     private app: Application;
@@ -13,10 +12,26 @@ export class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || '3001';
+
+        this.initializeFirebase();
+
         this.middlewares();  //configuramos middlewares
         this.routes();       //definimos las rutas
         this.start();        //conectamos con la bbdd y cargamos los datos iniciales
         this.listen();       //escuchamos al servidor
+    }
+
+    private initializeFirebase() {
+        // Asegúrate de que este código esté antes de cualquier middleware
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.applicationDefault(),
+                // O usa tu clave de servicio si no es la predeterminada
+                // credential: admin.credential.cert(require("./path/to/serviceAccountKey.json"))
+            });
+        } else {
+            admin.app(); // Si ya está inicializado, usa la instancia existente
+        }
     }
 
     listen() {
@@ -41,9 +56,15 @@ export class Server {
                 msg: 'API working'
             })
         });
-        this.app.use('/api/revenue', revenueRouter);
-        this.app.use('/api/events', calendarRouter);
-        this.app.use('/api/competitors', competitorRouter);
+        // Manejo de rutas con try-catch para capturar errores inesperados
+        this.app.use('/api/accounts', async (req: Request, res: Response, next) => {
+            try {
+                await accountsRouter(req, res, next);
+            } catch (error) {
+                console.error('Error in accounts route:', error);
+                res.status(500).json({ message: 'Internal Server Error' });
+            }
+        });
     }
 
     middlewares() {

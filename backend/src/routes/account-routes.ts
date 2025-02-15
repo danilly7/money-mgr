@@ -1,16 +1,10 @@
-import { Router } from "express";
-import { 
-    getAllAccounts, 
-    getAccountById, 
-    postAccount, 
-    updateAccount, 
-    deleteAccount 
-} from "../controllers/accounts";
-import { authenticateUser } from "../middlewares/auth.middleware";
+import { Router } from 'express';
+import { getAllAccounts, getAccountById, postAccount, updateAccount, deleteAccount } from '../controllers/accounts';
+import { authUser } from '../middlewares/auth.middleware';
 
 const accountsRouter = Router();
 
-accountsRouter.use(authenticateUser); // Aplica autenticación a todas las rutas
+accountsRouter.use(authUser);
 
 accountsRouter.get("/", getAllAccounts);
 accountsRouter.get("/:id", getAccountById);

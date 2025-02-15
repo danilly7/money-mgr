@@ -3,11 +3,12 @@ import models from "../models";
 
 const { Account, User } = models;
 
-export const getAllAccounts = async (req: Request, res: Response) => { //aquí pillo todos, no hay paginación
+export const getAllAccounts = async (req: Request, res: Response): Promise<void> => {  //aquí pillo todos, no hay paginación
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
-        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        return;    
     }
 
     try {
@@ -17,7 +18,8 @@ export const getAllAccounts = async (req: Request, res: Response) => { //aquí p
         });
 
         if (result.count === 0) {
-            return res.status(404).json({ message: "No accounts found for this user" });
+            res.status(404).json({ message: "No accounts found for this user" });
+            return;
         }
 
         res.json({
@@ -30,16 +32,18 @@ export const getAllAccounts = async (req: Request, res: Response) => { //aquí p
     }
 };
 
-export const getAccountById = async (req: Request, res: Response) => {
+export const getAccountById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
-        return res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        res.status(401).json({ msg: 'Unauthorized: No user authenticated' });
+        return;
     }
 
     if (isNaN(Number(id))) {
-        return res.status(400).json({ msg: 'Invalid account ID' });
+        res.status(400).json({ msg: 'Invalid account ID' });
+        return;
     }
 
     try {
@@ -49,7 +53,8 @@ export const getAccountById = async (req: Request, res: Response) => {
         });
 
         if (!account) {
-            return res.status(404).json({ message: "Account not found" });
+            res.status(404).json({ message: "Account not found" });
+            return;
         }
 
         res.json(account);
@@ -59,20 +64,23 @@ export const getAccountById = async (req: Request, res: Response) => {
     }
 };
 
-export const postAccount = async (req: Request, res: Response) => {
+export const postAccount = async (req: Request, res: Response): Promise<void> => {
     const { name, balance, visibility, user_id } = req.body;
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
-        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        return;
     }
 
     if (user_id !== authenticatedUserId) {
-        return res.status(403).json({ message: "Forbidden: You cannot create an account for another user" });
+        res.status(403).json({ message: "Forbidden: You cannot create an account for another user" });
+        return;
     }
     
     if (!name || user_id === undefined) {
-        return res.status(400).json({ message: "Name and user_id are required" });
+        res.status(400).json({ message: "Name and user_id are required" });
+        return;
     }
     
     try {
@@ -84,27 +92,31 @@ export const postAccount = async (req: Request, res: Response) => {
     }
 };
 
-export const updateAccount = async (req: Request, res: Response) => {
+export const updateAccount = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { name, balance, visibility } = req.body; //id_user no lo ponemos en el req body pq así no hay opción de update
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
-        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        return;
     }
 
     if (!name && !balance && !visibility) {
-        return res.status(400).json({ msg: 'At least one field is required to update' });
+        res.status(400).json({ msg: 'At least one field is required to update' });
+        return;
     }
 
     try {
         const account = await Account.findByPk(id, { include: [{ model: User, as: "user" }] });
         if (!account) {
-            return res.status(404).json({ message: `Account with id ${id} not found` });
+            res.status(404).json({ message: `Account with id ${id} not found` });
+            return;
         }
 
         if (account.user_id !== authenticatedUserId) {
-            return res.status(403).json({ message: "Forbidden: You can only update your own accounts" });
+            res.status(403).json({ message: "Forbidden: You can only update your own accounts" });
+            return;
         }
 
         await account.update({ name, balance, visibility }); //no user_id pq no quiero que se pueda update
@@ -116,23 +128,26 @@ export const updateAccount = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteAccount = async (req: Request, res: Response) => {
+export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
-        return res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        res.status(401).json({ message: "Unauthorized: No user authenticated" });
+        return;
     }
 
     try {
         const account = await Account.findByPk(id, { include: [{ model: User, as: "user" }] });
 
         if (!account) {
-            return res.status(404).json({ message: `Account with id ${id} not found` });
+            res.status(404).json({ message: `Account with id ${id} not found` });
+            return;
         }
 
         if (account.user_id !== authenticatedUserId) {
-            return res.status(403).json({ message: "Forbidden: You can only delete your own accounts" });
+            res.status(403).json({ message: "Forbidden: You can only delete your own accounts" });
+            return;
         }
 
         await account.destroy();

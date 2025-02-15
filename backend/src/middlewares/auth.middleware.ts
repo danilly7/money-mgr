@@ -1,15 +1,25 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, RequestHandler} from "express";
 import admin from "firebase-admin";
-import models from '../models';
+import User from "../models/user";
 
-const {User} = models;
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                uid: string;
+                id: number;
+            };
+        }
+    }
+}
 
 //middleware de autenticación con Firebase
-export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const authUser: RequestHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res.status(401).json({ message: "Unauthorized: No token provided" });
+        res.status(401).json({ message: "Unauthorized: No token provided" });  // Aquí enviamos la respuesta sin return
+        return;  // Después de la respuesta, salimos del middleware
     }
 
     const token = authHeader.split(" ")[1];
@@ -22,7 +32,8 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
         const user = await User.findOne({ where: { uid: decodedToken.uid } });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            res.status(404).json({ message: "User not found" });  // Respuesta sin return
+            return;
         }
 
         //asignar tanto el uid como el id al objeto req.user
@@ -31,9 +42,9 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
             id: user.id, //aquí asignas el id de la base de datos
         };
         
-        next();
+        next(); //next operation
     } catch (error) {
         console.error("Token verification failed:", error);
-        return res.status(403).json({ message: "Forbidden: Invalid token" });
+        res.status(403).json({ message: "Forbidden: Invalid token" });
     }
 };
