@@ -34,6 +34,7 @@ export const doSignOut = async () => {
     return signOut(auth);
 };
 
+//--------------- no están siendo usados en este momento----------------↓
 export const doPasswordReset = async (email: string) => {
     return sendPasswordResetEmail(auth, email);
 };
@@ -52,4 +53,22 @@ export const doSendEmailVerification = () => {
         });
     }
     throw new Error("No authenticated user found");
+};
+//--------------- no están siendo usados en este momento----------------↑
+
+export const getAuthToken = async () => {
+    const user = auth.currentUser;
+
+    if (user) {
+        try {
+            //pillamos el token de Firebase
+            const token = await user.getIdToken(true); 
+            //aquí añadimos dentro de () true para forzar siempre la actualización del token
+            //la vida del token de firebase es de 1h
+            return token;
+        } catch (error) {
+            console.error("Error getting the token:", error);
+        }
+    }
+    return null;
 };
