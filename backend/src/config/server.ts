@@ -3,6 +3,7 @@ import cors from 'cors';
 import { insertInitialData } from '../utils/start_data';
 import { testConnection } from '../db/connection';
 import accountsRouter from '../routes/account-routes';
+import categoriesRouter from '../routes/categories-routes';
 import * as admin from 'firebase-admin';
 
 export class Server {
@@ -56,15 +57,10 @@ export class Server {
                 msg: 'API working'
             })
         });
+
         // Manejo de rutas con try-catch para capturar errores inesperados
-        this.app.use('/api/accounts', async (req: Request, res: Response, next) => {
-            try {
-                await accountsRouter(req, res, next);
-            } catch (error) {
-                console.error('Error in accounts route:', error);
-                res.status(500).json({ message: 'Internal Server Error' });
-            }
-        });
+        this.app.use('/api/accounts', accountsRouter);
+        this.app.use('/api/categories', categoriesRouter);
     }
 
     middlewares() {
@@ -74,7 +70,7 @@ export class Server {
         /*
         this.app.use(cors({
             origin: 'https://blalbblablalb.com',
-            methods: ['GET', 'POST', 'PUT'], // Métodos permitidos
+            methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos, aquí están puestos todos
             allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
         }));
         */

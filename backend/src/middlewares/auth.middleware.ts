@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, RequestHandler} from "express";
 import admin from "firebase-admin";
 import User from "../models/user";
 
+//esto es para que pille uid y id de user, sino hay problemas de tipado
 declare global {
     namespace Express {
         interface Request {

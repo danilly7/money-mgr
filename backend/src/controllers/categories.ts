@@ -8,7 +8,7 @@ const { Category } = models;
 //por lo tanto se comentan post, update y delete
 //tmb las categorias estarán en intial data ya preestablecidas
 
-export const getCategories = async (req: Request, res: Response) => { //pedimos todas, no hay paginación  
+export const getAllCategories = async (req: Request, res: Response): Promise<void> => { //pedimos todas, no hay paginación  
     try {
         const result = await Category.findAndCountAll();
         res.json({ count: result.count, users: result.rows }) 
@@ -18,18 +18,20 @@ export const getCategories = async (req: Request, res: Response) => { //pedimos 
     }
 };
 
-export const getCategory = async (req: Request, res: Response) => {
+export const getCategoryById = async (req: Request, res: Response): Promise<void> => { 
     const { id } = req.params;
 
     if (isNaN(Number(id))) {
-        return res.status(400).json({ msg: 'Invalid category ID' });
+        res.status(400).json({ msg: 'Invalid category ID' });
+        return;
     }
 
     try {
         const category = await Category.findByPk(id);
 
         if (!category) {
-            return res.status(404).json({ msg: `Category with id ${id} not found` });
+            res.status(404).json({ msg: `Category with id ${id} not found` });
+            return;
         }
 
         res.json(category);
@@ -39,6 +41,7 @@ export const getCategory = async (req: Request, res: Response) => {
     }
 };
 
+//OJO si se descomenta, añadir lo del void y mirar lo del return!
 // export const postCategory = async (req: Request, res: Response) => {
 //     const { name, type } = req.body;
 
