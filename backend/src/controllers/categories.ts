@@ -11,7 +11,7 @@ const { Category } = models;
 export const getAllCategories = async (req: Request, res: Response): Promise<void> => { //pedimos todas, no hay paginación  
     try {
         const result = await Category.findAndCountAll();
-        res.json({ count: result.count, users: result.rows }) 
+        res.json({ count: result.count, categories: result.rows }) 
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: 'Ups, there was an error when trying to get the categories' });
