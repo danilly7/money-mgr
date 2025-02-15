@@ -3,7 +3,7 @@ import { sequelize } from '../db/connection';
 
 type CategoryType = 'income' | 'expense';
 
-interface CategoryAttributes {
+interface CategoryAttributes { //este tiene un tipado más fuerte
     id: number;
     name: string;
     type: CategoryType;

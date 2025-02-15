@@ -3,7 +3,7 @@ import models from "../models";
 
 const { Account, User } = models;
 
-export const getAllAccounts = async (req: Request, res: Response) => { //aquí pido todos, no hay paginación
+export const getAllAccounts = async (req: Request, res: Response) => { //aquí pillo todos, no hay paginación
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {
@@ -12,8 +12,8 @@ export const getAllAccounts = async (req: Request, res: Response) => { //aquí p
 
     try {
         const result = await Account.findAndCountAll({
-            where: { user_id: authenticatedUserId },
-            include: [{ model: User, as: "user" }],
+            where: { user_id: authenticatedUserId }, //solo puedo ver los accounts de mi user
+            include: [{ model: User, as: "user" }], 
         });
 
         if (result.count === 0) {
@@ -86,7 +86,7 @@ export const postAccount = async (req: Request, res: Response) => {
 
 export const updateAccount = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { name, balance, visibility } = req.body; //id_user no lo ponemos en el req body así no hay opción de update
+    const { name, balance, visibility } = req.body; //id_user no lo ponemos en el req body pq así no hay opción de update
     const authenticatedUserId = req.user?.id;
 
     if (!authenticatedUserId) {

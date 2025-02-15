@@ -32,6 +32,13 @@ export const getTransactions = async (req: Request, res: Response) => {
                     where: { user_id }, 
                 },
             ],
+            where: {
+                account_id: await Account.findAll({
+                    attributes: ['id_account'],
+                    where: { user_id },
+                    raw: true,
+                }).then(accounts => accounts.map(acc => acc.id)),
+            },
         });
 
         res.json({
@@ -59,7 +66,15 @@ export const getTransaction = async (req: Request, res: Response) => {
     }
 
     try {
-        const transaction = await Transaction.findByPk(id, {
+        const transaction = await Transaction.findOne({
+            where: { 
+                id,
+                account_id: await Account.findAll({
+                    attributes: ['id_account'],
+                    where: { user_id },
+                    raw: true,
+                }).then(accounts => accounts.map(acc => acc.id)), 
+            },
             include: [
                 {
                     model: Category,
@@ -68,7 +83,6 @@ export const getTransaction = async (req: Request, res: Response) => {
                 {
                     model: Account,
                     attributes: ['id_account', 'name', 'balance'],
-                    where: { user_id },
                 },
             ],
         });
@@ -173,6 +187,16 @@ export const deleteTransaction = async (req: Request, res: Response) => {
 
         if (!transaction) {
             return res.status(404).json({ msg: `Transaction with id ${id} not found` });
+        }
+
+        const { account_id } = transaction;
+
+        const account = await Account.findOne({
+            where: { id: account_id, user_id },
+        });
+
+        if (!account) {
+            return res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
         }
 
         await transaction.destroy();

@@ -3,7 +3,9 @@ import models from '../models';
 
 const { User } = models;
 
-//IMPORTANTE: gets y post están sin restringir. Solo update está restringido en este moment.
+//IMPORTANTE: gets y post están sin restringir
+//solo update está restringido en este moment
+//no tiene delete por el momento
 
 export const getUsers = async (req: Request, res: Response) => { //este al llamar llamamos a todos
     try {
@@ -27,13 +29,11 @@ export const getUser = async (req: Request, res: Response) => {
     try {
         const user = await User.findByPk(id);
 
-        if (user) {
-            res.json(user);
-        } else {
-            res.status(404).json({
-                msg: `User with id ${id} does NOT exist (yet)`,
-            });
+        if (!user) {
+            return res.status(404).json({ msg: `User with id ${id} does NOT exist (yet)` });
         }
+
+        res.json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -50,6 +50,12 @@ export const postUser = async (req: Request, res: Response) => {
     }
 
     try {
+        const existingUser = await User.findOne({ where: { uid } });
+
+        if (existingUser) {
+            return res.status(409).json({ msg: 'User already exists' });
+        }
+
         const user = await User.create({ name, email, uid });
         res.json(user);
     } catch (error) {
@@ -96,5 +102,3 @@ export const updateUser = async (req: Request, res: Response) => {
         });
     }
 };
-
-//este no tiene delete.

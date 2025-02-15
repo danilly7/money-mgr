@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import models from '../models';
+import { Op, Sequelize } from 'sequelize';
 
 const { Transfer, Account } = models;
 
@@ -19,6 +20,12 @@ export const getTransfers = async (req: Request, res: Response) => {
 
     try {
         const result = await Transfer.findAndCountAll({
+            where: {
+                [Op.or]: [ //ojo esto funciona pq es sequelize, si usamos otro hay que modificar cosis
+                    { origin_account_id: { [Op.in]: Sequelize.literal(`(SELECT id FROM Accounts WHERE user_id = ${user_id})`) } },
+                    { destination_account_id: { [Op.in]: Sequelize.literal(`(SELECT id FROM Accounts WHERE user_id = ${user_id})`) } }
+                ]
+            },
             limit,
             offset,
             include: [
@@ -26,13 +33,11 @@ export const getTransfers = async (req: Request, res: Response) => {
                     model: Account,
                     as: 'originAccount',
                     attributes: ['id', 'name', 'balance'],
-                    where: { user_id }
                 },
                 {
                     model: Account,
                     as: 'destinationAccount',
                     attributes: ['id', 'name', 'balance'],
-                    where: { user_id }
                 },
             ],
         });
@@ -64,19 +69,24 @@ export const getTransfer = async (req: Request, res: Response) => {
     }
 
     try {
-        const transfer = await Transfer.findByPk(id, {
+        const transfer = await Transfer.findOne({
+            where: {
+                id,
+                [Op.or]: [ //ojo esto funciona pq es sequelize, si usamos otro hay que modificar cosis
+                    { origin_account_id: { [Op.in]: Sequelize.literal(`(SELECT id FROM Accounts WHERE user_id = ${user_id})`) } },
+                    { destination_account_id: { [Op.in]: Sequelize.literal(`(SELECT id FROM Accounts WHERE user_id = ${user_id})`) } }
+                ]
+            },
             include: [
                 {
                     model: Account,
                     as: 'originAccount',
                     attributes: ['id', 'name', 'balance'],
-                    where: { user_id }
                 },
                 {
                     model: Account,
                     as: 'destinationAccount',
                     attributes: ['id', 'name', 'balance'],
-                    where: { user_id }
                 },
             ],
         });
