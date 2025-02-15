@@ -7,6 +7,7 @@ import accountsRouter from '../routes/account-routes';
 import categoriesRouter from '../routes/categories-routes';
 import transactionsRouter from '../routes/transactions-routes';
 import transfersRouter from '../routes/transfers-routes';
+import usersRouter from '../routes/users-routes';
 
 export class Server {
     private app: Application;
@@ -60,6 +61,7 @@ export class Server {
             })
         });
 
+        this.app.use('/api/users', usersRouter);
         this.app.use('/api/accounts', accountsRouter);
         this.app.use('/api/categories', categoriesRouter);
         this.app.use('/api/transactions', transactionsRouter);
