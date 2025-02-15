@@ -8,6 +8,7 @@ import categoriesRouter from '../routes/categories-routes';
 import transactionsRouter from '../routes/transactions-routes';
 import transfersRouter from '../routes/transfers-routes';
 import usersRouter from '../routes/users-routes';
+import Category from '../models/category';
 
 export class Server {
     private app: Application;
@@ -27,14 +28,21 @@ export class Server {
 
     private initializeFirebase() {
         // Asegúrate de que este código esté antes de cualquier middleware
-        if (!admin.apps.length) {
-            admin.initializeApp({
-                credential: admin.credential.applicationDefault(),
-                // O usa tu clave de servicio si no es la predeterminada
-                // credential: admin.credential.cert(require("./path/to/serviceAccountKey.json"))
-            });
-        } else {
-            admin.app(); // Si ya está inicializado, usa la instancia existente
+        try {
+            if (!admin.apps.length) {
+                admin.initializeApp({
+                    credential: admin.credential.cert({
+                        projectId: process.env.FIREBASE_PROJECT_ID!, //la ! dice que tengo que tener esto sí o sí
+                        clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+                        privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+                    }),
+                    // esto es si lo pillo de la carpeta → credential: admin.credential.cert(require("./credentials/firebaseServiceAccountKey.json"))
+                });
+            } else {
+                admin.app(); // Si ya está inicializado, usa la instancia existente
+            }
+        } catch (error) {
+            console.error('Error initializing Firebase:', error);
         }
     }
 
@@ -46,8 +54,13 @@ export class Server {
 
     async start() {
         try {
-            await testConnection();  //Nos conectamos a la base de datos y sincronizamos modelos
-            await insertInitialData(); //Datos iniciales (si es necesario)
+            await testConnection();  //nos conectamos a la base de datos y sincronizamos modelos
+
+            const categories = await Category.count(); //se hace comprovación si ya existen
+            if (categories === 0) {
+                await insertInitialData();  //insertar solo si no hay datos
+            }
+
             console.log('Server started successfully.');
         } catch (error) {
             console.error('Error during startup:', error);
