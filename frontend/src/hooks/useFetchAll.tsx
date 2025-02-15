@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAuthToken } from '../firebase/auth';
 
-//OJO que en mi cado el dataField es el nombre de las tablas que están en plural
+//OJO que en mi caso el dataField es el nombre de las tablas que están en plural
 export function useFetchAll<T>(url: string, dataField: string = 'data', useToken: boolean = false) {
     const [data, setData] = useState<{ data: T[] }>({ data: [] });
     const [loading, setLoading] = useState(true);
