@@ -10,13 +10,13 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 
 User.init(
     {
-        id: {
+        id: { //esto lo ento para linkear
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
             field: 'id_user',
         },
-        uid: {
+        uid: { //esto lo tengo para autentificar
             type: DataTypes.STRING(255),
             allowNull: false,
             unique: true,

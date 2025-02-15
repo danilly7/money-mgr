@@ -1,17 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import admin from "firebase-admin";
+import models from '../models';
 
-declare global {
-    namespace Express {
-        interface Request {
-            user?: {
-                uid: string;
-            };
-        }
-    }
-}
+const {User} = models;
 
-// Middleware de autenticación con Firebase
+//middleware de autenticación con Firebase
 export const authenticateUser = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
@@ -22,13 +15,23 @@ export const authenticateUser = async (req: Request, res: Response, next: NextFu
     const token = authHeader.split(" ")[1];
 
     try {
-        // Verificar y decodificar el token de Firebase
+        //verificar y decodificar el token de Firebase
         const decodedToken = await admin.auth().verifyIdToken(token);
         
-        // Asignamos el uid de Firebase al objeto req.user
-        req.user = { uid: decodedToken.uid };
+        //buscar el usuario en la base de datos usando el uid de Firebase
+        const user = await User.findOne({ where: { uid: decodedToken.uid } });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        //asignar tanto el uid como el id al objeto req.user
+        req.user = {
+            uid: decodedToken.uid,
+            id: user.id, //aquí asignas el id de la base de datos
+        };
         
-        next(); // Continuamos con la siguiente operación
+        next();
     } catch (error) {
         console.error("Token verification failed:", error);
         return res.status(403).json({ message: "Forbidden: Invalid token" });
