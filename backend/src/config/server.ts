@@ -1,11 +1,12 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import * as admin from 'firebase-admin';
 import { insertInitialData } from '../utils/start_data';
 import { testConnection } from '../db/connection';
 import accountsRouter from '../routes/account-routes';
 import categoriesRouter from '../routes/categories-routes';
-import * as admin from 'firebase-admin';
 import transactionsRouter from '../routes/transactions-routes';
+import transfersRouter from '../routes/transfers-routes';
 
 export class Server {
     private app: Application;
@@ -62,6 +63,7 @@ export class Server {
         this.app.use('/api/accounts', accountsRouter);
         this.app.use('/api/categories', categoriesRouter);
         this.app.use('/api/transactions', transactionsRouter);
+        this.app.use('/api/transfers', transfersRouter);
     }
 
     middlewares() {
