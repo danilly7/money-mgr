@@ -123,7 +123,7 @@ export const postTransfer = async (req: Request, res: Response): Promise<void> =
         return;
     }
 
-    if (amount <= 0) {
+    if (typeof amount !== 'number' || amount <= 0) {
         res.status(400).json({ msg: 'Amount must be greater than 0' });
         return;
     }
@@ -142,8 +142,19 @@ export const postTransfer = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
+        if (originAccount.balance < amount) {
+            res.status(400).json({ msg: 'Insufficient balance in the origin account' });
+            return;
+        }
+
         const transfer = await Transfer.create({ amount, origin_account_id, destination_account_id, date, comment });
        
+        originAccount.balance -= amount;
+        destinationAccount.balance += amount;
+
+        await originAccount.save();
+        await destinationAccount.save();
+
         res.json(transfer);
     } catch (error) {
         console.error(error);
@@ -168,7 +179,7 @@ export const updateTransfer = async (req: Request, res: Response): Promise<void>
         return;
     }
 
-    if (amount && amount <= 0) {
+    if (amount && (typeof amount !== 'number' || amount <= 0)) {
         res.status(400).json({ msg: 'Amount must be greater than 0' });
         return;
     }
@@ -181,20 +192,33 @@ export const updateTransfer = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        if (origin_account_id || destination_account_id) {
-            const originAccount = await models.Account.findByPk(origin_account_id || transfer.origin_account_id);
-            const destinationAccount = await models.Account.findByPk(destination_account_id || transfer.destination_account_id);
+        const originAccount = await Account.findByPk(origin_account_id || transfer.origin_account_id);
+        const destinationAccount = await Account.findByPk(destination_account_id || transfer.destination_account_id);
 
-            if (!originAccount || !destinationAccount) {
-                res.status(404).json({ msg: 'One or both accounts do not exist' });
-                return;
-            }
-
-            if (originAccount.user_id !== user_id || destinationAccount.user_id !== user_id) {
-                res.status(403).json({ msg: 'Both accounts must belong to the authenticated user' });
-                return;
-            }
+        if (!originAccount || !destinationAccount) {
+            res.status(404).json({ msg: 'One or both accounts do not exist' });
+            return;
         }
+
+        if (originAccount.user_id !== user_id || destinationAccount.user_id !== user_id) {
+            res.status(403).json({ msg: 'Both accounts must belong to the authenticated user' });
+            return;
+        }
+
+        //logica de revertir tranfe:
+        originAccount.balance += transfer.amount; 
+        destinationAccount.balance -= transfer.amount; 
+
+        originAccount.balance -= amount || transfer.amount; 
+        destinationAccount.balance += amount || transfer.amount; 
+
+        if (originAccount.balance < 0) {
+            res.status(400).json({ msg: 'Insufficient balance in the origin account' });
+            return;
+        }
+
+        await originAccount.save();
+        await destinationAccount.save();
 
         await transfer.update({ amount, origin_account_id, destination_account_id, date, comment });
 
@@ -237,7 +261,15 @@ export const deleteTransfer = async (req: Request, res: Response): Promise<void>
             return;
         }
 
+        //logica del balance accounts:
+        originAccount.balance += transfer.amount;
+        destinationAccount.balance -= transfer.amount;
+
+        await originAccount.save();
+        await destinationAccount.save();
+
         await transfer.destroy();
+
         res.json({ msg: `Transfer with id ${id} was deleted` });
     } catch (error) {
         console.error(error);
