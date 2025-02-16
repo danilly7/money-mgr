@@ -20,7 +20,7 @@ const sequelize = new Sequelize(
 //Sincronización de los modelos de Sequelize con la bbdd
 const syncroModel = async () => {
   try {
-    await sequelize.sync({ alter: true }); 
+    await sequelize.sync({ force: false }); 
     /* OJO IMPORTANTE:
       - "alter: true": Modifica las tablas existentes sin borrar datos.  
       - "force: true": Borra todas las tablas y las vuelve a crear.
