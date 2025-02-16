@@ -3,7 +3,7 @@ import models from '../models';
 
 const { Transaction, Category, Account } = models;
 
-export const getAllTransactions = async (req: Request, res: Response): Promise<void> => { 
+export const getAllTransactions = async (req: Request, res: Response): Promise<void> => {
     const user_id = req.user?.id;
 
     if (!user_id) {
@@ -30,7 +30,7 @@ export const getAllTransactions = async (req: Request, res: Response): Promise<v
                 {
                     model: Account,
                     attributes: ['id_account', 'name', 'balance'],
-                    where: { user_id }, 
+                    where: { user_id },
                 },
             ],
             where: {
@@ -54,7 +54,7 @@ export const getAllTransactions = async (req: Request, res: Response): Promise<v
     }
 };
 
-export const getTransactionById = async (req: Request, res: Response): Promise<void> => { 
+export const getTransactionById = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const user_id = req.user?.id;
 
@@ -70,13 +70,13 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
 
     try {
         const transaction = await Transaction.findOne({
-            where: { 
+            where: {
                 id,
                 account_id: await Account.findAll({
                     attributes: ['id_account'],
                     where: { user_id },
                     raw: true,
-                }).then(accounts => accounts.map(acc => acc.id)), 
+                }).then(accounts => accounts.map(acc => acc.id)),
             },
             include: [
                 {
@@ -102,7 +102,7 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
     }
 };
 
-export const postTransaction = async (req: Request, res: Response): Promise<void> => { 
+export const postTransaction = async (req: Request, res: Response): Promise<void> => {
     const { amount, account_id, category_id, date, comment } = req.body;
     const user_id = req.user?.id;
 
@@ -116,7 +116,7 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
         return;
     }
 
-    if (amount <= 0) {
+    if (typeof amount !== 'number' || amount <= 0) {
         res.status(400).json({ msg: 'Amount must be greater than 0' });
         return;
     }
@@ -131,7 +131,24 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
             return;
         }
 
+        const category = await Category.findByPk(category_id);
+        if (!category) {
+            res.status(400).json({ msg: 'Category not found' });
+            return;
+        }
+
         const transaction = await Transaction.create({ amount, account_id, category_id, date, comment });
+
+        //logica suma-resta:
+        let updatedBalance = account.balance;
+        if (category.type === 'income') {
+            updatedBalance += amount; //sumamos para ingresos
+        } else if (category.type === 'expense') {
+            updatedBalance -= amount; //restamos para gastos
+        }
+
+        await account.update({ balance: updatedBalance });
+
         res.json(transaction);
     } catch (error) {
         console.error(error);
@@ -139,7 +156,7 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
     }
 };
 
-export const updateTransaction = async (req: Request, res: Response): Promise<void> => { 
+export const updateTransaction = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const { amount, account_id, category_id, date, comment } = req.body;
     const user_id = req.user?.id;
@@ -154,7 +171,7 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         return;
     }
 
-    if (amount && amount <= 0) {
+    if (amount && (typeof amount !== 'number' || amount <= 0)) {
         res.status(400).json({ msg: 'Amount must be greater than 0' });
         return;
     }
@@ -167,8 +184,14 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
             return;
         }
 
+        //logica old-new:
+        const oldCategory = await Category.findByPk(transaction.category_id);
+        const oldAmount = transaction.amount;
+
+        let account: InstanceType<typeof Account> | null = null;
+
         if (account_id) {
-            const account = await Account.findOne({ 
+            account = await Account.findOne({
                 where: { id: account_id, user_id },
             });
 
@@ -176,9 +199,36 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
                 res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
                 return;
             }
+        } else {
+            account = await Account.findOne({
+                where: { id: transaction.account_id, user_id },
+            });
+
+            if (!account) {
+                res.status(403).json({ msg: `Unauthorized: Account with id ${transaction.account_id} does not belong to you` });
+                return;
+            }
         }
 
         await transaction.update({ amount, account_id, category_id, date, comment });
+
+        const newCategory = category_id ? await Category.findByPk(category_id) : oldCategory;
+        const newAmount = amount || oldAmount;
+
+        let updatedBalance = account.balance;
+        if (oldCategory?.type === 'income') {
+            updatedBalance -= oldAmount;
+        } else if (oldCategory?.type === 'expense') {
+            updatedBalance += oldAmount;
+        }
+
+        if (newCategory?.type === 'income') {
+            updatedBalance += newAmount;
+        } else if (newCategory?.type === 'expense') {
+            updatedBalance -= newAmount;
+        }
+
+        await account.update({ balance: updatedBalance });
 
         res.json(transaction);
     } catch (error) {
@@ -187,7 +237,7 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
     }
 };
 
-export const deleteTransaction = async (req: Request, res: Response): Promise<void> => { 
+export const deleteTransaction = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const user_id = req.user?.id;
 
@@ -215,7 +265,18 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
             return;
         }
 
+        const category = await Category.findByPk(transaction.category_id);
+
+        let updatedBalance = account.balance;
+        if (category?.type === 'income') {
+            updatedBalance -= transaction.amount; //revertir ingreso
+        } else if (category?.type === 'expense') {
+            updatedBalance += transaction.amount; //revertir gasto
+        }
+
+        await account.update({ balance: updatedBalance });
         await transaction.destroy();
+
         res.json({ msg: 'Transaction deleted successfully' });
     } catch (error) {
         console.error(error);
