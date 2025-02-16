@@ -26,7 +26,7 @@ const User = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-screen mb-2">
-            <UserIcon className="text-4xl"/>
+            <UserIcon className="text-4xl text-personalizedPurple hover:text-personalizedOrange"/>
             <h1 className="text-4xl font-bold">User</h1>
             <div className="m-8 text-center text-lg">
                 <p><strong>Email:</strong> {currentUser?.email}</p>
