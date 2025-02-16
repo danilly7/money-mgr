@@ -3,6 +3,8 @@ import { apiCategories } from '../../api';
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { Category } from '../../components/categories/interface';
 import { colors } from '../../utils/colors';
+import { iconsCategories } from '../../utils/iconsCategories';
+import { AsteriskIcon } from '../../components/ui/icons/AsteriskIcon';
 
 interface CategoriesProviderProps {
     children: ReactNode;
@@ -19,14 +21,18 @@ const CategoriesContext = createContext<CategoriesContextType | undefined>(undef
 export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children }) => {
     const { data, loading, error } = useFetchAll<Category>(apiCategories, 'categories', false);
 
-    //las categorias tendrán los mismos colores, compartido por toda la app por el context
-    const categoriesWithColors = data.data.map((category, index) => ({ 
-        ...category,
-        color: colors[index % colors.length],
-    })); 
+    const categoriesWithIconsAndColors = data?.data?.map((category, index) => {
+        const matchingIcon = iconsCategories.find((icon) => icon.name === category.name);
+        
+        return { 
+            ...category,
+            color: colors[index % colors.length],
+            icon: matchingIcon ? matchingIcon.icon : AsteriskIcon, //fallback si no hay icono
+        };
+    }) || [];
 
     return (
-        <CategoriesContext.Provider value={{ categories: categoriesWithColors, loading, error }}>
+        <CategoriesContext.Provider value={{ categories: categoriesWithIconsAndColors, loading, error }}>
             {children}
         </CategoriesContext.Provider>
     );
