@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Header } from "./../../components/ui/header";
 import { Footer } from "./../../components/ui/footer";
 import { ScrollToTopButton } from "../../components/ui/scroll-top-btn";
+import { CategoriesProvider } from "../../context/categories-context";
 
 const MainLayout = () => {
   return (
@@ -9,7 +10,9 @@ const MainLayout = () => {
       <Header />
       <main>
         <div className="flex flex-col min-h-screen flex-grow">
-          <Outlet />
+          <CategoriesProvider>
+            <Outlet />
+          </CategoriesProvider>
         </div>
       </main>
       <Footer />

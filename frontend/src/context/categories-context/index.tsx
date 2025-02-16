@@ -2,6 +2,7 @@ import React, { ReactNode, createContext, useContext } from 'react';
 import { apiCategories } from '../../api';
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { Category } from '../../components/categories/interface';
+import { colors } from '../../utils/colors';
 
 interface CategoriesProviderProps {
     children: ReactNode;
@@ -18,8 +19,14 @@ const CategoriesContext = createContext<CategoriesContextType | undefined>(undef
 export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children }) => {
     const { data, loading, error } = useFetchAll<Category>(apiCategories, 'categories', false);
 
+    //las categorias tendrán los mismos colores, compartido por toda la app por el context
+    const categoriesWithColors = data.data.map((category, index) => ({ 
+        ...category,
+        color: colors[index % colors.length],
+    })); 
+
     return (
-        <CategoriesContext.Provider value={{ categories: data.data, loading, error }}>
+        <CategoriesContext.Provider value={{ categories: categoriesWithColors, loading, error }}>
             {children}
         </CategoriesContext.Provider>
     );

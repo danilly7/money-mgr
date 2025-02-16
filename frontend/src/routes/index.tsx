@@ -4,7 +4,6 @@ import { RouteObject } from 'react-router-dom';
 const AuthLayout = lazy(() => import('../layouts/auth-layout'));
 const RequireAuth = lazy(() => import('../components/welcome/required-auth'));
 const MainLayout = lazy(() => import('../layouts/main-layout'));
-const CategoriesLayout = lazy(() => import('../layouts/categories-layout'));
 
 const Home = lazy(() => import('../pages/home'));
 const Welcome = lazy(() => import('../pages/welcome'));
@@ -55,13 +54,8 @@ export const routes: RouteObject[] = [
                     },
                     {
                         path: "categories",
-                        element: <CategoriesLayout />,
-                        children: [
-                            {
-                              path: '',
-                              element: <Categories />,
-                            },
-                          ],
+                        element: <Categories />,
+                        //children
                     },
                     {
                         path: "user",

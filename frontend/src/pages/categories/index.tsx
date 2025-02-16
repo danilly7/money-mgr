@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { CategoriesList } from "../../components/categories/r/read";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 
 const Categories = () => {
+    const [isExpense, setIsExpense] = useState(true);
+
     return (
-        <div>
-            <SwitchExpenseIncome />
-            <div className="flex flex-col items-center justify-center h-screen">
+        <>
+           <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
+            <div className="flex flex-col items-center justify-center m-6">
                 <h1 className="text-4xl font-bold">CATEGORIES</h1>
             </div>
-            <CategoriesList />
-        </div>
+            <CategoriesList isExpense={isExpense} />
+        </>
     )
 };
 
