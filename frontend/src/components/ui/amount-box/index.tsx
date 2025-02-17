@@ -51,15 +51,16 @@ const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) 
           <p className="text-black text-xl font-bold">Amount</p>
           {isEditing ? (
             <input
-              type="text"
+              type="number"
               value={amount}
               onChange={handleChange}
               onBlur={handleBlur}
               className="text-7xl font-bold mt-3 text-center bg-transparent border-none outline-none"
               autoFocus
+              inputMode='decimal'
             />
           ) : (
-            <span className="text-7xl font-bold mt-3">
+            <span className="text-6xl sm:text-7xl font-bold mt-3">
               {amount} <span className="text-black">€</span>
             </span>
           )}

@@ -12,7 +12,7 @@ const BalanceBox: React.FC<BalanceBoxProps> = ({ balance }) => {
         <div className="flex flex-col items-center justify-center text-center">
           <p className="text-black text-xl font-bold">Balance</p>
           <ScaleIcon className='w-9 h-9' />
-          <span className="text-7xl font-bold mt-3">
+          <span className="text-6xl sm:text-7xl font-bold mt-3">
             {balance.toFixed(2)} <span className="text-black">€</span>
           </span>
         </div>

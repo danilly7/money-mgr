@@ -20,7 +20,7 @@ const SwitchTimeframe: FC<SwitchTimeframeProps> = ({ timeframe, setTimeframe }) 
         {options.map(({ label, color }) => (
           <button
             key={label}
-            className={`h-full flex-1 flex items-center justify-center text-2xl transition-all duration-300 px-4 
+            className={`h-full flex-1 flex items-center justify-center text-xl sm:text-2xl transition-all duration-300 px-4 
               ${timeframe === label ? `${color} text-black font-semibold` : "bg-gray-800 text-gray-200"} 
               ${label === "Day" ? "rounded-l-xl" : ""} 
               ${label === "Year" ? "rounded-r-xl" : ""}`}
