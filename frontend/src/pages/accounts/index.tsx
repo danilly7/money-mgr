@@ -8,12 +8,14 @@ import { PlusButton } from "../../components/ui/Plus-btn";
 import { EditButton } from "../../components/ui/edit-btn";
 import { CancelButton } from "../../components/ui/cancel-btn";
 import { SearchButton } from "../../components/ui/search-btn";
+import { DescriptionBox } from "../../components/ui/description-box";
 
 const Accounts = () => {
     const [timeframe, setTimeframe] = useState<"Day" | "Week" | "Month" | "Year">("Month");
     const [isExpense, setIsExpense] = useState(true);
     const [amount, setAmount] = useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [description, setDescription] = useState<string>('');
 
     const handleAmountChange = (newAmount: number) => {
         setAmount(newAmount);  //actualiza el amount en el estado del componente padre
@@ -25,12 +27,17 @@ const Accounts = () => {
     };
 
     const handleOpenModal = () => {
-        setIsModalOpen(true); // Abre el modal
+        setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false); // Cierra el modal
+        setIsModalOpen(false);
     };
+
+    const handleDescriptionChange = (newDescription: string) => {
+        setDescription(newDescription);
+    };
+
 
     return (
         <div>
@@ -41,11 +48,15 @@ const Accounts = () => {
             <SwitchTimeframe timeframe={timeframe} setTimeframe={setTimeframe} />
             <BalanceBox balance={150.50} />
             <CheckButton onClick={handleSubmit} />
-            <PlusButton onClick={handleSubmit}/>
+            <PlusButton onClick={handleSubmit} />
             <EditButton to="/" />
             <CancelButton onClick={handleOpenModal} />
             <SearchButton to="/details" />
             <AmountBox initialAmount={amount} onAmountChange={handleAmountChange} />
+            <DescriptionBox
+                initialDescription={description}
+                onDescriptionChange={handleDescriptionChange}
+            />
 
             {/* Modal */}
             {isModalOpen && (
