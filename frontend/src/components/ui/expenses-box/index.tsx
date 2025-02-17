@@ -15,7 +15,7 @@ const ExpensesBox: React.FC<ExpensesBoxProps> = ({ expenses }) => {
             <div className="flex flex-col items-center justify-center text-center">
               <p className="text-black text-xl font-bold">Expenses</p>
                 <FlameIcon className="w-9 h-9" />
-                <span className="text-2xl sm:text-3xl font-bold mt-3">
+                <span className="text-3xl font-bold mt-3">
                 {formattedNumbers(expenses)} <span className="text-black">€</span>
                 </span>
             </div>

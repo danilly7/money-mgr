@@ -15,7 +15,7 @@ const IncomeBox: React.FC<IncomeBoxProps> = ({ income }) => {
             <div className="flex flex-col items-center justify-center text-center">
               <p className="text-black text-xl font-bold">Income</p>
                 <FireExtinguisherIcon className="w-9 h-9" />
-                <span className="text-2xl sm:text-3xl font-bold mt-3">
+                <span className="text-3xl font-bold mt-3">
                   {formattedNumbers(income)} <span className="text-black">€</span>
                 </span>
             </div>
