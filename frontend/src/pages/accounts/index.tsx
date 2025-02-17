@@ -10,7 +10,7 @@ import { DescriptionBox } from "../../components/ui/description-box";
 
 import NameBox from "../../components/ui/name-box";
 // import AccountBox from "../../components/ui/account-box";
-import { VisibilityToggleButton } from "../../components/ui/visibility-toggle-btn";
+import { VisibilityToggleButton } from "../../components/ui/visibility-toggle";
 
 
 const Accounts = () => {

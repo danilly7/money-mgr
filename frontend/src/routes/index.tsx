@@ -14,7 +14,7 @@ const ErrorPage = lazy(() => import('../pages/error/index'));
 
 const Login = lazy(() => import('../components/welcome/login'));
 const Register = lazy(() => import('../components/welcome/register'));
-const ViewOfTransactions = lazy(() => import('../pages/home/transactions'));
+const ViewOfTransactions = lazy(() => import('../pages/transactions'));
 
 export const routes: RouteObject[] = [
     {
