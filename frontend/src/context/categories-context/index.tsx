@@ -23,7 +23,7 @@ export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children
 
     const categoriesWithIconsAndColors = data?.data?.map((category, index) => {
         const matchingIcon = iconsCategories.find((icon) => icon.name === category.name);
-        
+
         return { 
             ...category,
             color: colors[index % colors.length],
