@@ -22,8 +22,15 @@ export const DescriptionBox: React.FC<DescriptionBoxProps> = ({ initialDescripti
     onDescriptionChange(description);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setDescription(event.target.value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); //para que no haga el salto de linea ya que es un Enter
+      handleBlur();
+    }
   };
 
   return (
@@ -40,20 +47,22 @@ export const DescriptionBox: React.FC<DescriptionBoxProps> = ({ initialDescripti
           </p>
 
           {isEditing ? (
-            <textarea
+            <input
+              type="text"
               value={description}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="text-4xl font-bold text-center bg-transparent border-none outline-none w-full h-[4.5rem] resize-none mt-2"
+              onKeyDown={handleKeyDown}
+              className="text-4xl font-bold text-center bg-transparent border-none outline-none"
               autoFocus
               placeholder="Blablabl"
-              inputMode="text" //esto en principio obliga a abrir el teclado en mvls
+              inputMode="text"
             />
           ) : (
             <span className="text-4xl font-bold mt-3 text-center">{description}</span>
           )}
 
-          {!isEditing && description === "" && <div className="w-[calc(100%+11rem)] border-b-4 border-black mt-11" />}
+          {!isEditing && description === "" && <div className="w-[calc(100%+15rem)] border-b-4 border-black mt-8" />}
         </div>
       </div>
     </div>
