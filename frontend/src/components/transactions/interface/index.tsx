@@ -4,4 +4,5 @@ export interface Transaction {
     account_id: number;
     amount: number;
     comment: string;
+    date: string;
 };

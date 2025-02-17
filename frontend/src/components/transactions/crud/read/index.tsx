@@ -2,6 +2,7 @@ import React from 'react';
 import { Transaction } from '../../interface';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
+import { formattedDate } from '../../../../utils/formattedDate';
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -10,7 +11,6 @@ interface TransactionListProps {
 const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
     const { categories } = useCategories();
 
-    // Función para obtener los detalles de la categoría
     const getCategoryDetails = (categoryId: number) => {
         return categories.find((category) => category.id === categoryId);
     };
@@ -19,7 +19,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
         <div className="flex flex-col space-y-4">
             {transactions.map((transaction) => {
                 const category = getCategoryDetails(transaction.category_id);
-                // Verificamos si category está definido antes de acceder a sus propiedades
+
                 if (!category) {
                     return (
                         <div
@@ -32,9 +32,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
                 }
 
                 const Icon = category.icon || AsteriskIcon;
-
-                // Verificamos si el color está en el formato adecuado
-                const iconColor = category.color.startsWith('#') ? category.color : `#${category.color}`;
+                const iconColor = category.color && category.color.startsWith('#') ? category.color : `#${category.color || '000000'}`;
 
                 return (
                     <div
@@ -46,22 +44,20 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
                                 <Icon className="w-5 h-5 text-black" />
                             </div>
 
-
-                            {/* Detalles de la transacción */}
                             <div className="flex flex-1 justify-between">
                                 <div className="flex flex-col">
                                     <span className="font-semibold">{category.name}</span>
                                     <span className="text-sm text-gray-600">{transaction.comment || 'No comment'}</span>
                                 </div>
 
-                                {/* Account Name (esto puede venir de otra parte si es necesario) */}
                                 <div className="text-sm text-gray-500">Account {transaction.account_id}</div>
 
-                                {/* Monto */}
                                 <div className="text-lg font-bold text-green-600">
                                     {transaction.amount} €
                                 </div>
                             </div>
+
+                            <div className="text-sm text-gray-500">{formattedDate(new Date(transaction.date))}</div>
                         </div>
                     </div>
                 );

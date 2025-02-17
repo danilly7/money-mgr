@@ -6,8 +6,8 @@ export const BackButton = () => {
     return (
         <button
             onClick={goBack}
-            className="absolute top-[5.5rem] left-2 w-14 h-14 bg-personalizedPink text-black font-extrabold border-4 border-black text-2xl 
-        hover:bg-personalizedOrange rounded-full flex items-center justify-center transition-all duration-300 z-50"
+            className="absolute top-20 left-2 w-14 h-14 bg-personalizedPink text-black font-extrabold border-4 border-black text-2xl 
+        hover:bg-personalizedOrange rounded-full flex items-center justify-center transition-all duration-300 z-10" // Cambié z-50 a z-10
             aria-label="Go back"
         >
             <svg
