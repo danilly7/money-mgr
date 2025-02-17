@@ -88,7 +88,7 @@ const ViewOfTransactions = () => {
 
   return (
     <>
-      <BackButton />
+      <BackButton goTo="/" />
       <div className="flex flex-col items-center justify-center pt-6 pb-1">
         <h1 className="text-4xl font-bold text-center whitespace-pre-line">
           A view of
