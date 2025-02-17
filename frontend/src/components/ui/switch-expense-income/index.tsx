@@ -7,7 +7,7 @@ interface SwitchExpenseIncomeProps {
 
 const SwitchExpenseIncome: React.FC<SwitchExpenseIncomeProps> = ({ isExpense, setIsExpense }) => {
   return (
-    <div className="flex items-center justify-center py-4 m-4">
+    <div className="flex items-center justify-center pt-4 m-2">
       <div className="relative w-[28rem] h-16 bg-transparent border-4 border-black rounded-2xl flex">
         <button
           className={`h-full flex items-center justify-center text-2xl transition-all duration-300 px-4 relative 
