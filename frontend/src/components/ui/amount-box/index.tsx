@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { formattedNumbers } from '../../../utils/formattedNumbers';
 
 interface AmountBoxProps {
   initialAmount: number;
@@ -6,12 +7,12 @@ interface AmountBoxProps {
 }
 
 const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) => {
-  const [amount, setAmount] = useState<string>(initialAmount.toFixed(2));
+  const [amount, setAmount] = useState<string>(formattedNumbers(initialAmount));
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   //cuando el valor inicial cambie, actualizamos el estado
   useEffect(() => {
-    setAmount(initialAmount.toFixed(2));
+    setAmount(formattedNumbers(initialAmount));
   }, [initialAmount]);
 
   const handleClick = () => {
@@ -21,15 +22,16 @@ const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) 
 
   const handleBlur = () => {
     setIsEditing(false);
-    const parsedAmount = parseFloat(amount);
+    const parsedAmount = parseFloat(amount.replace(',', '.'));
 
     if (amount.trim() === '') {
-      setAmount(initialAmount.toFixed(2)); //si el campo está vacío, restauramos el valor inicial
+      setAmount(formattedNumbers(initialAmount)); //si el campo está vacío, restauramos el valor inicial
       onAmountChange(initialAmount);
     } else if (!isNaN(parsedAmount)) {
       onAmountChange(parsedAmount);
+      setAmount(formattedNumbers(parsedAmount));
     } else {
-      setAmount(initialAmount.toFixed(2));
+      setAmount(formattedNumbers(initialAmount));
       onAmountChange(initialAmount);
     }
   };
@@ -38,6 +40,12 @@ const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) 
     const value = event.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
       setAmount(value);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleBlur();
     }
   };
 
@@ -51,16 +59,17 @@ const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) 
           <p className="text-black text-xl font-bold">Amount</p>
           {isEditing ? (
             <input
-              type="number"
+              type="text"
               value={amount}
               onChange={handleChange}
               onBlur={handleBlur}
+              onKeyDown={handleKeyDown} //para guardar al hacer Enter
               className="text-7xl font-bold mt-3 text-center bg-transparent border-none outline-none"
               autoFocus
-              inputMode='decimal'
+              inputMode="decimal"
             />
           ) : (
-            <span className="text-6xl sm:text-7xl font-bold mt-3">
+            <span className="text-5xl sm:text-6xl font-bold mt-3">
               {amount} <span className="text-black">€</span>
             </span>
           )}

@@ -46,7 +46,7 @@ export const DescriptionBox: React.FC<DescriptionBoxProps> = ({ initialDescripti
               onBlur={handleBlur}
               className="text-4xl font-bold text-center bg-transparent border-none outline-none w-full h-[4.5rem] resize-none mt-2"
               autoFocus
-              placeholder="blabla"
+              placeholder="Blablabl"
               inputMode="text" //esto en principio obliga a abrir el teclado en mvls
             />
           ) : (
