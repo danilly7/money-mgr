@@ -14,6 +14,7 @@ const ErrorPage = lazy(() => import('../pages/error/index'));
 
 const Login = lazy(() => import('../components/welcome/login'));
 const Register = lazy(() => import('../components/welcome/register'));
+const ViewOfTransactions = lazy(() => import('../pages/home/transactions'));
 
 export const routes: RouteObject[] = [
     {
@@ -44,8 +45,7 @@ export const routes: RouteObject[] = [
                 children: [
                     {
                         path: "",
-                        element: <Home />
-                        //faltan los children
+                        element: <Home />,
                     },
                     {
                         path: "accounts",
@@ -61,6 +61,10 @@ export const routes: RouteObject[] = [
                         path: "user",
                         element: <User />
                         //faltan los children
+                    },
+                    {
+                        path: "transactions",
+                        element: <ViewOfTransactions />
                     },
                 ],
             },
