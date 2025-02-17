@@ -21,13 +21,13 @@ const ExpenseIncomeToggle: React.FC<ExpenseIncomeToggleProps> = ({
       <button
         onClick={() => setIsExpense(true)}
         className={`relative w-54 h-44 ${isExpense ? "bg-[#FF6B6B]" : "bg-gray-300"} 
-                    border-4 border-black rounded-2xl flex items-center justify-center text-black p-8 
+                    border-4 border-black rounded-2xl flex items-center justify-center text-black p-4 
                     transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl`}
       >
         <div className="flex flex-col items-center justify-center text-center">
-          <p className="text-black text-xl font-bold">Expenses</p>
+          <p className="text-black text-lg md:text-xl font-bold">Expenses</p>
           <FlameIcon className="w-9 h-9" />
-          <span className="text-xl lg:text-3xl font-bold mt-3">
+          <span className="text-2xl md:text-4xl font-bold mt-3">
             {formattedNumbers(amountExpense)} <span className="text-black">€</span>
           </span>
         </div>
@@ -36,13 +36,13 @@ const ExpenseIncomeToggle: React.FC<ExpenseIncomeToggleProps> = ({
       <button
         onClick={() => setIsExpense(false)}
         className={`relative w-54 h-44 ${!isExpense ? "bg-personalizedGreen" : "bg-gray-300"} 
-                    border-4 border-black rounded-2xl flex items-center justify-center text-black p-8 
+                    border-4 border-black rounded-2xl flex items-center justify-center text-black p-4 
                     transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl`}
       >
         <div className="flex flex-col items-center justify-center text-center">
-          <p className="text-black text-xl font-bold">Income</p>
+          <p className="text-black text-lg md:text-xl font-bold">Income</p>
           <FireExtinguisherIcon className="w-9 h-9" />
-          <span className="text-xl lg:text-3xl font-bold mt-3">
+          <span className="text-2xl md:text-4xl font-bold mt-3">
             {formattedNumbers(amountIncome)} <span className="text-black">€</span>
           </span>
         </div>
