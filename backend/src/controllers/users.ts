@@ -45,7 +45,8 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 };
 
 export const postUser = async (req: Request, res: Response): Promise<void> => {
-    const { name, email, uid } = req.body;
+    const { name, email } = req.body;
+    const uid = req.user?.uid;
     
     if (!name || !email || !uid) {
         res.status(400).json({ msg: 'All fields are required' });
