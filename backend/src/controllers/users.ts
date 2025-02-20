@@ -45,13 +45,20 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 };
 
 export const postUser = async (req: Request, res: Response): Promise<void> => {
-    const { name, email } = req.body;
-    const uid = req.user?.uid;
+    console.log('Request body:', req.body);
     
-    if (!name || !email || !uid) {
-        res.status(400).json({ msg: 'All fields are required' });
+    const { name, email } = req.body;
+    const uid = req.user?.uid; //nos aseguramos que el auth se ejecute
+
+    if (!uid) {
+        res.status(400).json({ msg: "User is not authenticated in Firebase" });
         return;
     }
+   
+    if (!name || !email) {
+        res.status(400).json({ msg: "All fields are required" });
+        return;
+    } 
 
     try {
         const existingUser = await User.findOne({ where: { uid } });
@@ -62,7 +69,8 @@ export const postUser = async (req: Request, res: Response): Promise<void> => {
         }
 
         const user = await User.create({ name, email, uid });
-        res.json(user);
+
+        res.status(201).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({

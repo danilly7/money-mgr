@@ -20,6 +20,7 @@ const sequelize = new Sequelize(
 //Sincronización de los modelos de Sequelize con la bbdd
 const syncroModel = async () => {
   try {
+    console.log('Syncing models with the database...');
     await sequelize.sync({ force: false }); 
     /* OJO IMPORTANTE:
       - "alter: true": Modifica las tablas existentes sin borrar datos.  
@@ -35,6 +36,8 @@ const syncroModel = async () => {
 //Comprueba la conexión a la bbdd
 const testConnection = async () => {
   try {
+    console.log('Attempting to authenticate with the database...');
+    
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
     //si la conexión es correcta, sincroniza los modelos

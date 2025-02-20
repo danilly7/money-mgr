@@ -2,16 +2,33 @@ import React, { useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/auth-context";
 import { doCreateUserWithEmailAndPassword } from "../../../firebase/auth";
+import { apiUsers } from "../../../api";
+import Spinner from "../../ui/spinner";
 
 const Register = () => {
-    const { userLoggedIn } = useAuth();
+    const { userLoggedIn, loading } = useAuth();
+    //pregunta: pq no pillo el token del context?
+    //respuesta: pq el usuario no está en el contexto (es nuevo) en el moment del registro
+    //primero, se hace el registro y después de dan el token
+    //con el token hacemos peticiones al backend
+    //luego se actualiza el context después del registro
+
     const navigate = useNavigate();
 
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isRegistering, setIsRegistering] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    if (loading) {
+        return <Spinner />;
+    }
+
+    if (userLoggedIn) {
+        return <Navigate to="/" replace />;
+    }
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,7 +41,23 @@ const Register = () => {
         if (!isRegistering) {
             setIsRegistering(true);
             try {
-                await doCreateUserWithEmailAndPassword(email, password);
+                const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                const idToken = await user.getIdToken();
+
+                await fetch(apiUsers, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${idToken}`, 
+                    },
+                    body: JSON.stringify({
+                        uid: user.uid,  //id único de Firebase, uid
+                        name: name,
+                        email: user.email,
+                    }),
+                });
+
                 navigate("/");
             } catch (err: unknown) {
                 if (err instanceof Error) {
@@ -37,15 +70,11 @@ const Register = () => {
         }
     };
 
-    if (userLoggedIn) {
-        return <Navigate to="/" replace />;
-    }
-
     return (
         <div className="flex items-center justify-center min-h-screen text-black text-center p-8">
             <div className="w-full max-w-md mx-4">
                 <div className="p-4 mb-6 flex justify-center">
-                <Link to='/welcome'>
+                    <Link to='/welcome'>
                         <img
                             src="/logo.png"
                             alt="Logo"
@@ -57,6 +86,14 @@ const Register = () => {
                     <h2 className="text-3xl font-semibold text-black mb-6">Register</h2>
                     {errorMessage && <p className="text-red-900 text-center mb-4">{errorMessage}</p>}
                     <form onSubmit={onSubmit} className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Full Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
+                        />
                         <input
                             type="email"
                             placeholder="Email"
