@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/auth-context";
 import { doCreateUserWithEmailAndPassword } from "../../../firebase/auth";
+import { updateProfile } from "firebase/auth";
 import { apiUsers } from "../../../api";
 import Spinner from "../../ui/spinner";
 
@@ -30,6 +31,10 @@ const Register = () => {
             try {
                 const userCredential = await doCreateUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
+
+                await updateProfile(user, { //aquí pillo la info del nombre para imprimirla en el comp User
+                    displayName: name,
+                });
 
                 const response = await fetch(apiUsers, {
                     method: "POST",
