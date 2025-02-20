@@ -7,12 +7,6 @@ import Spinner from "../../ui/spinner";
 
 const Register = () => {
     const { userLoggedIn, loading } = useAuth();
-    //pregunta: pq no pillo el token del context?
-    //respuesta: pq el usuario no está en el contexto (es nuevo) en el moment del registro
-    //primero, se hace el registro y después de dan el token
-    //con el token hacemos peticiones al backend
-    //luego se actualiza el context después del registro
-
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -21,14 +15,6 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isRegistering, setIsRegistering] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-    if (loading) {
-        return <Spinner />;
-    }
-
-    if (userLoggedIn) {
-        return <Navigate to="/" replace />;
-    }
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -40,23 +26,27 @@ const Register = () => {
 
         if (!isRegistering) {
             setIsRegistering(true);
+            setErrorMessage("");
             try {
                 const userCredential = await doCreateUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                const idToken = await user.getIdToken();
 
-                await fetch(apiUsers, {
+                const response = await fetch(apiUsers, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${idToken}`, 
+                        //no token para register
                     },
                     body: JSON.stringify({
-                        uid: user.uid,  //id único de Firebase, uid
+                        uid: user.uid,
                         name: name,
                         email: user.email,
                     }),
                 });
+
+                if (!response.ok) {
+                    throw new Error("Failed to update user data");
+                }
 
                 navigate("/");
             } catch (err: unknown) {
@@ -65,10 +55,19 @@ const Register = () => {
                 } else {
                     setErrorMessage("An unexpected error occurred.");
                 }
+            } finally {
                 setIsRegistering(false);
             }
         }
     };
+
+    if (loading) {
+        return <Spinner />;
+    }
+
+    if (userLoggedIn) {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="flex items-center justify-center min-h-screen text-black text-center p-8">

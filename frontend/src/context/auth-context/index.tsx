@@ -6,7 +6,6 @@ interface AuthContextType {
     currentUser: User | null;
     userLoggedIn: boolean;
     loading: boolean;
-    token: string | null;
     logout: () => Promise<void>;
 };
 
@@ -16,38 +15,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [token, setToken] = useState<string | null>(null); 
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
             setUserLoggedIn(!!user);
-
-            if (user) {
-                try {
-                    const idToken = await user.getIdToken(); //token de Firebase!!
-                    setToken(idToken);
-                } catch (error) {
-                    console.error("Error getting token:", error);
-                    setToken(null);
-                }
-            } else {
-                setToken(null);
-            }
-
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        return unsubscribe;
     }, []);
 
     const logout = async () => {
-        await signOut(auth);
-        setToken(null); //logout y se limpia token
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.log('Error loging out:', error);
+        }
     };
 
+    const value = { currentUser, userLoggedIn, loading, logout };
+
     return (
-        <AuthContext.Provider value={{ currentUser, userLoggedIn, loading, token, logout }}>
+        <AuthContext.Provider value={value}>
             {!loading && children}
         </AuthContext.Provider>
     );

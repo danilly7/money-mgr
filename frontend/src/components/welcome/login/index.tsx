@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { doSignInWithEmailAndPassword, doSignInWithGoogle } from "../../../firebase/auth";
 import { useAuth } from "../../../context/auth-context";
+import { apiUsers } from "../../../api";
+import Spinner from "../../ui/spinner";
 
 
 const Login = () => {
-    const { userLoggedIn } = useAuth();
+    const { userLoggedIn, loading } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isSigningIn, setIsSigningIn] = useState(false);
@@ -15,14 +17,28 @@ const Login = () => {
         e.preventDefault();
         if (!isSigningIn) {
             setIsSigningIn(true);
+            setErrorMessage("");
             try {
-                await doSignInWithEmailAndPassword(email, password);
+                const userCredential = await doSignInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                const response = await fetch(`${apiUsers}/${user.uid}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to update user data");
+                }
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     setErrorMessage(err.message);
                 } else {
                     setErrorMessage("An unexpected error occurred.");
                 }
+            } finally {
                 setIsSigningIn(false);
             }
         }
@@ -32,17 +48,60 @@ const Login = () => {
         e.preventDefault();
         if (!isSigningIn) {
             setIsSigningIn(true);
-            doSignInWithGoogle()
-                .catch((err: unknown) => {
-                    if (err instanceof Error) {
-                        setErrorMessage(err.message);
-                    } else {
-                        setErrorMessage("An unexpected error occurred.");
-                    }
-                    setIsSigningIn(false);
+            setErrorMessage("");
+            try {
+                const userCredential = await doSignInWithGoogle();
+                const user = userCredential.user;
+
+                const response = await fetch(`${apiUsers}/${user.uid}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 });
+                //si da error 400 en consola, no estrés, significa que no está en mi bbdd
+                //y por lo tanto lo crearemos en la bbdd
+
+                if (user.uid) {
+                    if (response.ok) {
+                        const userData = await response.json();
+                        console.log(userData);
+                    } else {
+                        //aquí es dnd creamos al usuario
+                        const createResponse = await fetch(apiUsers, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                name: user.displayName,
+                                email: user.email,
+                                uid: user.uid,
+                            }),
+                        });
+
+                        if (!createResponse.ok) {
+                            throw new Error("Failed to create new user");
+                        }
+                    }
+                } else {
+                    setErrorMessage("Invalid user ID");
+                }
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setErrorMessage(err.message);
+                } else {
+                    setErrorMessage("An unexpected error occurred.");
+                }
+            } finally {
+                setIsSigningIn(false);
+            }
         }
     };
+
+    if (loading) {
+        return <Spinner />;
+    }
 
     if (userLoggedIn) {
         return <Navigate to="/" />;

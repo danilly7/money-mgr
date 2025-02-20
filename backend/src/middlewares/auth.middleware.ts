@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, RequestHandler} from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import admin from "firebase-admin";
 import User from "../models/user";
 
@@ -28,7 +28,7 @@ export const authUser: RequestHandler = async (req: Request, res: Response, next
     try {
         //verificar y decodificar el token de Firebase
         const decodedToken = await admin.auth().verifyIdToken(token);
-        
+
         //buscar el usuario en la base de datos usando el uid de Firebase
         const user = await User.findOne({ where: { uid: decodedToken.uid } });
 
@@ -42,7 +42,7 @@ export const authUser: RequestHandler = async (req: Request, res: Response, next
             uid: decodedToken.uid,
             id: user.id, //aquí asignas el id de la base de datos
         };
-        
+
         next(); //next operation
     } catch (error) {
         console.error("Token verification failed:", error);
