@@ -27,7 +27,6 @@ const Accounts = () => {
     };
 
     const handleSubmit = () => {
-        console.log("Formulario enviado ✅");
         setIsModalOpen(false);
     };
 

@@ -3,22 +3,22 @@ import { Dispatch, SetStateAction } from "react";
 interface SwitchExpenseIncomeProps {
   isExpense: boolean;
   setIsExpense: Dispatch<SetStateAction<boolean>>;
-  handleExpenseIncomeChange: (newIsExpense: boolean) => void; // Agrega la función aquí
+  handleExpenseIncomeChange?: (newIsExpense: boolean) => void; // Agrega la función aquí
 }
 
 const SwitchExpenseIncome: React.FC<SwitchExpenseIncomeProps> = ({ isExpense, setIsExpense, handleExpenseIncomeChange }) => {
   const handleClickExpense = () => {
     setIsExpense(true);
-    handleExpenseIncomeChange(true);  //para la url para expenses
+    handleExpenseIncomeChange?.(true);  //para la url para expenses
   };
 
   const handleClickIncome = () => {
     setIsExpense(false);
-    handleExpenseIncomeChange(false);  //url para income
+    handleExpenseIncomeChange?.(false);  //url para income
   };
 
   return (
-    <div className="flex items-center justify-center pt-4 m-2">
+    <div className="flex items-center justify-center pt-2 m-2">
       <div className="relative w-[28rem] h-16 bg-transparent border-4 border-black rounded-2xl flex">
         <button
           className={`h-full flex items-center justify-center text-2xl transition-all duration-300 px-4 relative 

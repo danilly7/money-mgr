@@ -7,10 +7,10 @@ const Categories = () => {
 
     return (
         <>
-           <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
             <div className="flex flex-col items-center justify-center m-6">
                 <h1 className="text-4xl font-bold">CATEGORIES</h1>
             </div>
+           <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
             <CategoriesList isExpense={isExpense} />
         </>
     )
