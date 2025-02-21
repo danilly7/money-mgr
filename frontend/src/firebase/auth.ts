@@ -55,6 +55,8 @@ export const doSendEmailVerification = () => {
     throw new Error("No authenticated user found");
 };
 
+//--------------- no están siendo usados en este momento----------------↑
+
 export const getAuthToken = async () => {
     const user = auth.currentUser;
     
@@ -71,4 +73,3 @@ export const getAuthToken = async () => {
     }
     return null;
 };
-//--------------- no están siendo usados en este momento----------------↑
