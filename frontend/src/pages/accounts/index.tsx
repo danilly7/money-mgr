@@ -1,20 +1,17 @@
 import { useState } from "react";
+import { PlusButton } from "../../components/ui/plus-btn";
+import { Outlet } from "react-router-dom";
 
 import AmountBox from "../../components/ui/amount-box";
 import { CheckButton } from "../../components/ui/check-btn";
-
 import { EditButton } from "../../components/ui/edit-btn";
 import { CancelButton } from "../../components/ui/cancel-btn";
-
 import { DescriptionBox } from "../../components/ui/description-box";
-
 import NameBox from "../../components/ui/name-box";
 // import AccountBox from "../../components/ui/account-box";
 import { VisibilityToggleButton } from "../../components/ui/visibility-toggle";
 
-
 const Accounts = () => {
-    
     const [amount, setAmount] = useState<number>(0);
     const [name, setName] = useState<string>("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,9 +60,9 @@ const Accounts = () => {
             <div className="flex flex-col items-center justify-center pt-6">
                 <h1 className="text-4xl font-bold">ACCOUNTS</h1>
             </div>
+            <PlusButton to="/accounts/newaccount" />
+            <Outlet />
             
-            
-
             <CheckButton onClick={() => handleOpenModal("submit")} />
             <CancelButton onClick={() => handleOpenModal("cancel")} />
 

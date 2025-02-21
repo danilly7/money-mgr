@@ -15,6 +15,7 @@ const ErrorPage = lazy(() => import('../pages/error/index'));
 const Login = lazy(() => import('../components/welcome/login'));
 const Register = lazy(() => import('../components/welcome/register'));
 const ViewOfTransactions = lazy(() => import('../pages/transactions'));
+const NewAccount = lazy(()=> import ("../components/accounts/crud/create"));
 
 export const routes: RouteObject[] = [
     {
@@ -22,7 +23,7 @@ export const routes: RouteObject[] = [
         element: <AuthLayout />,
         children: [
             {
-                path: '',
+                index: true, //pq no tiene hijos
                 element: <Welcome />,
             },
             {
@@ -40,17 +41,22 @@ export const routes: RouteObject[] = [
         element: <RequireAuth />,
         children: [
             {
-                path: "",
+                path: "", 
                 element: <MainLayout />,
                 children: [
                     {
-                        path: "",
+                        index: true, //no tiene hijos, es raíz de /
                         element: <Home />,
                     },
                     {
                         path: "accounts",
-                        element: <Accounts />
-                        //faltan los children
+                        element: <Accounts />,
+                        children: [
+                            {
+                                path: "newaccount",
+                                element: <NewAccount />
+                            },
+                        ]
                     },
                     {
                         path: "categories",

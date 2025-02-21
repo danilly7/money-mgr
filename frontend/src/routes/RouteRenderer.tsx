@@ -1,22 +1,25 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import { Route, Routes, RouteObject } from 'react-router-dom';
+import Spinner from '../components/ui/spinner';
 
 interface RouteRendererProps {
   routes: RouteObject[];
 };
 
 const RouteRenderer: React.FC<RouteRendererProps> = ({ routes }) => {
-  const renderRoutes = (routes: RouteObject[]) => {
+  const renderRoutes = (routes: RouteObject[], parentPath = '') => {
     return routes.map((route, index) => {
-      //si la ruta tiene hijos, renderizamos el elemento de la ruta padre y las rutas hijas
+      //si la ruta tiene hijos y nietos, renderizamos el elemento de la ruta padre, hijas y nietos
+      const fullPath = route.path ? `${parentPath}/${route.path}`.replace(/\/+/g, '/') : parentPath;
+
       if (route.children) {
         return (
           <Route
             key={index}
-            path={route.path}
-            element={route.element} //elemento padre
+            path={fullPath}
+            element={<Suspense fallback={<Spinner />}>{route.element}</Suspense>}
           >
-            {renderRoutes(route.children)} {/* rutas hijas */}
+             {renderRoutes(route.children, fullPath)}
           </Route>
         );
       }
@@ -25,8 +28,8 @@ const RouteRenderer: React.FC<RouteRendererProps> = ({ routes }) => {
       return (
         <Route
           key={index}
-          path={route.path}
-          element={route.element}
+          path={fullPath}
+          element={<Suspense fallback={<Spinner />}>{route.element}</Suspense>}
         />
       );
     });
