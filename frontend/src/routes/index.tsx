@@ -4,6 +4,7 @@ import { RouteObject } from 'react-router-dom';
 const AuthLayout = lazy(() => import('../layouts/auth-layout'));
 const RequireAuth = lazy(() => import('../components/welcome/required-auth'));
 const MainLayout = lazy(() => import('../layouts/main-layout'));
+const AccountsLayout = lazy(() => import('../layouts/accounts-layout'));
 
 const Home = lazy(() => import('../pages/home'));
 const Welcome = lazy(() => import('../pages/welcome'));
@@ -23,7 +24,7 @@ export const routes: RouteObject[] = [
         element: <AuthLayout />,
         children: [
             {
-                index: true, //pq no tiene hijos
+                index: true, //pq no tiene hijos, raíz /welcome
                 element: <Welcome />,
             },
             {
@@ -50,11 +51,19 @@ export const routes: RouteObject[] = [
                     },
                     {
                         path: "accounts",
-                        element: <Accounts />,
+                        element: <AccountsLayout />,
                         children: [
+                            {
+                                index: true, //raíz /accounts
+                                element: <Accounts />,
+                            },
                             {
                                 path: "newaccount",
                                 element: <NewAccount />
+                            },
+                            {
+                                path: "updateaccount",
+                                // element: < UpdateAccount/>
                             },
                         ]
                     },
