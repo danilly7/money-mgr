@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
 
 interface BackButtonProps {
-    goTo: string;
+    goTo?: string;
 }
 
 export const BackButton: React.FC<BackButtonProps> = ({ goTo }) => {
     const navigate = useNavigate();
 
     const goBack = () => {
-        navigate(goTo);
+        if (goTo) {
+            navigate(goTo);
+        } else {
+            navigate(-1);
+        }
     };
 
     return (
