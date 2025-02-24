@@ -9,7 +9,7 @@ interface UseFetchAccountResult {
     error: Error | null;
 }
 
-export const useFetchAccount = (accountId: string): UseFetchAccountResult => {
+export const useFetchAccount = (accountId: number): UseFetchAccountResult => {
     const [account, setAccount] = useState<Account | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);

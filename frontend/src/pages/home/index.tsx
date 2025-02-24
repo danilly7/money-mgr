@@ -23,7 +23,7 @@ const Home = () => {
                 amountIncome={amountIncome}
             />
 
-            <div className="flex flex-row justify-center space-x-8 m-6">
+            <div className="flex flex-row justify-center space-x-10 m-6">
                 <SearchButton to="/transactions" timeframe={timeframe} isExpense={isExpense} />
                 <PlusButton to="/newtransaction" />
             </div>
