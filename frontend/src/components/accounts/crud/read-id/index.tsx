@@ -8,7 +8,7 @@ import { AccountEditModal } from '../update-modal';
 
 const AccountDetails: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
-  const { account, loading, error } = useFetchAccount(Number(accountId!));
+  const { account, loading, error, refetch } = useFetchAccount(Number(accountId!));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,7 +25,10 @@ const AccountDetails: React.FC = () => {
   }
 
   const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleCloseModal = () => {
+    refetch();
+    setIsModalOpen(false);
+  }
 
   return (
     <>

@@ -1,15 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { EyeClosedIcon } from '../../../ui/icons/EyeClosedIcon';
 import { EyeIcon } from '../../../ui/icons/EyeIcon';
 import { formattedNumbers } from '../../../../utils/formattedNumbers';
 import { useAccounts } from '../../../../context/accounts-context';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AccountsList: React.FC = () => {
-  const { accounts, loading } = useAccounts();
+  const { accounts, loading, refetchAccounts } = useAccounts();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleAccountClick = (accountId: string) => {
+  useEffect(() => {
+    refetchAccounts();
+  }, [location.pathname, refetchAccounts]); 
+
+  const handleAccountClick = (accountId: number) => {
     if (accountId) {
       navigate(`/accounts/acc/${accountId}`);
     } else {
@@ -42,7 +47,7 @@ const AccountsList: React.FC = () => {
           <div
             key={account.id ?? account.name ?? `account-${index}`}
             className="relative max-w-lg mx-auto h-22 bg-slate-300 border-4 border-black rounded-2xl flex items-center text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer mb-2"
-            onClick={() => handleAccountClick(String(account.id))} // Usa `id`
+            onClick={() => handleAccountClick(Number(account.id))}
           >
             <div className="flex items-center justify-start w-1/3">
               <p className="text-xl font-bold text-black truncate">{account.name}</p>

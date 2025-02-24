@@ -1,26 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useFetchAccount } from '../../../../hooks/useFetchAccount';
-import { useUpdateAccount } from '../../../../hooks/useUpdateAccount';
-import { EyeClosedIcon } from '../../../ui/icons/EyeClosedIcon';
-import { EyeIcon } from '../../../ui/icons/EyeIcon';
-import { CheckButton } from '../../../ui/check-btn';
-import { CancelButton } from '../../../ui/cancel-btn';
+import { useState, useEffect, useRef } from "react";
+import AmountBox from "../../../ui/amount-box";
+import NameBox from "../../../ui/name-box";
+import { VisibilityToggleButton } from "../../../ui/visibility-toggle";
+import { CheckButton } from "../../../ui/check-btn";
+import { CancelButton } from "../../../ui/cancel-btn";
+import { ModalMisc } from "../../../modal";
+import { useFetchAccount } from "../../../../hooks/useFetchAccount";
+import { useUpdateAccount } from "../../../../hooks/useUpdateAccount";
 
-interface ModalProps {
+interface AccountEditModalProps {
   isOpen: boolean;
   onClose: () => void;
   accountId: number;
 }
 
-const AccountEditModal: React.FC<ModalProps> = ({ isOpen, onClose, accountId }) => {
-  const { account, loading, error } = useFetchAccount(accountId);
+const AccountEditModal = ({ isOpen, onClose, accountId }: AccountEditModalProps) => {
+  const { account, loading, error, refetch } = useFetchAccount(accountId);
   const { updateAccount } = useUpdateAccount();
 
-  const [name, setName] = useState<string>('');
-  const [balance, setBalance] = useState<number>(0);
-  const [isVisible, setIsVisible] = useState<boolean>(true);
-  const [loadingUpdate, setLoadingUpdate] = useState<boolean>(false);
+  const [name, setName] = useState("");
+  const [balance, setBalance] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
+  const errorRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (errorMessage && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [errorMessage]);
 
   useEffect(() => {
     if (account) {
@@ -32,7 +44,12 @@ const AccountEditModal: React.FC<ModalProps> = ({ isOpen, onClose, accountId }) 
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      setErrorMessage('Account Name is required.');
+      setErrorMessage("Account Name is required.");
+      return;
+    }
+
+    if (balance < 0) {
+      setErrorMessage("Balance cannot be negative.");
       return;
     }
 
@@ -48,97 +65,80 @@ const AccountEditModal: React.FC<ModalProps> = ({ isOpen, onClose, accountId }) 
 
     try {
       await updateAccount(accountId, updatedAccount);
-      handleClose();
+      setModalMessage("Account updated successfully!");
+      setIsModalOpen(true);
+      refetch();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to update account.');
+      setErrorMessage(error instanceof Error ? error.message : "Failed to update account.");
     } finally {
       setLoadingUpdate(false);
     }
   };
 
-  const handleClose = () => {
-    setName('');
-    setBalance(0);
-    setIsVisible(true);
-    setErrorMessage(null);
+  const handleCancel = () => {
+    setModalMessage("Account update has been cancelled.");
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
     onClose();
   };
 
   if (!isOpen) return null;
 
   if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div className="bg-white p-6 border-4 border-black rounded-lg shadow-lg max-w-lg w-full">
-          <div>Loading account details...</div>
-        </div>
-      </div>
-    );
+    return <p>Loading account details...</p>;
   }
 
   if (error) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div className="bg-white p-6 border-4 border-black rounded-lg shadow-lg max-w-lg w-full">
-          <div className="text-red-500">{error.message}</div>
-        </div>
-      </div>
-    );
+    return <p className="text-red-500">{error.message}</p>;
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 border-4 border-black rounded-lg shadow-lg max-w-lg w-full">
-        <h2 className="text-xl font-semibold mb-4">Edit Account</h2>
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        <div className="mb-4">
-          <label htmlFor="account-name" className="text-lg font-semibold">
-            Account Name
-          </label>
-          <input
-            id="account-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border-2 border-gray-300 rounded-md"
-            aria-required="true"
+    <div className="relative bg-white p-3 border-4 border-black rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto">
+      <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
+        <div className="flex flex-col">
+          {errorMessage && (
+            <p ref={errorRef} className="text-red-500 text-md font-semibold">
+              {errorMessage}
+            </p>
+          )}
+          <p className="text-md text-gray-500 mb-1">Account Name: Update it with a new name.</p>
+          <NameBox initialName={name} onNameChange={setName} />
+        </div>
+
+        <div className="flex flex-col">
+          <p className="text-md text-gray-500 mb-1">Balance: Update it with a different amount.</p>
+          <AmountBox initialAmount={balance} onAmountChange={setBalance} />
+        </div>
+
+        <div className="flex flex-col items-center mb-4">
+          <p className="text-md text-gray-500 mb-1">
+            Account Visibility: Change it to make it or not visible in the total balance.
+          </p>
+          <VisibilityToggleButton
+            isVisible={isVisible}
+            setIsVisible={setIsVisible}
+            className="mt-3"
           />
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="account-balance" className="text-lg font-semibold">
-            Balance
-          </label>
-          <input
-            id="account-balance"
-            type="number"
-            value={balance}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              if (value >= 0) setBalance(value);
-            }}
-            className="w-full p-2 border-2 border-gray-300 rounded-md"
-          />
-        </div>
+        <div className="border-t-4 border-black my-2 w-full" />
 
-        <div className="flex justify-between items-center mb-4">
-          <label className="text-lg font-semibold">Visibility</label>
-          <button onClick={() => setIsVisible(!isVisible)} className="text-lg">
-            {isVisible ? <EyeIcon /> : <EyeClosedIcon />}
-          </button>
-        </div>
-
-        <div className="flex justify-center gap-8">
+        <div className="flex justify-center gap-8 mb-4">
           {loadingUpdate ? (
             <p>Updating account...</p>
           ) : (
             <>
-              <CheckButton onClick={handleSubmit} />
-              <CancelButton onClick={handleClose} />
+              <CheckButton onClick={handleSubmit} disabled={loadingUpdate} />
+              <CancelButton onClick={handleCancel} />
             </>
           )}
         </div>
-      </div>
+      </form>
+
+      <ModalMisc isOpen={isModalOpen} onClose={handleModalClose} message={modalMessage} />
     </div>
   );
 };

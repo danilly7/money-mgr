@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAuthToken } from '../firebase/auth';
 
 //OJO que en mi caso el dataField es el nombre de las tablas que están en plural
@@ -7,9 +7,9 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
-    useEffect(() => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
-        const fetchData = async () => {
+        setError(null);
             try {
                 const headers: HeadersInit = { 'Content-Type': 'application/json' };
 
@@ -43,10 +43,11 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
             } finally {
                 setLoading(false);
             }
-        };
-
+        }, [url, dataField, useToken]);
+        
+    useEffect(() => {
         fetchData();
-    }, [url, dataField, useToken]);
+    }, [fetchData]);
 
-    return { data, loading, error };
+    return { data, loading, error, refetch: fetchData };
 };

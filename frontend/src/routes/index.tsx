@@ -18,7 +18,6 @@ const Register = lazy(() => import('../components/welcome/register'));
 const ViewOfTransactions = lazy(() => import('../pages/transactions'));
 const NewAccount = lazy(() => import("../pages/accounts/new-account"));
 const DetailsAccountId = lazy(() => import("../pages/accounts/details-account"));
-// const UpdateAccountId = lazy(() => import("../pages/accounts/update-account"));
 
 export const routes: RouteObject[] = [
     {
@@ -66,12 +65,6 @@ export const routes: RouteObject[] = [
                             {
                                 path: "acc/:accountId",
                                 element: <DetailsAccountId />,
-                                // children: [
-                                //     {
-                                //         path: "update",
-                                //         element: <UpdateAccountId />
-                                //     }
-                                // ]
                             },
                         ]
                     },

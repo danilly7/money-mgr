@@ -8,6 +8,7 @@ interface AccountsContextType {
   loading: boolean;
   error: Error | null;
   getVisibleBalance: () => number;
+  refetchAccounts: () => void;
 }
 
 interface AccountsProviderProps {
@@ -17,7 +18,7 @@ interface AccountsProviderProps {
 const AccountsContext = createContext<AccountsContextType | undefined>(undefined);
 
 export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children}) => {
-  const { data: fetchedAccounts, loading, error } = useFetchAll<Account>(apiAccounts, 'accounts', true);
+  const { data: fetchedAccounts, loading, error, refetch } = useFetchAll<Account>(apiAccounts, 'accounts', true);
   const [accounts, setAccounts] = useState<Account[]>(fetchedAccounts.data);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children}) =
   };
 
   return (
-    <AccountsContext.Provider value={{ accounts, loading, error, getVisibleBalance }}>
+    <AccountsContext.Provider value={{ accounts, loading, error, getVisibleBalance, refetchAccounts: refetch }}>
       {children}
     </AccountsContext.Provider>
   );
