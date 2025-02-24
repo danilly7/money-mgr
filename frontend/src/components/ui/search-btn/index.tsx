@@ -22,7 +22,7 @@ export const SearchButton = ({
     <button
       onClick={handleClick}
       className={`w-14 h-14 bg-amber-300 text-black font-extrabold border-4 border-black text-2xl 
-                        hover:bg-[#FFC300] rounded-full flex items-center justify-center 
+                        hover:bg-personalizedOrange rounded-full flex items-center justify-center 
                         transition-all duration-300 hover:-translate-y-1 hover:scale-105 ${className}`}
       aria-label="Search"
     >
