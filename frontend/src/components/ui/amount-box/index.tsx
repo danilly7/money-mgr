@@ -38,7 +38,7 @@ const AmountBox: React.FC<AmountBoxProps> = ({ initialAmount, onAmountChange }) 
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
+    if (/^\d*\.?\d*$/.test(value)) { //esto hace tmb que no haya núms negativos!
       setAmount(value);
     }
   };

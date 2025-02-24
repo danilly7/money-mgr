@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import AmountBox from "../../../ui/amount-box";
 import NameBox from "../../../ui/name-box";
 import { VisibilityToggleButton } from "../../../ui/visibility-toggle";
@@ -7,7 +7,7 @@ import { useAccounts } from "../../../../context/accounts-context";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useNavigate } from "react-router-dom";
-import { ModalMisc } from "../../../modals";
+import { ModalMisc } from "../../../modal";
 
 const NewAccountForm = () => {
     const { addAccount } = useAccounts();
@@ -21,18 +21,23 @@ const NewAccountForm = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>("");
 
+    const errorRef = useRef<HTMLParagraphElement>(null);
+
+    useEffect(() => {
+        if (errorMessage && errorRef.current) {
+            errorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }, [errorMessage]);
+
     const handleSubmit = async () => {
         setErrorMessage(null);
 
         if (!name.trim()) {
-            setErrorMessage("Account name is required.");
+            setErrorMessage("Account Name is required.");
             return;
         }
 
-        if (amount < 0) {
-            setErrorMessage("Balance cannot be negative.");
-            return;
-        }
+        //validación números negativos no hace falta pq el mismo AmountBox lo hace solo.
 
         // if (!currentUser) {
         //     setErrorMessage("User not authenticated.");
@@ -82,13 +87,15 @@ const NewAccountForm = () => {
     return (
         <div className="relative bg-white p-3 border-4 border-black rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto">
             <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
-                {errorMessage && (
-                    <p className="text-red-500 text-md font-semibold">{errorMessage}</p>
-                )}
                 <div className="flex flex-col">
                     <p className="text-md text-gray-500 mb-1">
                         Account Name: Choose a unique name.
                     </p>
+                    {errorMessage && (
+                        <p ref={errorRef} className="text-red-500 text-md font-semibold">
+                            {errorMessage}
+                        </p>
+                    )}
                     <NameBox initialName={name} onNameChange={setName} />
                 </div>
 
