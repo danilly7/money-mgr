@@ -2,15 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import AmountBox from "../../../ui/amount-box";
 import NameBox from "../../../ui/name-box";
 import { VisibilityToggleButton } from "../../../ui/visibility-toggle";
-import { useAccounts } from "../../../../context/accounts-context";
 import { useAuth } from "../../../../context/auth-context";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useNavigate } from "react-router-dom";
 import { ModalMisc } from "../../../modal";
+import { useAddAccount } from "../../../../hooks/useAddAccount";
 
 const NewAccountForm = () => {
-    const { addAccount } = useAccounts();
+    const { addAccount } = useAddAccount();
     const { userId } = useAuth();
     const navigate = useNavigate();
     const [amount, setAmount] = useState<number>(0);

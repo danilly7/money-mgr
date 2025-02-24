@@ -19,8 +19,7 @@ const AccountDetails: React.FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-4xl font-bold">Account Details</h1>
+    <>
       <div className="mt-6">
         <div className="flex justify-between items-center">
           <p className="text-xl font-semibold">Name:</p>
@@ -35,7 +34,7 @@ const AccountDetails: React.FC = () => {
           <p className="text-lg">{account.balance} €</p>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

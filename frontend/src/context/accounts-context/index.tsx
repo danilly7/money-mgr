@@ -1,16 +1,12 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { Account } from "../../components/accounts/interface-account";
 import { useFetchAll } from '../../hooks/useFetchAll';
-import { getAuthToken } from '../../firebase/auth';
 import { apiAccounts } from '../../api';
 
 interface AccountsContextType {
   accounts: Account[];
   loading: boolean;
   error: Error | null;
-  addAccount: (account: Account) => void;
-  updateAccount: (id: number, account: Account) => void;
-  deleteAccount: (id: number) => void;
   getVisibleBalance: () => number;
 }
 
@@ -40,88 +36,8 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children}) =
       }, 0);
   };
 
-  const addAccount = async (account: Account) => {
-    try {
-      const token = await getAuthToken();
-
-      if (!token) {
-        throw new Error("Error getting the token of authentification.");
-      }
-
-      const response = await fetch(apiAccounts, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(account),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create account');
-      }
-
-      const newAccount = await response.json();
-      setAccounts(prevAccounts => [...prevAccounts, newAccount]);
-    } catch (error) {
-      console.error('Error adding account:', error);
-    }
-  };
-
-  const updateAccount = async (id: number, account: Account) => {
-    try {
-      const token = await getAuthToken();
-
-      if (!token) {
-        throw new Error("Error getting the token of authentification.");
-      }
-
-      const response = await fetch(`${apiAccounts}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(account),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update account');
-      }
-
-      setAccounts(accounts.map(acc => acc.id === id ? { ...acc, ...account } : acc));
-    } catch (error) {
-      console.error('Error updating account:', error);
-    }
-  };
-
-  const deleteAccount = async (id: number) => {
-    try {
-      const token = await getAuthToken();
-
-      if (!token) {
-        throw new Error("Error getting the token of authentification.");
-      }
-
-      const response = await fetch(`${apiAccounts}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete account');
-      }
-
-      setAccounts(accounts.filter(acc => acc.id !== id));
-    } catch (error) {
-      console.error('Error deleting account:', error);
-    }
-  };
-
   return (
-    <AccountsContext.Provider value={{ accounts, loading, error, addAccount, updateAccount, deleteAccount, getVisibleBalance }}>
+    <AccountsContext.Provider value={{ accounts, loading, error, getVisibleBalance }}>
       {children}
     </AccountsContext.Provider>
   );
