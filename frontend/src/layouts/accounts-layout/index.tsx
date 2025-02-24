@@ -1,8 +1,11 @@
 import { Outlet } from "react-router-dom";
+import { AccountsProvider } from "../../context/accounts-context";
 
 const AccountsLayout = () => {
     return (
-        <Outlet />
+        <AccountsProvider>
+            <Outlet />
+        </AccountsProvider>
     );
 };
 

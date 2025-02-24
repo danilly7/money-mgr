@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-const AuthLayout = () => {
+const AuthLayout = () => { //esto es para el login y register solo
   return (
     <Outlet />
   );
