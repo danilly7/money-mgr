@@ -34,7 +34,7 @@ export const DescriptionBox: React.FC<DescriptionBoxProps> = ({ initialDescripti
   };
 
   return (
-    <div className="flex items-start justify-center py-4 m-4">
+    <div className="flex items-start justify-center py-2 m-4">
       <div
         className="relative w-[28rem] h-36 bg-[#4ECDC4] border-4 border-black rounded-2xl flex items-start justify-center text-black p-8 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer"
         onClick={handleClick}

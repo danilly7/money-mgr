@@ -5,23 +5,23 @@ import { getAuthToken } from '../../firebase/auth';
 import { apiAccounts } from '../../api';
 
 interface AccountsContextType {
-    accounts: Account[];
-    loading: boolean;
-    error: Error | null;
-    addAccount: (account: Account) => void;
-    updateAccount: (id: number, account: Account) => void;
-    deleteAccount: (id: number) => void;
+  accounts: Account[];
+  loading: boolean;
+  error: Error | null;
+  addAccount: (account: Account) => void;
+  updateAccount: (id: number, account: Account) => void;
+  deleteAccount: (id: number) => void;
 }
 
 interface AccountsProviderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 const AccountsContext = createContext<AccountsContextType | undefined>(undefined);
 
 export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) => {
   const { data: fetchedAccounts, loading, error } = useFetchAll<Account>(apiAccounts, 'accounts', true);
-  
+
   const [accounts, setAccounts] = useState<Account[]>(fetchedAccounts.data);
 
   useEffect(() => {
@@ -31,7 +31,12 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
   const addAccount = async (account: Account) => {
     try {
       const token = await getAuthToken();
-      const response = await fetch('/accounts', {
+
+      if (!token) {
+        throw new Error("Error getting the token of authentification.");
+      }
+
+      const response = await fetch(apiAccounts, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +58,12 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
   const updateAccount = async (id: number, account: Account) => {
     try {
       const token = await getAuthToken();
-      const response = await fetch(`/accounts/${id}`, {
+
+      if (!token) {
+        throw new Error("Error getting the token of authentification.");
+      }
+
+      const response = await fetch(`${apiAccounts}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +85,12 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
   const deleteAccount = async (id: number) => {
     try {
       const token = await getAuthToken();
-      const response = await fetch(`/accounts/${id}`, {
+
+      if (!token) {
+        throw new Error("Error getting the token of authentification.");
+      }
+
+      const response = await fetch(`${apiAccounts}/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
