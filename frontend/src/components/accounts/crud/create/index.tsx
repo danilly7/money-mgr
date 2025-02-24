@@ -3,7 +3,7 @@ import AmountBox from "../../../ui/amount-box";
 import NameBox from "../../../ui/name-box";
 import { VisibilityToggleButton } from "../../../ui/visibility-toggle";
 import { useAccounts } from "../../../../context/accounts-context";
-// import { useAuth } from "../../../../context/auth-context";
+import { useAuth } from "../../../../context/auth-context";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { ModalMisc } from "../../../modal";
 
 const NewAccountForm = () => {
     const { addAccount } = useAccounts();
-    // const { currentUser } = useAuth();
+    const { userId } = useAuth();
     const navigate = useNavigate();
     const [amount, setAmount] = useState<number>(0);
     const [name, setName] = useState<string>("");
@@ -39,10 +39,10 @@ const NewAccountForm = () => {
 
         //validación números negativos no hace falta pq el mismo AmountBox lo hace solo.
 
-        // if (!currentUser) {
-        //     setErrorMessage("User not authenticated.");
-        //     return;
-        // }
+        if (!userId) {
+            setErrorMessage("User not authenticated.");
+            return;
+        }
 
         setLoading(true);
 
@@ -50,8 +50,9 @@ const NewAccountForm = () => {
             name,
             balance: amount,
             visibility: isVisible,
-            // user_id: Number(currentUser.uid),
+            user_id: userId,
         };
+        console.log('user_id', userId)
 
         try {
             await addAccount(newAccount);
@@ -88,14 +89,14 @@ const NewAccountForm = () => {
         <div className="relative bg-white p-3 border-4 border-black rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto">
             <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
                 <div className="flex flex-col">
-                    <p className="text-md text-gray-500 mb-1">
-                        Account Name: Choose a unique name.
-                    </p>
                     {errorMessage && (
                         <p ref={errorRef} className="text-red-500 text-md font-semibold">
                             {errorMessage}
                         </p>
                     )}
+                    <p className="text-md text-gray-500 mb-1">
+                        Account Name: Choose a unique name.
+                    </p>
                     <NameBox initialName={name} onNameChange={setName} />
                 </div>
 

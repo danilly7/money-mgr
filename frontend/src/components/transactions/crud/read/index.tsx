@@ -1,5 +1,5 @@
 import React from 'react';
-import { Transaction } from '../../interface';
+import { Transaction } from '../../interface-transaction';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { Account } from "../../components/accounts/interface";
+import { Account } from "../../components/accounts/interface-account";
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { getAuthToken } from '../../firebase/auth';
 import { apiAccounts } from '../../api';

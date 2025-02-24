@@ -1,7 +1,7 @@
 export interface Account {
-    id?: number;
+    id_account?: number;
     name: string;
     balance: number;
     visibility: boolean;
-    user_id?: number;
+    user_id: number;
 };

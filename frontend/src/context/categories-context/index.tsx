@@ -1,7 +1,7 @@
 import React, { ReactNode, createContext, useContext } from 'react';
 import { apiCategories } from '../../api';
 import { useFetchAll } from '../../hooks/useFetchAll';
-import { Category } from '../../components/categories/interface';
+import { Category } from '../../components/categories/interface-category';
 import { colors } from '../../utils/colors';
 import { iconsCategories } from '../../utils/iconsCategories';
 import { AsteriskIcon } from '../../components/ui/icons/AsteriskIcon';
