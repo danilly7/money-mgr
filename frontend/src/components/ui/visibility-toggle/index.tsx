@@ -4,21 +4,22 @@ import { EyeIcon } from '../icons/EyeIcon';
 interface VisibilityToggleButtonProps {
     isVisible: boolean;
     setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    className?: string;
 }
 
-export const VisibilityToggleButton: React.FC<VisibilityToggleButtonProps> = ({ isVisible, setIsVisible }) => {
+export const VisibilityToggleButton: React.FC<VisibilityToggleButtonProps> = ({ isVisible, setIsVisible, className = '' }) => {
     return (
-        <div className="flex items-center space-x-2">
+        <div className={`flex items-center space-x-2 ${className}`}>
             <button
                 onClick={() => setIsVisible(true)}
-                className={`p-2 ${isVisible ? 'bg-personalizedGreen' : 'bg-gray-300'} 
+                className={`p-2 ${isVisible ? 'bg-yellow-300' : 'bg-gray-400'} 
                         border-4 border-black rounded-full transition-all transform hover:scale-110`}
             >
                 <EyeIcon className="text-black" />
             </button>
             <button
                 onClick={() => setIsVisible(false)}
-                className={`p-2 ${!isVisible ? 'bg-[#FF6B6B]' : 'bg-gray-300'} 
+                className={`p-2 ${!isVisible ? 'bg-yellow-300' : 'bg-gray-400'} 
                         border-4 border-black rounded-full transition-all transform hover:scale-110`}
             >
                 <EyeClosedIcon className="text-black" />

@@ -62,7 +62,7 @@ export const DescriptionBox: React.FC<DescriptionBoxProps> = ({ initialDescripti
             <span className="text-4xl font-bold mt-3 text-center">{description}</span>
           )}
 
-          {!isEditing && description === "" && <div className="w-[calc(100%+15rem)] border-b-4 border-black mt-8" />}
+          {!isEditing && description === "" && <div className="w-[calc(100%+11rem)] border-b-4 border-black mt-8" />}
         </div>
       </div>
     </div>
