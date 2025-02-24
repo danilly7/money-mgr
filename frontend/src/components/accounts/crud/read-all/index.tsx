@@ -10,7 +10,7 @@ const AccountsList: React.FC = () => {
   const navigate = useNavigate();
 
   const handleAccountClick = (accountId: number) => {
-    navigate(`/account/${accountId}`);
+    navigate(`acc/${accountId}`);
   };
 
   if (loading) {

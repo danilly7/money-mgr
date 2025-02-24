@@ -16,7 +16,9 @@ const ErrorPage = lazy(() => import('../pages/error/index'));
 const Login = lazy(() => import('../components/welcome/login'));
 const Register = lazy(() => import('../components/welcome/register'));
 const ViewOfTransactions = lazy(() => import('../pages/transactions'));
-const NewAccount = lazy(()=> import ("../pages/accounts/newaccount"));
+const NewAccount = lazy(() => import("../pages/accounts/new-account"));
+const DetailsAccountId = lazy(() => import("../pages/accounts/details-account"));
+
 
 export const routes: RouteObject[] = [
     {
@@ -42,7 +44,7 @@ export const routes: RouteObject[] = [
         element: <RequireAuth />,
         children: [
             {
-                path: "", 
+                path: "",
                 element: <MainLayout />,
                 children: [
                     {
@@ -62,8 +64,8 @@ export const routes: RouteObject[] = [
                                 element: <NewAccount />
                             },
                             {
-                                path: "updateaccount",
-                                // element: < UpdateAccount/>
+                                path: "acc/:accountId",
+                                element: <DetailsAccountId />
                             },
                         ]
                     },

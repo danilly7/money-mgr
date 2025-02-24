@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { PlusButton } from "../../components/ui/plus-btn";
-import AccountsList from "../../components/accounts/crud/read";
+import AccountsList from "../../components/accounts/crud/read-all";
 import BalanceBox from "../../components/ui/balance-box";
 import { useAccounts } from "../../context/accounts-context";
 
