@@ -14,6 +14,7 @@ interface AccountsContextType {
   updateAccount: (id: number, account: Account) => void;
   deleteAccount: (id: number) => void;
   accountId: number | null;
+  getVisibleBalance: () => number;
 }
 
 interface AccountsProviderProps {
@@ -38,6 +39,18 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
       setAccountId(fetchedAccountId);
     }
   }, [fetchedAccountId]);
+
+  const getVisibleBalance = () => {
+    return accounts
+      .filter(account => account.visibility)
+      .reduce((sum, account) => {
+        const balance = Number(account.balance);
+        if (!isNaN(balance)) {
+          return sum + balance;
+        }
+        return sum;
+      }, 0);
+  };
 
   const addAccount = async (account: Account) => {
     try {
@@ -126,7 +139,7 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
   };
 
   return (
-    <AccountsContext.Provider value={{ accounts, loading, error, addAccount, updateAccount, deleteAccount, accountId }}>
+    <AccountsContext.Provider value={{ accounts, loading, error, addAccount, updateAccount, deleteAccount, accountId, getVisibleBalance }}>
       {children}
     </AccountsContext.Provider>
   );

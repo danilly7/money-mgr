@@ -1,16 +1,23 @@
+import { useState, useEffect } from "react";
 import { PlusButton } from "../../components/ui/plus-btn";
 import AccountsList from "../../components/accounts/crud/read";
 import BalanceBox from "../../components/ui/balance-box";
+import { useAccounts } from "../../context/accounts-context";
 
 const Accounts = () => {
+    const { getVisibleBalance, accounts } = useAccounts();
+    const [balance, setBalance] = useState(0);
 
+    useEffect(() => {
+        setBalance(getVisibleBalance());
+      }, [accounts, getVisibleBalance]);
 
     return (
         <>
             <div className="flex flex-col items-center justify-center m-6">
                 <h1 className="text-4xl font-bold">ACCOUNTS</h1>
             </div>
-            <BalanceBox balance={0}/>
+            <BalanceBox balance={balance} />
             <div className="p-4">
                 <AccountsList />
             </div>
