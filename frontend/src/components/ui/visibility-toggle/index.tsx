@@ -12,14 +12,14 @@ export const VisibilityToggleButton: React.FC<VisibilityToggleButtonProps> = ({ 
         <div className={`flex items-center space-x-2 ${className}`}>
             <button
                 onClick={() => setIsVisible(true)}
-                className={`p-2 ${isVisible ? 'bg-yellow-300' : 'bg-gray-400'} 
+                className={`p-3 ${isVisible ? 'bg-[#4ECDC4]' : 'bg-gray-400'} 
                         border-4 border-black rounded-full transition-all transform hover:scale-110`}
             >
                 <EyeIcon className="text-black" />
             </button>
             <button
                 onClick={() => setIsVisible(false)}
-                className={`p-2 ${!isVisible ? 'bg-yellow-300' : 'bg-gray-400'} 
+                className={`p-3 ${!isVisible ? 'bg-[#4ECDC4]' : 'bg-gray-400'} 
                         border-4 border-black rounded-full transition-all transform hover:scale-110`}
             >
                 <EyeClosedIcon className="text-black" />

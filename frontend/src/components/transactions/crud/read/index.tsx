@@ -16,7 +16,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
     };
 
     return (
-        <div className="relative items-center justify-center m-8 border-4 border-black overflow-hidden">
+        <div className="relative items-center justify-center mx-4 my-8 border-4 border-black overflow-hidden rounded-lg shadow-lg">
             {transactions.map((transaction, index) => {
                 const category = getCategoryDetails(transaction.category_id);
 

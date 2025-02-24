@@ -62,7 +62,7 @@ const NameBox: React.FC<NameBoxProps> = ({ initialName, onNameChange }) => {
                         <span className="text-4xl font-bold mt-3 text-center">{name}</span>
                     )}
 
-                    {!isEditing && name === "" && <div className="w-[calc(100%+14rem)] border-b-4 border-black mt-8" />}
+                    {!isEditing && name === "" && <div className="w-[calc(100%+10rem)] border-b-4 border-black mt-8" />}
                 </div>
             </div>
         </div>
