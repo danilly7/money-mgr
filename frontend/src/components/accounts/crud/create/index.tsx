@@ -82,7 +82,7 @@ const NewAccountForm = () => {
 
     const handleModalClose = () => {
         setIsModalOpen(false);
-        navigate("/accounts");  // Redirigir a /accounts solo cuando el modal se cierra
+        navigate("/accounts");
     };
 
     return (

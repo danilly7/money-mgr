@@ -3,6 +3,8 @@ import { Account } from "../../components/accounts/interface-account";
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { getAuthToken } from '../../firebase/auth';
 import { apiAccounts } from '../../api';
+import { useAuth } from '../auth-context';
+import { useFetchAccountId } from '../../hooks/useFetchAccountId';
 
 interface AccountsContextType {
   accounts: Account[];
@@ -11,6 +13,7 @@ interface AccountsContextType {
   addAccount: (account: Account) => void;
   updateAccount: (id: number, account: Account) => void;
   deleteAccount: (id: number) => void;
+  accountId: number | null;
 }
 
 interface AccountsProviderProps {
@@ -21,12 +24,20 @@ const AccountsContext = createContext<AccountsContextType | undefined>(undefined
 
 export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) => {
   const { data: fetchedAccounts, loading, error } = useFetchAll<Account>(apiAccounts, 'accounts', true);
-
+  const { userId } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>(fetchedAccounts.data);
+  const [accountId, setAccountId] = useState<number | null>(null);
 
   useEffect(() => {
     setAccounts(fetchedAccounts.data);
   }, [fetchedAccounts]);
+
+  const { accountId: fetchedAccountId } = useFetchAccountId("AccountName", userId);
+  useEffect(() => {
+    if (fetchedAccountId) {
+      setAccountId(fetchedAccountId);
+    }
+  }, [fetchedAccountId]);
 
   const addAccount = async (account: Account) => {
     try {
@@ -49,7 +60,8 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
         throw new Error('Failed to create account');
       }
 
-      setAccounts(prevAccounts => [...prevAccounts, account]);
+      const newAccount = await response.json();
+      setAccounts(prevAccounts => [...prevAccounts, newAccount]);
     } catch (error) {
       console.error('Error adding account:', error);
     }
@@ -76,7 +88,10 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
         throw new Error('Failed to update account');
       }
 
-      setAccounts(accounts.map(acc => acc.id === id ? account : acc));
+      setAccounts(accounts.map(acc => acc.id_account === id ? { ...acc, ...account } : acc));
+      if (account.id_account === accountId) {
+        setAccountId(account.id_account);
+      }
     } catch (error) {
       console.error('Error updating account:', error);
     }
@@ -101,14 +116,17 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children }) 
         throw new Error('Failed to delete account');
       }
 
-      setAccounts(accounts.filter(acc => acc.id !== id));
+      setAccounts(accounts.filter(acc => acc.id_account !== id));
+      if (id === accountId) {
+        setAccountId(null); 
+      }
     } catch (error) {
       console.error('Error deleting account:', error);
     }
   };
 
   return (
-    <AccountsContext.Provider value={{ accounts, loading, error, addAccount, updateAccount, deleteAccount }}>
+    <AccountsContext.Provider value={{ accounts, loading, error, addAccount, updateAccount, deleteAccount, accountId }}>
       {children}
     </AccountsContext.Provider>
   );
