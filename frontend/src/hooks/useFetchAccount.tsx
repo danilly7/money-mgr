@@ -3,27 +3,27 @@ import { Account } from "../components/accounts/interface-account";
 import { apiAccounts } from "../api";
 import { getAuthToken } from "../firebase/auth";
 
-interface UseFetchAccountIdResult {
-    accountId: number | null;
+interface UseFetchAccountResult {
+    account: Account | null;
     loading: boolean;
     error: Error | null;
 }
 
-export const useFetchAccountId = (name: string, id_user: number | null): UseFetchAccountIdResult => {
-    const [accountId, setAccountId] = useState<number | null>(null);
+export const useFetchAccount = (accountId: string): UseFetchAccountResult => {
+    const [account, setAccount] = useState<Account | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const fetchAccountId = async () => {
-            if (id_user && name) {
+        const fetchAccount = async () => {
+            if (accountId) {
                 try {
                     const token = await getAuthToken();
                     if (!token) {
                         throw new Error("Authentication token is missing.");
                     }
 
-                    const response = await fetch(apiAccounts, {
+                    const response = await fetch(`${apiAccounts}/${accountId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
@@ -31,19 +31,11 @@ export const useFetchAccountId = (name: string, id_user: number | null): UseFetc
                     });
 
                     if (!response.ok) {
-                        throw new Error("Failed to fetch accounts");
+                        throw new Error("Failed to fetch account");
                     }
 
                     const data = await response.json();
-                    const account = data.accounts.find(
-                        (account: Account) => account.name === name && account.user_id === id_user
-                    );
-
-                    if (account) {
-                        setAccountId(account.id);
-                    } else {
-                        setError(new Error("Account not found"));
-                    }
+                    setAccount(data);
                 } catch (err) {
                     setError(err as Error);
                 } finally {
@@ -54,8 +46,8 @@ export const useFetchAccountId = (name: string, id_user: number | null): UseFetc
             }
         };
 
-        fetchAccountId();
-    }, [name, id_user]);
+        fetchAccount();
+    }, [accountId]);
 
-    return { accountId, loading, error };
+    return { account, loading, error };
 };

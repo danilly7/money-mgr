@@ -1,5 +1,5 @@
 export interface Account {
-    id_account?: number;
+    id?: number;
     name: string;
     balance: number;
     visibility: boolean;

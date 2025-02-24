@@ -1,19 +1,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useAccounts } from '../../../../context/accounts-context';
+import { useFetchAccount } from '../../../../hooks/useFetchAccount';
 
 const AccountDetails: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
-  const { accounts, loading } = useAccounts();
-  
-  const account = accounts.find(acc => acc.id_account === Number(accountId));
-
-  if (!account) {
-    return <div className="text-center text-xl font-semibold">Account not found</div>;
-  }
+  const { account, loading, error } = useFetchAccount(accountId!);
 
   if (loading) {
     return <div className="text-center text-xl font-semibold">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-xl font-semibold">Error: {error.message}</div>;
+  }
+
+  if (!account) {
+    return <div className="text-center text-xl font-semibold">Account not found</div>;
   }
 
   return (
