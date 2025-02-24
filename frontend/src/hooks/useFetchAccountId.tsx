@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Account } from "../components/accounts/interface-account";
 import { apiAccounts } from "../api";
+import { getAuthToken } from "../firebase/auth";
 
 interface UseFetchAccountIdResult {
     accountId: number | null;
@@ -17,8 +18,21 @@ export const useFetchAccountId = (name: string, id_user: number | null): UseFetc
         const fetchAccountId = async () => {
             if (id_user && name) {
                 try {
-                    const response = await fetch(apiAccounts);
-                    if (!response.ok) throw new Error("Failed to fetch accounts");
+                    const token = await getAuthToken();
+                    if (!token) {
+                        throw new Error("Authentication token is missing.");
+                    }
+
+                    const response = await fetch(apiAccounts, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch accounts");
+                    }
 
                     const data = await response.json();
                     const account = data.accounts.find(
