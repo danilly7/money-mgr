@@ -3,5 +3,5 @@ export interface Account {
     name: string;
     balance: number;
     visibility: boolean;
-    user_id: number;
+    user_id?: number;
 };

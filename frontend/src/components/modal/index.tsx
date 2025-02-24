@@ -6,7 +6,7 @@ interface ModalProps {
     message: string;
 }
 
-export const ModalCreate: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
+export const ModalMisc: React.FC<ModalProps> = ({ isOpen, onClose, message }) => {
     if (!isOpen) return null;
 
     return (
@@ -22,7 +22,7 @@ export const ModalCreate: React.FC<ModalProps> = ({ isOpen, onClose, message }) 
                 <div className="flex justify-center">
                     <button
                         onClick={onClose}
-                        className="bg-personalizedGreen text-black font-semibold border-4 border-black py-2 px-4 rounded-md"
+                        className="bg-[#4ECDC4] text-black font-semibold border-4 border-black py-2 px-4 rounded-md"
                     >
                         OK
                     </button>
