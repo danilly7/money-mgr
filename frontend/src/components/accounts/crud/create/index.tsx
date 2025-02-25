@@ -76,8 +76,7 @@ const NewAccountForm = () => {
         setName("");
         setAmount(0);
         setIsVisible(true);
-        setModalMessage("Account creation has been cancelled.");
-        setIsModalOpen(true);
+        navigate(-1);
     };
 
     const handleModalClose = () => {

@@ -1,6 +1,6 @@
 import { CancelIcon } from "../icons/CancelIcon";
 
-export const CancelButton = ({ onClick, className = "" }: { onClick: () => void; className?: string }) => {
+export const CancelButton = ({ onClick, className = "" }: { onClick?: () => void; className?: string }) => {
     return (
         <button
             onClick={onClick}

@@ -76,8 +76,7 @@ const AccountEditModal = ({ isOpen, onClose, accountId }: AccountEditModalProps)
   };
 
   const handleCancel = () => {
-    setModalMessage("Account update has been cancelled.");
-    setIsModalOpen(true);
+    onClose();
   };
 
   const handleModalClose = () => {
