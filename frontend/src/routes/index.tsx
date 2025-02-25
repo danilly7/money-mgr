@@ -5,6 +5,7 @@ const AuthLayout = lazy(() => import('../layouts/auth-layout'));
 const RequireAuth = lazy(() => import('../components/welcome/required-auth'));
 const MainLayout = lazy(() => import('../layouts/main-layout'));
 const AccountsLayout = lazy(() => import('../layouts/accounts-layout'));
+const TransactionsLayout = lazy(() => import('../layouts/transactions-layout'));
 
 const Home = lazy(() => import('../pages/home'));
 const Welcome = lazy(() => import('../pages/welcome'));
@@ -71,16 +72,28 @@ export const routes: RouteObject[] = [
                     {
                         path: "categories",
                         element: <Categories />,
-                        //children
                     },
                     {
                         path: "user",
                         element: <User />
-                        //faltan los children
                     },
                     {
                         path: "transactions",
-                        element: <ViewOfTransactions />
+                        element: <TransactionsLayout />,
+                        children: [
+                            {
+                                index: true, //raíz /transactions
+                                element: <ViewOfTransactions />,
+                            },
+                            {
+                                path: "newtransaction",
+                                // element: <NewAccount />
+                            },
+                            {
+                                path: "transac/:transactionId",
+                                // element: <DetailsAccountId />,
+                            },
+                        ]
                     },
                 ],
             },
