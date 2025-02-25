@@ -4,8 +4,10 @@ import BalanceBox from "../../components/ui/balance-box";
 import ExpenseIncomeToggle from "../../components/ui/expense-income-toggle";
 import { SearchButton } from "../../components/ui/search-btn";
 import { PlusButton } from "../../components/ui/plus-btn";
+import useVisibleBalance from "../../hooks/useVisibleBalance";
 
 const Home = () => {
+    const { visibleBalance } = useVisibleBalance();
     const [timeframe, setTimeframe] = useState<"Day" | "Week" | "Month" | "Year">("Month");
     const [isExpense, setIsExpense] = useState(true);
     const amountExpense = 1250.5;
@@ -14,7 +16,7 @@ const Home = () => {
     return (
         <>
             <SwitchTimeframe timeframe={timeframe} setTimeframe={setTimeframe} />
-            <BalanceBox balance={1150.5} />
+            <BalanceBox balance={visibleBalance} />
 
             <ExpenseIncomeToggle
                 isExpense={isExpense}

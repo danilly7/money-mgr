@@ -3,11 +3,10 @@ import { Account } from "../../components/accounts/interface-account";
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { apiAccounts } from '../../api';
 
-interface AccountsContextType {
+interface AccountsContextType { //básicamente este context es un useFetchAllAccounts y refetch hook accesible a muchos
   accounts: Account[];
   loading: boolean;
   error: Error | null;
-  getVisibleBalance: () => number;
   refetchAccounts: () => void;
 }
 
@@ -22,17 +21,8 @@ export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children}) =
   
   const accounts = fetchedAccounts.data ?? [];
 
-  const getVisibleBalance = () => {
-    return accounts
-      .filter(account => account.visibility)
-      .reduce((sum, account) => {
-        const balance = Number(account.balance);
-        return isNaN(balance) ? sum : sum + balance;
-      }, 0);
-  };
-
   return (
-    <AccountsContext.Provider value={{ accounts, loading, error, getVisibleBalance, refetchAccounts: refetch }}>
+    <AccountsContext.Provider value={{ accounts, loading, error, refetchAccounts: refetch }}>
       {children}
     </AccountsContext.Provider>
   );
