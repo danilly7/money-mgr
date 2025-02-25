@@ -15,6 +15,7 @@ interface TransactionListProps {
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpense }) => {
     const { categories } = useCategories();
 
+    //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
     const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
 
     const accountNamesMap = React.useMemo(() => {

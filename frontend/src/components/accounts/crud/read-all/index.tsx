@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { EyeClosedIcon } from '../../../ui/icons/EyeClosedIcon';
 import { EyeIcon } from '../../../ui/icons/EyeIcon';
 import { formattedNumbers } from '../../../../utils/formattedNumbers';
-import { useAccounts } from '../../../../context/accounts-context';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useFetchAllAccounts from '../../../../hooks/useFetchAllAccounts';
 
 const AccountsList: React.FC = () => {
-  const { accounts, loading, refetchAccounts } = useAccounts();
+  const { accounts, loading, refetchAccounts } = useFetchAllAccounts();
   const navigate = useNavigate();
   const location = useLocation();
 
