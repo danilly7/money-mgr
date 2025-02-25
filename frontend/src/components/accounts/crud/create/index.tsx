@@ -52,7 +52,6 @@ const NewAccountForm = () => {
             visibility: isVisible,
             user_id: userId,
         };
-        console.log('user_id', userId)
 
         try {
             await addAccount(newAccount);

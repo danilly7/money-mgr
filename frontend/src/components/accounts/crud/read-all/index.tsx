@@ -1,12 +1,18 @@
+import { useEffect } from 'react';
 import { EyeClosedIcon } from '../../../ui/icons/EyeClosedIcon';
 import { EyeIcon } from '../../../ui/icons/EyeIcon';
 import { formattedNumbers } from '../../../../utils/formattedNumbers';
 import { useAccounts } from '../../../../context/accounts-context';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AccountsList: React.FC = () => {
-  const { accounts, loading } = useAccounts();
+  const { accounts, loading, refetchAccounts } = useAccounts();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => { //esto no borrar, es para que haga refetch después de venir de otra página  
+    refetchAccounts();
+  }, [location, refetchAccounts]);
 
   const handleAccountClick = (accountId: number) => {
     if (accountId) {
