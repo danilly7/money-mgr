@@ -6,7 +6,7 @@ import { useAuth } from "../../../../context/auth-context";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useNavigate } from "react-router-dom";
-import { ModalMisc } from "../../../modal";
+import { ModalMisc } from "../../../modal misc";
 import { useAddAccount } from "../../../../hooks/useAddAccount";
 
 const NewAccountForm = () => {

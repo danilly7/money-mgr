@@ -4,7 +4,7 @@ import NameBox from "../../../ui/name-box";
 import { VisibilityToggleButton } from "../../../ui/visibility-toggle";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
-import { ModalMisc } from "../../../modal";
+import { ModalMisc } from "../../../modal misc";
 import { useFetchAccount } from "../../../../hooks/useFetchAccount";
 import { useUpdateAccount } from "../../../../hooks/useUpdateAccount";
 

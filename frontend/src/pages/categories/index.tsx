@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CategoriesList } from "../../components/categories/r/read";
+import { CategoriesList } from "../../components/categories/r/read-all";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 
 const Categories = () => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ModalMisc } from "../../../modal";
+import { ModalMisc } from "../../../modal misc";
 import { useNavigate } from "react-router-dom";
 
 interface ConfirmationDeleteModalProps {

@@ -4,7 +4,7 @@ import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 import { BackButton } from "../../components/ui/back-btn";
 import mockTransactions from "../../utils/mockTransactions";
-import TransactionList from "../../components/transactions/crud/read";
+import TransactionList from "../../components/transactions/crud/read-all";
 import { useCategories } from "../../context/categories-context";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 
@@ -17,7 +17,6 @@ const ViewOfTransactions = () => {
 
   const transactions = mockTransactions;
 
-  // Filtro por tiempo
   const filterByTimeframe = (date: string) => {
     const transactionDate = new Date(date);
     const today = new Date();
@@ -52,7 +51,6 @@ const ViewOfTransactions = () => {
     }
   };
 
-  //filtro por tipo (expense o income) y tiempo
   const filteredTransactions = transactions.filter((transaction) => {
     const category = categories.find((cat) => cat.id === transaction.category_id);
     if (!category) return false;
@@ -101,7 +99,9 @@ const ViewOfTransactions = () => {
         handleExpenseIncomeChange={handleExpenseIncomeChange}
       />
       <SwitchTimeframe timeframe={timeframe} setTimeframe={handleTimeframeChange} />
-      <TransactionList transactions={filteredTransactions} />
+      <div className="px-4">
+      <TransactionList transactions={filteredTransactions} isExpense={isExpense} />
+      </div>
     </>
   );
 };
