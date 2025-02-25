@@ -3,6 +3,9 @@ import { Transaction } from '../../interface-transaction';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';
+import { useFetchAll } from '../../../../hooks/useFetchAll';
+import { Account } from '../../../accounts/interface-account';
+import { apiAccounts } from '../../../../api';
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -11,6 +14,18 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpense }) => {
     const { categories } = useCategories();
+
+    const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
+
+    const accountNamesMap = React.useMemo(() => {
+        if (!accountsData.data) return {};
+        return accountsData.data.reduce((acc, account) => {
+            if (account.id !== undefined) {
+                acc[account.id] = account.name;
+            }
+            return acc;
+        }, {} as Record<number | string, string>);
+    }, [accountsData]);
 
     const getCategoryDetails = (categoryId: number) => {
         return categories.find((category) => category.id === categoryId);
@@ -32,6 +47,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpen
         `}>
             {sortedTransactions.map((transaction, index) => {
                 const category = getCategoryDetails(transaction.category_id);
+                const accountName = accountNamesMap[transaction.account_id] || "not found";
 
                 if (!category) {
                     return (
@@ -67,7 +83,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpen
                             >
                                 {transaction.comment || ''}
                             </span>
-                            <span className="text-sm text-gray-500 w-1/3 text-right">Account {transaction.account_id}</span>
+                            <span className="text-sm text-gray-500 w-1/3 text-right">Account: {accountName}</span>
                         </div>
 
                         {index !== sortedTransactions.length - 1 && (
