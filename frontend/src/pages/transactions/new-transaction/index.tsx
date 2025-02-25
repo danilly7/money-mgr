@@ -1,5 +1,5 @@
 import { BackButton } from "../../../components/ui/back-btn";
-// import NewAccountForm from "../../../components/accounts/crud/create";
+import NewTransactionForm from "../../../components/transactions/crud/create";
 
 const NewTransaction = () => {
     return (
@@ -12,7 +12,7 @@ const NewTransaction = () => {
                 </h1>
             </div>
             <div className="p-4">
-                {/* <NewAccountForm /> */}
+                <NewTransactionForm />
             </div>
         </>
     );
