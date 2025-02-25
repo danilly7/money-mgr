@@ -27,7 +27,7 @@ const Home = () => {
 
             <div className="flex flex-row justify-center space-x-10 m-6">
                 <SearchButton to="/transactions" timeframe={timeframe} isExpense={isExpense} />
-                <PlusButton to="/newtransaction" />
+                <PlusButton to="transactions/newtransaction" />
             </div>
         </>
     );

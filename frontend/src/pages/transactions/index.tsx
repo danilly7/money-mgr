@@ -104,7 +104,7 @@ const ViewOfTransactions = () => {
         <TransactionList transactions={filteredTransactions} isExpense={isExpense} />
       </div>
       <div className="flex flex-row justify-center mb-7">
-        <PlusButton to="/newtransaction" />
+        <PlusButton to="/transactions/newtransaction" />
       </div>
     </>
   );
