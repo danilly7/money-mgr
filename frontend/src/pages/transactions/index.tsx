@@ -7,6 +7,7 @@ import mockTransactions from "../../utils/mockTransactions";
 import TransactionList from "../../components/transactions/crud/read-all";
 import { useCategories } from "../../context/categories-context";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { PlusButton } from "../../components/ui/plus-btn";
 
 const ViewOfTransactions = () => {
   const location = useLocation();
@@ -100,7 +101,10 @@ const ViewOfTransactions = () => {
       />
       <SwitchTimeframe timeframe={timeframe} setTimeframe={handleTimeframeChange} />
       <div className="px-4">
-      <TransactionList transactions={filteredTransactions} isExpense={isExpense} />
+        <TransactionList transactions={filteredTransactions} isExpense={isExpense} />
+      </div>
+      <div className="flex flex-row justify-center mb-7">
+        <PlusButton to="/newtransaction" />
       </div>
     </>
   );
