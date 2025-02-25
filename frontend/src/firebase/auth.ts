@@ -63,7 +63,7 @@ export const getAuthToken = async () => {
     if (user) {
         try {
             //pillamos el token de Firebase
-            const token = await user.getIdToken(true); 
+            const token = await user.getIdToken(true);
             //aquí añadimos dentro de () true para forzar siempre la actualización del token
             //la vida del token de firebase es de 1h
             return token;

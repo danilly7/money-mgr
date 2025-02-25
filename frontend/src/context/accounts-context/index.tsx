@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { Account } from "../../components/accounts/interface-account";
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { apiAccounts } from '../../api';
@@ -19,21 +19,15 @@ const AccountsContext = createContext<AccountsContextType | undefined>(undefined
 
 export const AccountsProvider: React.FC<AccountsProviderProps> = ({ children}) => {
   const { data: fetchedAccounts, loading, error, refetch } = useFetchAll<Account>(apiAccounts, 'accounts', true);
-  const [accounts, setAccounts] = useState<Account[]>(fetchedAccounts.data);
-
-  useEffect(() => {
-    setAccounts(fetchedAccounts.data);
-  }, [fetchedAccounts]);
+  
+  const accounts = fetchedAccounts.data ?? [];
 
   const getVisibleBalance = () => {
     return accounts
       .filter(account => account.visibility)
       .reduce((sum, account) => {
         const balance = Number(account.balance);
-        if (!isNaN(balance)) {
-          return sum + balance;
-        }
-        return sum;
+        return isNaN(balance) ? sum : sum + balance;
       }, 0);
   };
 
