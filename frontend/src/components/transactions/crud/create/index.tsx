@@ -9,6 +9,7 @@ import { ModalMisc } from "../../../modal misc";
 import { useAddTransaction } from "../../../../hooks/useAddTransaction";
 import SwitchExpenseIncome from "../../../ui/switch-expense-income";
 import { CommentBox } from "../../../ui/comment-box";
+import { DateBox } from "../../../ui/date-box";
 
 const NewTransactionForm = () => {
     const { addTransaction } = useAddTransaction();
@@ -130,13 +131,7 @@ const NewTransactionForm = () => {
                 </div>
 
                 <div className="flex flex-col">
-                    <p className="text-md text-gray-500 mb-1">Date:</p>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="border-2 border-black p-2 rounded-lg"
-                    />
+                    <DateBox initialDate={date} onDateChange={setDate} />
                 </div>
 
                 <div className="border-t-4 border-black my-2 w-full" />

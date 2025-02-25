@@ -103,17 +103,17 @@ const AccountEditModal = ({ isOpen, onClose, accountId }: AccountEditModalProps)
               {errorMessage}
             </p>
           )}
-          <p className="text-md text-gray-500 mb-1">Account Name: Update it with a new name.</p>
+          <p className="text-md text-gray-500 mb-2">Account Name: Update it with a new name.</p>
           <NameBox initialName={name} onNameChange={setName} />
         </div>
 
         <div className="flex flex-col">
-          <p className="text-md text-gray-500 mb-1">Balance: Update it with a different amount.</p>
+          <p className="text-md text-gray-500 mb-2">Balance: Update it with a different amount.</p>
           <AmountBox initialAmount={balance} onAmountChange={setBalance} />
         </div>
 
-        <div className="flex flex-col items-center mb-4">
-          <p className="text-md text-gray-500 mb-1">
+        <div className="flex flex-col items-center mb-2">
+          <p className="text-md text-gray-500">
             Account Visibility: Change it to make it or not visible in the total balance.
           </p>
           <VisibilityToggleButton

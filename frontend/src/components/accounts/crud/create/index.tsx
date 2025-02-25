@@ -92,21 +92,21 @@ const NewAccountForm = () => {
                             {errorMessage}
                         </p>
                     )}
-                    <p className="text-md text-gray-500 mb-1">
+                    <p className="text-md text-gray-500 mb-2">
                         Account Name: Choose a unique name.
                     </p>
                     <NameBox initialName={name} onNameChange={setName} />
                 </div>
 
                 <div className="flex flex-col">
-                    <p className="text-md text-gray-500 mb-1">
+                    <p className="text-md text-gray-500 mb-2">
                         Balance: Initial balance of the account.
                     </p>
                     <AmountBox initialAmount={amount} onAmountChange={setAmount} />
                 </div>
 
-                <div className="flex flex-col items-center mb-4">
-                    <p className="text-md text-gray-500 mb-1">
+                <div className="flex flex-col items-center mb-2">
+                    <p className="text-md text-gray-500">
                         Account Visibility: Choose whether to make this account visible in the total balance or not.
                     </p>
                     <VisibilityToggleButton
