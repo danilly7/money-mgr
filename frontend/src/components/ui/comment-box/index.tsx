@@ -55,7 +55,7 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ initialComment, onCommen
               onKeyDown={handleKeyDown}
               className="text-4xl font-bold text-center bg-transparent border-none outline-none"
               autoFocus
-              placeholder="Write a comment..."
+              placeholder="Blablabl"
               inputMode="text"
             />
           ) : (
