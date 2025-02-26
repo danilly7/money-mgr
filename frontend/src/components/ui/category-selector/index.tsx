@@ -55,7 +55,10 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
                 onClick={handleClick}
             >
                 {selectedCategory ? (
-                    <span className="text-black text-2xl">{selectedCategory.name}</span>
+                    <span className="text-black text-2xl flex items-center">
+                        <selectedCategory.icon className="w-6 h-6 mr-2" />
+                        {selectedCategory.name}
+                    </span>
                 ) : (
                     <span className="text-xl text-gray-400">Choose a category</span>
                 )}
