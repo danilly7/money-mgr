@@ -3,6 +3,7 @@ import { Header } from "./../../components/ui/header";
 import { Footer } from "./../../components/ui/footer";
 import { ScrollToTopButton } from "../../components/ui/scroll-top-btn";
 import { CategoriesProvider } from "../../context/categories-context";
+import { TransactionsProvider } from "../../context/transactions-context";
 
 const MainLayout = () => {
   return (
@@ -10,9 +11,15 @@ const MainLayout = () => {
       <Header />
       <main>
         <div className="flex flex-col min-h-screen flex-grow">
+
           <CategoriesProvider>
-            <Outlet />
+            <TransactionsProvider>
+
+              <Outlet />
+
+            </TransactionsProvider>
           </CategoriesProvider>
+
         </div>
       </main>
       <Footer />

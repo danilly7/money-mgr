@@ -23,7 +23,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
 
                 if (response.status === 401 && useToken) {
-                    console.warn("Token expirado, intentando renovarlo...");
+                    console.warn("Token expired, getting new token...");
                     const newToken = await getAuthToken();
 
                     if (newToken) {

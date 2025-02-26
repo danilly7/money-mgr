@@ -3,7 +3,7 @@ import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';
 import { useFetchAll } from '../../../../hooks/useFetchAll';
-import useFetchAllTransactions from '../../../../hooks/useFetchAllTransactions';
+import { useTransactions } from '../../../../context/transactions-context';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
@@ -16,7 +16,7 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
-    const { transactions, loading, error, hasMore, loadMore } = useFetchAllTransactions();
+    const { transactions, loading, error, hasMore, loadMore } = useTransactions();
 
     //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
     const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
