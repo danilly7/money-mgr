@@ -18,7 +18,7 @@ const NewTransactionForm = () => {
 
     const [amount, setAmount] = useState<number>(0);
     const [comment, setComment] = useState<string>("");
-    const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
+    const [date, setDate] = useState<Date>(new Date());
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [accountId, setAccountId] = useState<number | null>(null);
     const [isExpense, setIsExpense] = useState<boolean>(true);
@@ -133,7 +133,7 @@ const NewTransactionForm = () => {
                 </div>
 
                 <div className="flex flex-col">
-                    <DateBox initialDate={date} onDateChange={setDate} />
+                    <DateBox initialDate={date} onDateChange={(newDate: Date) => setDate(newDate)} />
                 </div>
 
                 <div className="flex justify-center gap-8 mb-4">

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { formattedDate } from "../../../utils/formattedDate";
 
 interface DateBoxProps {
-  initialDate: string;
-  onDateChange: (date: string) => void;
+  initialDate: Date;
+  onDateChange: (date: Date) => void;
 }
 
 export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) => {
-  const [date, setDate] = useState<string>(initialDate);
+  const [date, setDate] = useState<Date>(initialDate);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const today = new Date().toISOString().split("T")[0];
 
@@ -25,8 +25,8 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = event.target.value;
-    if (selectedDate > today) return; //no se puede escribir en fecha futura
+    const selectedDate = new Date(event.target.value);
+    if (selectedDate > new Date()) return; //no se puede seleccionar una fecha futura
     setDate(selectedDate);
   };
 
@@ -43,7 +43,7 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
           {isEditing ? (
             <input
               type="date"
-              value={date}
+              value={date.toISOString().split("T")[0]}
               onChange={handleChange}
               onBlur={handleBlur}
               className="text-4xl font-bold text-center bg-transparent border-none outline-none"
@@ -51,9 +51,9 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
               max={today}
             />
           ) : (
-            <span className="text-4xl font-bold mt-3 text-center">{formattedDate(new Date(date))}</span> // Mostrar la fecha formateada
+            <span className="text-4xl font-bold mt-3 text-center">{formattedDate(date)}</span>
           )}
-          {!isEditing && date === "" && <div className="w-[calc(100%+7rem)] border-b-4 border-black mt-8" />}
+          {!isEditing && date === null && <div className="w-[calc(100%+7rem)] border-b-4 border-black mt-8" />}
         </div>
       </div>
     </div>
