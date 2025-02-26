@@ -18,7 +18,7 @@ const NewTransactionForm = () => {
 
     const [amount, setAmount] = useState<number>(0);
     const [comment, setComment] = useState<string>("");
-    const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]); // Fecha actual en formato YYYY-MM-DD
+    const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [accountId, setAccountId] = useState<number | null>(null);
     const [isExpense, setIsExpense] = useState<boolean>(true);
@@ -102,7 +102,9 @@ const NewTransactionForm = () => {
     };
 
     return (
-        <div className="relative bg-white p-3 border-4 border-black rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto">
+        <div className={`relative bg-white p-3 border-4 rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto 
+            ${isExpense ? 'border-personalizedPink' : 'border-personalizedGreen'}`}
+        >
             <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
 
             <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
@@ -112,7 +114,7 @@ const NewTransactionForm = () => {
                     </p>
                 )}
 
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-2">
                     <AmountBox initialAmount={amount} onAmountChange={setAmount} />
                 </div>
 
@@ -133,8 +135,6 @@ const NewTransactionForm = () => {
                 <div className="flex flex-col">
                     <DateBox initialDate={date} onDateChange={setDate} />
                 </div>
-
-                <div className="border-t-4 border-black my-2 w-full" />
 
                 <div className="flex justify-center gap-8 mb-4">
                     {loading ? (

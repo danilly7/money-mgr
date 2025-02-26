@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { formattedDate } from "../../../utils/formattedDate";
 
 interface DateBoxProps {
   initialDate: string;
@@ -25,7 +26,7 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedDate = event.target.value;
-    if (selectedDate > today) return; //tope hoy, no se puede escribir en fecha futura
+    if (selectedDate > today) return; //no se puede escribir en fecha futura
     setDate(selectedDate);
   };
 
@@ -50,7 +51,7 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
               max={today}
             />
           ) : (
-            <span className="text-4xl font-bold mt-3 text-center">{date}</span>
+            <span className="text-4xl font-bold mt-3 text-center">{formattedDate(new Date(date))}</span> // Mostrar la fecha formateada
           )}
           {!isEditing && date === "" && <div className="w-[calc(100%+7rem)] border-b-4 border-black mt-8" />}
         </div>
