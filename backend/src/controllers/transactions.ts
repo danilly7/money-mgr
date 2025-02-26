@@ -83,14 +83,23 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
     }
 
     try {
+        const userAccounts = await Account.findAll({
+            attributes: ['id'],
+            where: { user_id },
+            raw: true,
+        });
+
+        if (userAccounts.length === 0) {
+            res.status(404).json({ msg: 'No accounts found for this user' });
+            return;
+        }
+
+        const accountIds = userAccounts.map((account: { id: number }) => account.id);
+
         const transaction = await Transaction.findOne({
             where: {
                 id,
-                account_id: await Account.findAll({
-                    attributes: ['id_account'],
-                    where: { user_id },
-                    raw: true,
-                }).then(accounts => accounts.map(acc => acc.id)),
+                account_id: accountIds,
             },
             include: [
                 {
@@ -101,7 +110,7 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
                 {
                     model: Account,
                     as: 'account',
-                    attributes: ['id_account', 'name', 'balance'],
+                    attributes: ['id', 'name', 'balance'],
                 },
             ],
         });
@@ -114,7 +123,7 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
         res.json(transaction);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ msg: 'Ups, there was an error when trying to get the transfer' });
+        res.status(500).json({ msg: 'Ups, there was an error when trying to get the transaction' });
     }
 };
 
