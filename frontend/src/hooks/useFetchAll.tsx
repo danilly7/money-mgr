@@ -22,7 +22,7 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
       const response = await fetch(url, { headers });
 
       if (response.status === 401 && useToken) {
-        console.warn("Token expirado, intentando renovarlo...");
+        console.warn("Token expired, getting a new one...");
         const newToken = await refreshToken();
 
         if (newToken) {
