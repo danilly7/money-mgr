@@ -152,12 +152,17 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
             res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
             return;
         }
+        
+        if (amount > account.balance) {
+            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
+            return;
+        }
 
         const category = await Category.findByPk(category_id);
         if (!category) {
             res.status(400).json({ msg: 'Category not found' });
             return;
-        }
+        }    
 
         const transaction = await Transaction.create({ amount, account_id, category_id, date, comment });
 
@@ -230,6 +235,11 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
                 res.status(403).json({ msg: `Unauthorized: Account with id ${transaction.account_id} does not belong to you` });
                 return;
             }
+        }
+
+        if (amount > account.balance) {
+            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
+            return;
         }
 
         await transaction.update({ amount, account_id, category_id, date, comment });
