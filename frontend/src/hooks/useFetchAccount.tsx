@@ -17,6 +17,13 @@ export const useFetchAccount = (accountId: number): UseFetchAccountResult => {
     const [error, setError] = useState<Error | null>(null);
 
     const fetchAccount = useCallback(async () => {
+        if (accountId === 0) {
+            setAccount(null);
+            setLoading(false);
+            setError(null);
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -54,7 +61,7 @@ export const useFetchAccount = (accountId: number): UseFetchAccountResult => {
 
                     const data = await retryResponse.json();
                     setAccount(data);
-                    return; 
+                    return;
                 } else {
                     throw new Error("Failed to refresh token.");
                 }

@@ -11,6 +11,7 @@ import { CommentBox } from "../../../ui/comment-box";
 import { DateBox } from "../../../ui/date-box";
 import { CategorySelector } from "../../../ui/category-selector";
 import { AccountSelector } from "../../../ui/account-selector";
+import { useFetchAccount } from "../../../../hooks/useFetchAccount";
 
 const NewTransactionForm = () => {
     const { addTransaction } = useAddTransaction();
@@ -30,6 +31,8 @@ const NewTransactionForm = () => {
     const [modalMessage, setModalMessage] = useState<string>("");
 
     const errorRef = useRef<HTMLParagraphElement>(null);
+
+    const { account } = useFetchAccount(accountId || 0);
 
     useEffect(() => {
         if (errorMessage && errorRef.current) {
@@ -71,6 +74,11 @@ const NewTransactionForm = () => {
         };
 
         try {
+            if (amount > account!.balance) {
+                setErrorMessage("Sorry, not enough money in this account. Try a different one.");
+                return;
+            }
+
             await addTransaction(newTransaction);
             setAmount(0);
             setComment("");
@@ -110,10 +118,17 @@ const NewTransactionForm = () => {
 
             <form onSubmit={(e) => e.preventDefault()} className="flex flex-col">
                 {errorMessage && (
-                    <p ref={errorRef} className="text-red-500 text-md font-semibold">
+                    <p ref={errorRef} className="text-red-500 text-md font-semibold my-2 flex justify-center">
                         {errorMessage}
                     </p>
                 )}
+
+                <div className="flex flex-col mt-2">
+                <AccountSelector
+                        selectedAccountId={accountId}
+                        onAccountChange={setAccountId}
+                    />
+                </div>
 
                 <div className="flex flex-col mt-2">
                     <AmountBox initialAmount={amount} onAmountChange={setAmount} />
@@ -128,13 +143,6 @@ const NewTransactionForm = () => {
                 </div>
 
                 <div className="flex flex-col mt-2">
-                <AccountSelector
-                        selectedAccountId={accountId}
-                        onAccountChange={setAccountId}
-                    />
-                </div>
-
-                <div className="flex flex-col">
                     <CommentBox initialComment={comment} onCommentChange={setComment} />
                 </div>
 
