@@ -16,12 +16,14 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 //si useToken es true, obtiene el token y lo agrega a las cabeceras
                 if (useToken) {
                     const token = await getAuthToken();
+                    
                     if (token) {
                         headers['Authorization'] = `Bearer ${token}`;
                     }
                 }
 
-                const response = await fetch(`${url}?page=${page}`, { headers });
+                const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
