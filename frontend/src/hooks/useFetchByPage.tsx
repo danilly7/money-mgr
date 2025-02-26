@@ -13,10 +13,8 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
             try {
                 const headers: HeadersInit = { 'Content-Type': 'application/json' };
 
-                //si useToken es true, obtiene el token y lo agrega a las cabeceras
                 if (useToken) {
                     const token = await getAuthToken();
-                    
                     if (token) {
                         headers['Authorization'] = `Bearer ${token}`;
                     }
@@ -24,26 +22,58 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
 
                 const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
 
+                if (response.status === 401 && useToken) {
+                    console.warn("Token expirado, intentando renovarlo...");
+                    const newToken = await getAuthToken();
+
+                    if (newToken) {
+                        const retryHeaders: HeadersInit = {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${newToken}`,
+                        };
+
+                        const retryResponse = await fetch(`${url}?page=${page ?? 1}`, { headers: retryHeaders });
+
+                        if (!retryResponse.ok) {
+                            throw new Error(`HTTP error! status: ${retryResponse.status}`);
+                        }
+
+                        const retryJson = await retryResponse.json();
+
+                        const dataFromResponse = retryJson[dataKey] || [];
+                        setHasMore(retryJson.currentPage < retryJson.totalPages || !!retryJson.next);
+
+                        if (page === 1) {
+                            setData({
+                                data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                                next: retryJson.next || null,
+                            });
+                        } else {
+                            setData((prevData) => ({
+                                data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                                next: retryJson.next || null,
+                            }));
+                        }
+
+                        return;
+                    }
+                }
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const json = await response.json();
 
-                //hay más páginas? sabremos dependiendo del campo 'next' o 'currentPage'
+                const dataFromResponse = json[dataKey] || [];
                 setHasMore(json.currentPage < json.totalPages || !!json.next);
 
-                //clave dinámica (dataKey)
-                const dataFromResponse = json[dataKey] || [];
-
-                //actualizamos los datos, agregando los previos y los nuevos
                 if (page === 1) {
                     setData({
                         data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
                         next: json.next || null,
                     });
                 } else {
-                    // Si no es la primera página, agrega los nuevos datos a los existentes
                     setData((prevData) => ({
                         data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
                         next: json.next || null,
