@@ -1,4 +1,4 @@
-import { ElementType } from "react";
+import React from "react";
 
 export type CategoryType = 'income' | 'expense';
 
@@ -7,5 +7,5 @@ export interface Category {
     name: string;
     type: CategoryType;
     color: string;
-    icon: ElementType;
+    icon: React.ComponentType<{ className?: string }>; 
 };

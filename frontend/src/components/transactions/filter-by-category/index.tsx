@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { formattedNumbers } from "../../../utils/formattedNumbers";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useCategories } from "../../../context/categories-context";
 import { useTransactions } from "../../../context/transactions-context";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
@@ -8,6 +8,7 @@ import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYea
 interface CategoryTotal {
   categoryName: string;
   total: number;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 interface TransactionsByCategoryProps {
@@ -18,7 +19,6 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
   const { transactions, loading, error, loadMore, timeframe } = useTransactions();
   const { categories } = useCategories();
   const [categoryTotals, setCategoryTotals] = useState<CategoryTotal[]>([]);
-  const navigate = useNavigate();
   const location = useLocation();
 
   const filterByTimeframe = useCallback((date: Date) => {
@@ -56,7 +56,13 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
 
   useEffect(() => {
     if (transactions && categories) {
-      const groupedByCategory: { [key: number]: { total: number; name: string } } = {};
+      const groupedByCategory: {
+        [key: number]: {
+          total: number;
+          name: string;
+          icon: React.ComponentType<{ className?: string }>;
+        }
+      } = {};
 
       transactions.forEach((transaction) => {
         const isTimeframeValid = filterByTimeframe(transaction.date);
@@ -64,7 +70,11 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
 
         if (isTimeframeValid && category && category.type === (isExpense ? "expense" : "income")) {
           if (!groupedByCategory[transaction.category_id]) {
-            groupedByCategory[transaction.category_id] = { total: 0, name: category.name };
+            groupedByCategory[transaction.category_id] = {
+              total: 0,
+              name: category.name,
+              icon: category.icon,
+            };
           }
           groupedByCategory[transaction.category_id].total += Number(transaction.amount);
         }
@@ -74,6 +84,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
         Object.values(groupedByCategory).map((data) => ({
           categoryName: data.name,
           total: data.total,
+          icon: data.icon,
         }))
       );
     }
@@ -82,10 +93,6 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
   useEffect(() => {
     loadMore();
   }, [location, loadMore]);
-
-  const handleCategoryClick = (categoryName: string) => {
-    navigate(`/categories/${categoryName}`);
-  };
 
   if (loading) {
     return <div className="text-center text-xl font-semibold">Loading...</div>;
@@ -96,39 +103,46 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
   }
 
   return (
-    <>
-      <div className="relative max-w-lg mx-auto h-22 bg-personalizedPink border-4 border-black rounded-2xl flex items-center text-black p-4 mb-2">
-        <div className="flex items-center justify-start w-[200px]">
-          <p className="text-xl font-bold text-black">Category</p>
+    <div className="mt-6">
+      <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 bg-personalizedPink border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 gap-x-4 my-2">
+        <div className="flex items-center justify-start w-1/2">
+          <p className="text-lg sm:text-xl font-bold text-black truncate">Category</p>
         </div>
 
-        <div className="flex items-center justify-end w-[200px]">
-          <p className="text-xl font-bold text-black">Amount</p>
+        <div className="flex items-center justify-end w-1/2">
+          <p className="text-lg sm:text-xl font-bold text-black truncate">Amount</p>
         </div>
       </div>
 
       {categoryTotals.length > 0 ? (
-        categoryTotals.map((category, index) => (
-          <div
-            key={category.categoryName || `category-${index}`}
-            className="relative max-w-lg mx-auto h-22 bg-slate-300 border-4 border-black rounded-2xl flex items-center text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer mb-2 gap-x-6"
-            onClick={() => handleCategoryClick(category.categoryName)}
-          >
-            <div className="flex items-center justify-start w-[200px]">
-              <p className="text-xl font-bold text-black truncate">{category.categoryName}</p>
-            </div>
+        categoryTotals.map((category, index) => {
+          const IconComponent = category.icon;
+          return (
+            <div
+              key={category.categoryName || `category-${index}`}
+              className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 bg-slate-300 border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl mb-2 gap-x-4"
+            >
+              <div className="flex items-center justify-start w-1/2">
+                <IconComponent className="w-6 h-6 mr-2" />
+                <p className="text-lg sm:text-xl font-bold text-black truncate">
+                  {category.categoryName}
+                </p>
+              </div>
 
-            <div className="flex items-center justify-end w-[200px]">
-              <span className="text-xl font-bold text-black">
-                {formattedNumbers(category.total)} €
-              </span>
+              <div className="flex items-center justify-end w-1/2">
+                <span className="text-lg sm:text-xl font-bold text-black truncate">
+                  {formattedNumbers(category.total)} €
+                </span>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
-        <div className="text-center text-xl font-semibold text-gray-500">No categories available</div>
+        <div className="text-center text-lg sm:text-xl font-semibold text-gray-500">
+          No categories available
+        </div>
       )}
-    </>
+    </div>
   );
 };
 
