@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import AmountBox from "../../../ui/amount-box";
-import NameBox from "../../../ui/name-box";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useAuth } from "../../../../context/auth-context";
@@ -11,6 +10,7 @@ import SwitchExpenseIncome from "../../../ui/switch-expense-income";
 import { CommentBox } from "../../../ui/comment-box";
 import { DateBox } from "../../../ui/date-box";
 import { CategorySelector } from "../../../ui/category-selector";
+import { AccountSelector } from "../../../ui/account-selector";
 
 const NewTransactionForm = () => {
     const { addTransaction } = useAddTransaction();
@@ -108,7 +108,7 @@ const NewTransactionForm = () => {
         >
             <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
 
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
+            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col">
                 {errorMessage && (
                     <p ref={errorRef} className="text-red-500 text-md font-semibold">
                         {errorMessage}
@@ -119,7 +119,7 @@ const NewTransactionForm = () => {
                     <AmountBox initialAmount={amount} onAmountChange={setAmount} />
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-2">
                     <CategorySelector
                         selectedCategoryId={categoryId}
                         onCategoryChange={setCategoryId}
@@ -127,20 +127,22 @@ const NewTransactionForm = () => {
                     />
                 </div>
 
-                <div className="flex flex-col">
-                    <p className="text-md text-gray-500 mb-1">Account:</p>
-                    <NameBox initialName={accountId?.toString() || ""} onNameChange={(value) => setAccountId(Number(value))} />
+                <div className="flex flex-col mt-2">
+                <AccountSelector
+                        selectedAccountId={accountId}
+                        onAccountChange={setAccountId}
+                    />
                 </div>
 
                 <div className="flex flex-col">
                     <CommentBox initialComment={comment} onCommentChange={setComment} />
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-2">
                     <DateBox initialDate={date} onDateChange={(newDate: Date) => setDate(newDate)} />
                 </div>
 
-                <div className="flex justify-center gap-8 mb-4">
+                <div className="flex justify-center gap-8 my-4">
                     {loading ? (
                         <p>Creating new transaction...</p>
                     ) : (

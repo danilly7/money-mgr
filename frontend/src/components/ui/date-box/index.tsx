@@ -45,7 +45,7 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
       </button>
 
       {isEditing && (
-        <div className="absolute top-14 left-1/2 transform -translate-x-1/2 w-full sm:w-[28rem] md:w-[28rem] bg-white border-4 border-black rounded-lg shadow-lg p-2 z-20 flex justify-center">
+        <div className="absolute top-14 left-1/2 transform -translate-x-1/2 w-full sm:w-56 bg-white border-4 border-black rounded-lg shadow-lg p-2 z-20 flex justify-center">
           <input
             type="date"
             value={date.toISOString().split("T")[0]}

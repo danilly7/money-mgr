@@ -57,7 +57,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
                 {selectedCategory ? (
                     <span className="text-black text-2xl">{selectedCategory.name}</span>
                 ) : (
-                    <span className="text-xl">Choose a category</span>
+                    <span className="text-xl text-gray-400">Choose a category</span>
                 )}
             </button>
 
