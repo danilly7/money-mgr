@@ -47,7 +47,6 @@ const ViewOfTransactions = () => {
       />
       <SwitchTimeframe timeframe={timeframe} setTimeframe={handleTimeframeChange} />
       <div className="px-4">
-        {/* Pasa timeframe e isExpense como props a TransactionList */}
         <TransactionList isExpense={isExpense} timeframe={timeframe} />
       </div>
       <div className="flex flex-row justify-center mb-7">

@@ -6,7 +6,7 @@ import { useFetchAll } from '../../../../hooks/useFetchAll';
 import { useTransactions } from '../../../../context/transactions-context';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
-// import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { LoadMoreButton } from '../../../ui/load-more-btn';
 
 interface TransactionListProps {
@@ -14,7 +14,7 @@ interface TransactionListProps {
     timeframe?: "Day" | "Week" | "Month" | "Year";
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
     const { transactions, loading, error, hasMore, loadMore } = useTransactions();
 
@@ -35,38 +35,38 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
         return categories.find((category) => category.id === categoryId);
     };
 
-    // const filterByTimeframe = (transactionDate: Date) => {
-    //     const today = new Date();
+    const filterByTimeframe = (transactionDate: Date) => {
+        const today = new Date();
 
-    //     switch (timeframe) {
-    //         case "Day":
-    //             return isWithinInterval(transactionDate, {
-    //                 start: startOfDay(today),
-    //                 end: endOfDay(today),
-    //             });
+        switch (timeframe) {
+            case "Day":
+                return isWithinInterval(transactionDate, {
+                    start: startOfDay(today),
+                    end: endOfDay(today),
+                });
 
-    //         case "Week":
-    //             return isWithinInterval(transactionDate, {
-    //                 start: startOfWeek(today),
-    //                 end: endOfWeek(today),
-    //             });
+            case "Week":
+                return isWithinInterval(transactionDate, {
+                    start: startOfWeek(today),
+                    end: endOfWeek(today),
+                });
 
-    //         case "Month":
-    //             return isWithinInterval(transactionDate, {
-    //                 start: startOfMonth(today),
-    //                 end: endOfMonth(today),
-    //             });
+            case "Month":
+                return isWithinInterval(transactionDate, {
+                    start: startOfMonth(today),
+                    end: endOfMonth(today),
+                });
 
-    //         case "Year":
-    //             return isWithinInterval(transactionDate, {
-    //                 start: startOfYear(today),
-    //                 end: endOfYear(today),
-    //             });
+            case "Year":
+                return isWithinInterval(transactionDate, {
+                    start: startOfYear(today),
+                    end: endOfYear(today),
+                });
 
-    //         default:
-    //             return false;
-    //     }
-    // };
+            default:
+                return false;
+        }
+    };
 
     const filteredTransactions = transactions.filter((transaction) => {
         if (!transaction.date) return false;
@@ -74,8 +74,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
         const category = getCategoryDetails(transaction.category_id);
         if (!category) return false;
 
-        // const isTimeframeValid = filterByTimeframe(transaction.date);
-        // if (!isTimeframeValid) return false;
+        const isTimeframeValid = filterByTimeframe(transaction.date);
+        if (!isTimeframeValid) return false;
 
         if (isExpense) {
             return category.type === "expense";
