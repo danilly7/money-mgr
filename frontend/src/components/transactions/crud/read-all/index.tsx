@@ -6,12 +6,15 @@ import { useFetchAll } from '../../../../hooks/useFetchAll';
 import useFetchAllTransactions from '../../../../hooks/useFetchAllTransactions';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { LoadMoreButton } from '../../../ui/load-more-btn';
 
 interface TransactionListProps {
     isExpense: boolean;
+    timeframe: "Day" | "Week" | "Month" | "Year";
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
     const { transactions, loading, error, hasMore, loadMore } = useFetchAllTransactions();
 
@@ -32,6 +35,54 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
         return categories.find((category) => category.id === categoryId);
     };
 
+    const filterByTimeframe = (transactionDate: Date) => {
+        const today = new Date();
+
+        switch (timeframe) {
+            case "Day":
+                return isWithinInterval(transactionDate, {
+                    start: startOfDay(today),
+                    end: endOfDay(today),
+                });
+
+            case "Week":
+                return isWithinInterval(transactionDate, {
+                    start: startOfWeek(today),
+                    end: endOfWeek(today),
+                });
+
+            case "Month":
+                return isWithinInterval(transactionDate, {
+                    start: startOfMonth(today),
+                    end: endOfMonth(today),
+                });
+
+            case "Year":
+                return isWithinInterval(transactionDate, {
+                    start: startOfYear(today),
+                    end: endOfYear(today),
+                });
+
+            default:
+                return false;
+        }
+    };
+
+    const filteredTransactions = transactions.filter((transaction) => {
+        if (!transaction.date) return false;
+
+        const category = getCategoryDetails(transaction.category_id);
+        if (!category) return false;
+
+        const isTimeframeValid = filterByTimeframe(transaction.date);
+        if (!isTimeframeValid) return false;
+
+        if (isExpense) {
+            return category.type === "expense";
+        }
+        return category.type === "income";
+    });
+
     if (loading && transactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">Loading...</div>;
     }
@@ -40,11 +91,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
         return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
     }
 
-    if (transactions.length === 0) {
+    if (filteredTransactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">No transactions yet</div>;
     }
 
-    const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
         <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-lg w-full
@@ -88,7 +139,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
                             >
                                 {transaction.comment || ''}
                             </span>
-                            <span className="text-sm text-gray-500 w-1/3 text-right">Account: {accountName}</span>
+                            <span className="text-sm text-gray-500 w-1/3 text-right">{accountName}</span>
                         </div>
 
                         {index !== sortedTransactions.length - 1 && (
@@ -97,14 +148,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
                     </div>
                 );
             })}
-            
+
             {hasMore && (
-                <button 
-                    onClick={loadMore} 
-                    className="mt-4 px-4 py-2 bg-personalizedGreen text-white rounded-lg shadow-md hover:bg-green-600 transition"
-                >
-                    Load More
-                </button>
+                <div className="bg-white w-full flex justify-center">
+                    <div className="p-4 w-[95%] flex justify-center border-t-2 border-gray-300">
+                    <LoadMoreButton onClick={loadMore} />
+                    </div>
+                </div>
             )}
         </div>
     );
