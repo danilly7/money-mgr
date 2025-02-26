@@ -1,30 +1,30 @@
 import { useState, useEffect } from 'react';
-import { getAuthToken } from '../firebase/auth';
+import { useAuth } from '../context/auth-context';
 
 export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string) {
+    const { token, loading: authLoading, refreshToken } = useAuth();
     const [data, setData] = useState<{ data: T[]; next?: string | null }>({ data: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const [hasMore, setHasMore] = useState(true);
 
     useEffect(() => {
+        if (authLoading) return;
+
         setLoading(true);
         const fetchData = async () => {
             try {
                 const headers: HeadersInit = { 'Content-Type': 'application/json' };
 
-                if (useToken) {
-                    const token = await getAuthToken();
-                    if (token) {
-                        headers['Authorization'] = `Bearer ${token}`;
-                    }
+                if (useToken && token) {
+                    headers['Authorization'] = `Bearer ${token}`;
                 }
 
                 const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
 
                 if (response.status === 401 && useToken) {
                     console.warn("Token expired, getting new token...");
-                    const newToken = await getAuthToken();
+                    const newToken = await refreshToken();
 
                     if (newToken) {
                         const retryHeaders: HeadersInit = {
@@ -39,7 +39,6 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                         }
 
                         const retryJson = await retryResponse.json();
-
                         const dataFromResponse = retryJson[dataKey] || [];
                         setHasMore(retryJson.currentPage < retryJson.totalPages || !!retryJson.next);
 
@@ -64,7 +63,6 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 }
 
                 const json = await response.json();
-
                 const dataFromResponse = json[dataKey] || [];
                 setHasMore(json.currentPage < json.totalPages || !!json.next);
 
@@ -80,18 +78,14 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                     }));
                 }
             } catch (error) {
-                if (error instanceof Error) {
-                    setError(error);
-                } else {
-                    setError(new Error("Unknown error occurred"));
-                }
+                setError(error instanceof Error ? error : new Error("Unknown error occurred"));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [url, page, useToken, dataKey]);
+    }, [url, page, useToken, dataKey, token, authLoading, refreshToken]);
 
     return { data, loading, error, hasMore };
 };
