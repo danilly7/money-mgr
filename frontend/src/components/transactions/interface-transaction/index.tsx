@@ -3,6 +3,6 @@ export interface Transaction {
     category_id: number;
     account_id: number;
     amount: number;
-    comment: string;
+    comment?: string;
     date: string;
 };
