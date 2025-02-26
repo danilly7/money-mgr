@@ -29,7 +29,7 @@ export const useAddAccount = () => {
             });
 
             if (response.status === 401) {
-                console.warn("Token expirado, intentando renovarlo...");
+                console.warn("Token expired, getting a new one...");
                 const newToken = await refreshToken();
 
                 if (newToken) {
