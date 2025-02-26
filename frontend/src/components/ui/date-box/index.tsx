@@ -31,31 +31,27 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
   };
 
   return (
-    <div className="flex items-start justify-center py-2">
-      <div
-        className="relative w-[28rem] h-36 bg-[#4ECDC4] border-4 border-black rounded-2xl flex items-start justify-center text-black p-8 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer"
+    <div className="relative flex flex-col items-center w-full">
+      <button
+        className="w-[28rem] h-12 bg-[#4ECDC4] border-4 border-black rounded-lg text-black font-bold text-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all"
         onClick={handleClick}
       >
-        <div className="flex flex-col items-center justify-center text-center">
-          <p className={`text-black text-xl font-bold transition-all duration-300 ${isEditing ? 'transform -translate-y-6 text-2xl' : ''}`}>
-            Date
-          </p>
-          {isEditing ? (
-            <input
-              type="date"
-              value={date.toISOString().split("T")[0]}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="text-4xl font-bold text-center bg-transparent border-none outline-none"
-              autoFocus
-              max={today}
-            />
-          ) : (
-            <span className="text-4xl font-bold mt-3 text-center">{formattedDate(date)}</span>
-          )}
-          {!isEditing && date === null && <div className="w-[calc(100%+7rem)] border-b-4 border-black mt-8" />}
+        {formattedDate(date)}
+      </button>
+
+      {isEditing && (
+        <div className="absolute top-14 left-1/2 transform -translate-x-1/2 w-56 bg-white border-4 border-black rounded-lg shadow-lg p-2 z-20 flex justify-center">
+          <input
+            type="date"
+            value={date.toISOString().split("T")[0]}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className="text-lg font-bold text-center bg-transparent border-none outline-none cursor-pointer"
+            autoFocus
+            max={today}
+          />
         </div>
-      </div>
+      )}
     </div>
   );
 };

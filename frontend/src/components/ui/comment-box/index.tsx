@@ -28,7 +28,7 @@ export const CommentBox: React.FC<CommentBoxProps> = ({ initialComment, onCommen
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Evita el salto de línea al presionar Enter
+      event.preventDefault(); //evita el salto de línea al presionar Enter
       handleBlur();
     }
   };
