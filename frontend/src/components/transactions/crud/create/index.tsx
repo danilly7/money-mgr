@@ -10,6 +10,7 @@ import { useAddTransaction } from "../../../../hooks/useAddTransaction";
 import SwitchExpenseIncome from "../../../ui/switch-expense-income";
 import { CommentBox } from "../../../ui/comment-box";
 import { DateBox } from "../../../ui/date-box";
+import { CategorySelector } from "../../../ui/category-selector";
 
 const NewTransactionForm = () => {
     const { addTransaction } = useAddTransaction();
@@ -119,8 +120,11 @@ const NewTransactionForm = () => {
                 </div>
 
                 <div className="flex flex-col">
-                    <p className="text-md text-gray-500 mb-1">Category:</p>
-                    <NameBox initialName={categoryId?.toString() || ""} onNameChange={(value) => setCategoryId(Number(value))} />
+                    <CategorySelector
+                        selectedCategoryId={categoryId}
+                        onCategoryChange={setCategoryId}
+                        type={isExpense ? "expense" : "income"}
+                    />
                 </div>
 
                 <div className="flex flex-col">
