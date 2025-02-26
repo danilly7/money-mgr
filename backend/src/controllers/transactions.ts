@@ -19,28 +19,42 @@ export const getAllTransactions = async (req: Request, res: Response): Promise<v
     const offset = (page - 1) * limit;
 
     try {
+        //de tooooooodas las cuentas del usuario
+        const userAccounts = await Account.findAll({
+            attributes: ['id'],
+            where: { user_id },
+            raw: true,
+        });
+
+        if (userAccounts.length === 0) {
+            res.status(404).json({ msg: 'No accounts found for this user' });
+            return;
+        }
+
+        const accountIds = userAccounts.map((account: { id: number }) => account.id);
+
         const result = await Transaction.findAndCountAll({
             limit,
             offset,
             include: [
                 {
                     model: Category,
+                    as: 'category',
                     attributes: ['id_category', 'name', 'type'],
                 },
                 {
                     model: Account,
-                    attributes: ['id_account', 'name', 'balance'],
-                    where: { user_id },
+                    as: 'account',
+                    attributes: ['id', 'name', 'balance'],
                 },
             ],
             where: {
-                account_id: await Account.findAll({
-                    attributes: ['id_account'],
-                    where: { user_id },
-                    raw: true,
-                }).then(accounts => accounts.map(acc => acc.id)),
+                account_id: accountIds,
             },
         });
+
+        console.log("User ID:", user_id);
+        console.log("Query Params - Page:", page, "Limit:", limit);
 
         res.json({
             total: result.count,
@@ -81,10 +95,12 @@ export const getTransactionById = async (req: Request, res: Response): Promise<v
             include: [
                 {
                     model: Category,
+                    as: 'category',
                     attributes: ['id_category', 'name', 'type'],
                 },
                 {
                     model: Account,
+                    as: 'account',
                     attributes: ['id_account', 'name', 'balance'],
                 },
             ],
