@@ -11,12 +11,11 @@ interface CategoryTotal {
 }
 
 interface TransactionsByCategoryProps {
-  timeframe: "Day" | "Week" | "Month" | "Year";
   isExpense: boolean;
 }
 
-const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ timeframe, isExpense }) => {
-  const { transactions, loading, error, loadMore, hasMore } = useTransactions();
+const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpense }) => {
+  const { transactions, loading, error, loadMore, timeframe } = useTransactions();
   const { categories } = useCategories();
   const [categoryTotals, setCategoryTotals] = useState<CategoryTotal[]>([]);
   const navigate = useNavigate();
@@ -67,7 +66,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ timefra
           if (!groupedByCategory[transaction.category_id]) {
             groupedByCategory[transaction.category_id] = { total: 0, name: category.name };
           }
-          groupedByCategory[transaction.category_id].total += transaction.amount;
+          groupedByCategory[transaction.category_id].total += Number(transaction.amount);
         }
       });
 
@@ -99,12 +98,12 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ timefra
   return (
     <>
       <div className="relative max-w-lg mx-auto h-22 bg-personalizedPink border-4 border-black rounded-2xl flex items-center text-black p-4 mb-2">
-        <div className="flex items-center justify-start w-1/3">
+        <div className="flex items-center justify-start w-[200px]">
           <p className="text-xl font-bold text-black">Category</p>
         </div>
 
-        <div className="flex items-center justify-center w-1/3">
-          <p className="text-xl font-bold text-black">Total Amount</p>
+        <div className="flex items-center justify-end w-[200px]">
+          <p className="text-xl font-bold text-black">Amount</p>
         </div>
       </div>
 
@@ -112,14 +111,14 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ timefra
         categoryTotals.map((category, index) => (
           <div
             key={category.categoryName || `category-${index}`}
-            className="relative max-w-lg mx-auto h-22 bg-slate-300 border-4 border-black rounded-2xl flex items-center text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer mb-2"
+            className="relative max-w-lg mx-auto h-22 bg-slate-300 border-4 border-black rounded-2xl flex items-center text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer mb-2 gap-x-6"
             onClick={() => handleCategoryClick(category.categoryName)}
           >
-            <div className="flex items-center justify-start w-1/3">
+            <div className="flex items-center justify-start w-[200px]">
               <p className="text-xl font-bold text-black truncate">{category.categoryName}</p>
             </div>
 
-            <div className="flex items-center justify-end w-2/3">
+            <div className="flex items-center justify-end w-[200px]">
               <span className="text-xl font-bold text-black">
                 {formattedNumbers(category.total)} €
               </span>
@@ -128,17 +127,6 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ timefra
         ))
       ) : (
         <div className="text-center text-xl font-semibold text-gray-500">No categories available</div>
-      )}
-
-      {hasMore && (
-        <div className="text-center mt-4">
-          <button
-            className="bg-personalizedOrange text-black py-2 px-4 rounded-lg hover:bg-personalizedGreen"
-            onClick={loadMore}
-          >
-            Load more
-          </button>
-        </div>
       )}
     </>
   );

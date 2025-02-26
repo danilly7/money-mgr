@@ -5,11 +5,12 @@ import ExpenseIncomeToggle from "../../components/ui/expense-income-toggle";
 import { SearchButton } from "../../components/ui/search-btn";
 import { PlusButton } from "../../components/ui/plus-btn";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
-// import TransactionsByCategory from "../../components/transactions/filter-by-category";
+import TransactionsByCategory from "../../components/transactions/filter-by-category";
+import { useTransactions } from "../../context/transactions-context";
 
 const Home = () => {
     const { visibleBalance } = useVisibleBalance();
-    const [timeframe, setTimeframe] = useState<"Day" | "Week" | "Month" | "Year">("Month");
+    const { timeframe, setTimeframe } = useTransactions();
     const [isExpense, setIsExpense] = useState(true);
     const amountExpense = 1250.5;
     const amountIncome = 2000.75;
@@ -26,7 +27,7 @@ const Home = () => {
                 amountIncome={amountIncome}
             />
 
-            {/* <TransactionsByCategory timeframe={timeframe} isExpense={isExpense} /> */}
+            <TransactionsByCategory isExpense={isExpense} />
 
             <div className="flex flex-row justify-center space-x-10 m-6">
                 <SearchButton to="/transactions" timeframe={timeframe} isExpense={isExpense} />
