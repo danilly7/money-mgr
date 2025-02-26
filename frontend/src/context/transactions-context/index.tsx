@@ -3,6 +3,7 @@ import { useFetchByPage } from '../../hooks/useFetchByPage';
 import { Transaction } from '../../components/transactions/interface-transaction';
 import { apiTransactions } from '../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { useCategories } from '../categories-context';
 
 interface TransactionsContextType {
   transactions: Transaction[];
@@ -12,6 +13,8 @@ interface TransactionsContextType {
   hasMore: boolean;
   timeframe: 'Day' | 'Week' | 'Month' | 'Year';
   setTimeframe: (timeframe: 'Day' | 'Week' | 'Month' | 'Year') => void;
+  totalExpense: number;
+  totalIncome: number;
 }
 
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
@@ -26,6 +29,8 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     true,
     'transactions'
   );
+
+  const { categories } = useCategories();
 
   useEffect(() => {
     setPage(1);
@@ -75,6 +80,24 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return fetchedTransactions.data?.filter((transaction) => filterByTimeframe(transaction.date)) ?? [];
   }, [fetchedTransactions.data, timeframe]);
 
+  const { totalExpense, totalIncome } = useMemo(() => {
+    let totalExpense = 0;
+    let totalIncome = 0;
+
+    transactions.forEach((transaction) => {
+      const category = categories.find((cat) => cat.id === transaction.category_id);
+      if (category) {
+        if (category.type === 'expense') {
+          totalExpense += Number(transaction.amount);
+        } else if (category.type === 'income') {
+          totalIncome += Number(transaction.amount);
+        }
+      }
+    });
+
+    return { totalExpense, totalIncome };
+  }, [transactions, categories]);
+
   const loadMore = useCallback(() => {
     if (hasMore) {
       setPage((prevPage) => prevPage + 1);
@@ -98,7 +121,19 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [transactions, timeframe, hasMore, loadMore]);
 
   return (
-    <TransactionsContext.Provider value={{ transactions, loading, error, loadMore, hasMore, timeframe, setTimeframe }}>
+    <TransactionsContext.Provider
+      value={{
+        transactions,
+        loading,
+        error,
+        loadMore,
+        hasMore,
+        timeframe,
+        setTimeframe,
+        totalExpense,
+        totalIncome,
+      }}
+    >
       {children}
     </TransactionsContext.Provider>
   );

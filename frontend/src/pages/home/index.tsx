@@ -10,10 +10,8 @@ import { useTransactions } from "../../context/transactions-context";
 
 const Home = () => {
     const { visibleBalance } = useVisibleBalance();
-    const { timeframe, setTimeframe } = useTransactions();
+    const { timeframe, setTimeframe, totalExpense, totalIncome } = useTransactions();
     const [isExpense, setIsExpense] = useState(true);
-    const amountExpense = 1250.5;
-    const amountIncome = 2000.75;
 
     return (
         <>
@@ -23,8 +21,8 @@ const Home = () => {
             <ExpenseIncomeToggle
                 isExpense={isExpense}
                 setIsExpense={setIsExpense}
-                amountExpense={amountExpense}
-                amountIncome={amountIncome}
+                amountExpense={totalExpense}
+                amountIncome={totalIncome}
             />
 
             <TransactionsByCategory isExpense={isExpense} />
