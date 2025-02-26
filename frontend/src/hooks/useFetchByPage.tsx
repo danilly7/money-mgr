@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAuthToken } from '../firebase/auth';
 
-export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false) {
+export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string) {
     const [data, setData] = useState<{ data: T[]; next?: string | null }>({ data: [] });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
@@ -33,11 +33,22 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 //hay más páginas? sabremos dependiendo del campo 'next' o 'currentPage'
                 setHasMore(json.currentPage < json.totalPages || !!json.next);
 
+                //clave dinámica (dataKey)
+                const dataFromResponse = json[dataKey] || [];
+
                 //actualizamos los datos, agregando los previos y los nuevos
-                setData((prevData) => ({
-                    data: [...(prevData?.data || []), ...(Array.isArray(json.data) ? json.data : [])],
-                    next: json.next || null
-                }));
+                if (page === 1) {
+                    setData({
+                        data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                        next: json.next || null,
+                    });
+                } else {
+                    // Si no es la primera página, agrega los nuevos datos a los existentes
+                    setData((prevData) => ({
+                        data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                        next: json.next || null,
+                    }));
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     setError(error);
@@ -50,7 +61,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
         };
 
         fetchData();
-    }, [url, page, useToken]);
+    }, [url, page, useToken, dataKey]);
 
     return { data, loading, error, hasMore };
 };

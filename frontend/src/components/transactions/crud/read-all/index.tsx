@@ -1,19 +1,19 @@
 import React from 'react';
-import { Transaction } from '../../interface-transaction';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';
 import { useFetchAll } from '../../../../hooks/useFetchAll';
+import useFetchAllTransactions from '../../../../hooks/useFetchAllTransactions';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 
 interface TransactionListProps {
-    transactions: Transaction[];
     isExpense: boolean;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpense }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ isExpense }) => {
     const { categories } = useCategories();
+    const { transactions, loading, error, hasMore, loadMore } = useFetchAllTransactions();
 
     //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
     const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
@@ -32,12 +32,16 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpen
         return categories.find((category) => category.id === categoryId);
     };
 
+    if (loading && transactions.length === 0) {
+        return <div className="text-center py-8 text-gray-500">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
+    }
+
     if (transactions.length === 0) {
-        return (
-            <div className="text-center py-8 text-gray-500">
-                No transactions
-            </div>
-        );
+        return <div className="text-center py-8 text-gray-500">No transactions yet</div>;
     }
 
     const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -93,6 +97,15 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isExpen
                     </div>
                 );
             })}
+            
+            {hasMore && (
+                <button 
+                    onClick={loadMore} 
+                    className="mt-4 px-4 py-2 bg-personalizedGreen text-white rounded-lg shadow-md hover:bg-green-600 transition"
+                >
+                    Load More
+                </button>
+            )}
         </div>
     );
 };

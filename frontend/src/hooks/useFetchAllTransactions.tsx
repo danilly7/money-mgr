@@ -6,7 +6,12 @@ import { useState } from 'react';
 const useFetchAllTransactions = () => {
     const [page, setPage] = useState(1);
 
-    const { data: fetchedTransactions, loading, error, hasMore } = useFetchByPage<Transaction>(apiTransactions, page, true);
+    const { data: fetchedTransactions, loading, error, hasMore } = useFetchByPage<Transaction>(
+        apiTransactions, 
+        page, 
+        true, 
+        'transactions' //importante estea es la dataKey para poder usar useFetchByPage
+    );
 
     const transactions = fetchedTransactions.data ?? [];
 

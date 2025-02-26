@@ -53,9 +53,6 @@ export const getAllTransactions = async (req: Request, res: Response): Promise<v
             },
         });
 
-        console.log("User ID:", user_id);
-        console.log("Query Params - Page:", page, "Limit:", limit);
-
         res.json({
             total: result.count,
             totalPages: Math.ceil(result.count / limit),
