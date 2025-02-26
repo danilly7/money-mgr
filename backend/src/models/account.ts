@@ -20,7 +20,7 @@ Account.init(
         name: {
             type: DataTypes.STRING(255),
             allowNull: false,
-            unique: true,
+            // unique: true, → ya no unique pq muchos usuarios pueden llamar una cuenta igual
         },
         balance: {
             type: DataTypes.DECIMAL(10, 2),
