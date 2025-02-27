@@ -15,6 +15,7 @@ interface TransactionsContextType {
   setTimeframe: (timeframe: 'Day' | 'Week' | 'Month' | 'Year') => void;
   totalExpense: number;
   totalIncome: number;
+  refetch: () => void;
 }
 
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
@@ -132,6 +133,7 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setTimeframe,
         totalExpense,
         totalIncome,
+        refetch,
       }}
     >
       {children}

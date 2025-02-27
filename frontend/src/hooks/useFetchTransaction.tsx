@@ -75,8 +75,5 @@ export const useFetchTransaction = (transactionId: number): UseFetchTransactionR
         fetchData();
     }, [fetchData]);
 
-    console.log(transaction);
-    
-
     return { transaction, loading, error, refetch };
 };

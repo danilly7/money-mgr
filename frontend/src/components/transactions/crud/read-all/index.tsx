@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';
@@ -8,7 +8,7 @@ import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { LoadMoreButton } from '../../../ui/load-more-btn';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface TransactionListProps {
     isExpense: boolean;
@@ -17,8 +17,13 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
+    const { transactions, loading, error, hasMore, loadMore, refetch } = useTransactions();
     const navigate = useNavigate();
-    const { transactions, loading, error, hasMore, loadMore } = useTransactions();
+    const location = useLocation();
+
+    useEffect(() => { //esto no borrar, es para que haga refetch después de venir de otra página  
+        refetch();
+      }, [location, refetch]);
 
     //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
     const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
