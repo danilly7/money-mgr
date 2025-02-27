@@ -4,19 +4,17 @@ import { apiTransactions } from "../api";
 import { Transaction } from "../components/transactions/interface-transaction";
 
 interface UseFetchTransactionResult {
-    transaction: Transaction[];
+    transaction: Transaction | null;
     loading: boolean;
     error: Error | null;
-    hasMore: boolean;
     refetch: () => void;
 }
 
-export const useFetchTransaction = (page: number): UseFetchTransactionResult => {
+export const useFetchTransaction = (transactionId: number): UseFetchTransactionResult => {
     const { token, refreshToken, loading: authLoading } = useAuth();
-    const [transaction, setTransaction] = useState<Transaction[]>([]);
+    const [transaction, setTransaction] = useState<Transaction | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
-    const [hasMore, setHasMore] = useState<boolean>(true);
 
     const fetchData = useCallback(async () => {
         if (authLoading) return;
@@ -31,7 +29,7 @@ export const useFetchTransaction = (page: number): UseFetchTransactionResult => 
                 headers["Authorization"] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`${apiTransactions}/transactions?page=${page}`, { headers });
+            const response = await fetch(`${apiTransactions}/${transactionId}`, { headers });
 
             if (response.status === 401 && token) {
                 console.warn("Token expired, getting a new one...");
@@ -43,49 +41,42 @@ export const useFetchTransaction = (page: number): UseFetchTransactionResult => 
                         "Authorization": `Bearer ${newToken}`,
                     };
 
-                    const retryResponse = await fetch(`${apiTransactions}/transactions?page=${page}`, { headers: retryHeaders });
+                    const retryResponse = await fetch(`${apiTransactions}/transactions/${transactionId}`, { headers: retryHeaders });
 
                     if (!retryResponse.ok) {
-                        throw new Error("Failed to fetch transactions after token refresh");
+                        throw new Error("Failed to fetch transaction after token refresh");
                     }
 
                     const retryJson = await retryResponse.json();
-                    setHasMore(retryJson.currentPage < retryJson.totalPages || !!retryJson.next);
-
-                    setTransaction(prevTransaction => [
-                        ...prevTransaction,
-                        ...(Array.isArray(retryJson.data) ? retryJson.data : []),
-                    ]);
+                    setTransaction(retryJson);
                     return;
                 }
             }
 
             if (!response.ok) {
-                throw new Error("Failed to fetch transactions");
+                throw new Error("Failed to fetch transaction");
             }
 
             const json = await response.json();
-            setHasMore(json.currentPage < json.totalPages || !!json.next);
-
-            setTransaction(prevTransaction => [
-                ...prevTransaction,
-                ...(Array.isArray(json.data) ? json.data : []),
-            ]);
+            setTransaction(json);
         } catch (err) {
             setError(err instanceof Error ? err : new Error("Unknown error occurred"));
         } finally {
             setLoading(false);
         }
-    }, [page, token, authLoading, refreshToken]);
+    }, [transactionId, token, authLoading, refreshToken]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
     const refetch = useCallback(() => {
-        setTransaction([]);
+        setTransaction(null);
         fetchData();
     }, [fetchData]);
 
-    return { transaction, loading, error, hasMore, refetch };
+    console.log(transaction);
+    
+
+    return { transaction, loading, error, refetch };
 };

@@ -5,4 +5,19 @@ export interface Transaction {
     amount: number;
     comment?: string;
     date: Date;
+
+    createdAt: string;
+    updatedAt: string;
+
+    category: {
+        id_category: number;
+        name: string;
+        type: "income" | "expense";
+    };
+
+    account: {
+        id: number;
+        name: string;
+        balance: number;
+    };
 };
