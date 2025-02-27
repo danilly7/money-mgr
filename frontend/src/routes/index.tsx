@@ -20,6 +20,7 @@ const ViewOfTransactions = lazy(() => import('../pages/transactions'));
 const NewAccount = lazy(() => import("../pages/accounts/new-account"));
 const DetailsAccountId = lazy(() => import("../pages/accounts/details-account"));
 const NewTransaction = lazy(() => import("../pages/transactions/new-transaction"));
+const DetailsTransactionId = lazy(() => import("../pages/transactions/details-transaction"));
 
 export const routes: RouteObject[] = [
     {
@@ -92,7 +93,7 @@ export const routes: RouteObject[] = [
                             },
                             {
                                 path: "transac/:transactionId",
-                                // element: <DetailsAccountId />,
+                                element: <DetailsTransactionId />,
                             },
                         ]
                     },

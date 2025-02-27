@@ -8,6 +8,7 @@ import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { LoadMoreButton } from '../../../ui/load-more-btn';
+import { useNavigate } from 'react-router-dom';
 
 interface TransactionListProps {
     isExpense: boolean;
@@ -16,6 +17,7 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
+    const navigate = useNavigate();
     const { transactions, loading, error, hasMore, loadMore } = useTransactions();
 
     //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
@@ -98,7 +100,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
     const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
-        <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-lg w-full
+        <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-xl w-full
             ${isExpense ? 'border-personalizedPink' : 'border-personalizedGreen'}
         `}>
             {sortedTransactions.map((transaction, index) => {
@@ -117,7 +119,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                 const iconColor = category.color && category.color.startsWith('#') ? category.color : `#${category.color || '000000'}`;
 
                 return (
-                    <div key={transaction.id} className="p-4 bg-white w-full">
+                    <div
+                        key={transaction.id}
+                        className="p-4 bg-white w-full cursor-pointer"
+                        onClick={() => navigate(`/transactions/transac/${transaction.id}`)}
+                    >
                         <div className="flex justify-between items-center w-full">
                             <div className="flex items-center space-x-3 w-2/3">
                                 <div
@@ -128,10 +134,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                                 </div>
                                 <span className="font-semibold text-gray-700 text-lg">{transaction.amount} €</span>
                             </div>
-
                             <span className="text-sm text-gray-500">{formattedDate(new Date(transaction.date))}</span>
                         </div>
-
                         <div className="flex justify-between items-center mt-2">
                             <span
                                 className="text-sm text-gray-600 truncate max-w-[66%]"
@@ -152,7 +156,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
             {hasMore && (
                 <div className="bg-white w-full flex justify-center">
                     <div className="p-4 w-[95%] flex justify-center border-t-2 border-gray-300">
-                    <LoadMoreButton onClick={loadMore} />
+                        <LoadMoreButton onClick={loadMore} />
                     </div>
                 </div>
             )}
