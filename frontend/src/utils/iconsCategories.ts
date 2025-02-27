@@ -1,0 +1,57 @@
+import { AsteriskIcon } from "../components/ui/icons/AsteriskIcon";
+import { BeerIcon } from "../components/ui/icons/BeerIcon";
+import { CarIcon } from "../components/ui/icons/CarIcon";
+import { ClapperboardIcon } from "../components/ui/icons/ClapperboardIcon";
+import { CoffeeIcon } from "../components/ui/icons/CoffeeIcon";
+import { CreditCardIcon } from "../components/ui/icons/CreditCartIcon";
+import { GemIcon } from "../components/ui/icons/GemIcon";
+import { GiftIcon } from "../components/ui/icons/GiftIcon";
+import { GraduationCapIcon } from "../components/ui/icons/GraduationCapIcon";
+import { HandCoinsIcon } from "../components/ui/icons/HandsCoinsIcon";
+import { HandshakeIcon } from "../components/ui/icons/HandshakeIcon";
+import { HeartIcon } from "../components/ui/icons/HeartIcon";
+import { HospitalIcon } from "../components/ui/icons/HospitalIcon";
+import { HouseIcon } from "../components/ui/icons/HouseIcon";
+import { LightbulbIcon } from "../components/ui/icons/LightbulbIcon";
+import { PawPrintIcon } from "../components/ui/icons/PawPrintIcon";
+import { PercentIcon } from "../components/ui/icons/PercentIcon";
+import { PlaneIcon } from "../components/ui/icons/PlaneIcon";
+import { ShirtIcon } from "../components/ui/icons/ShirtIcon";
+import { ShoppingBagIcon } from "../components/ui/icons/ShoppingBagIcon";
+import { ShoppingCartIcon } from "../components/ui/icons/ShoppingCartIcon";
+import { SirenIcon } from "../components/ui/icons/SirenIcon";
+import { SproutIcon } from "../components/ui/icons/SproutIcon";
+import { StarIcon } from "../components/ui/icons/StarIcon";
+import { TvIcon } from "../components/ui/icons/TvIcon";
+import { UtensilsIcon } from "../components/ui/icons/UtensilsIcon";
+
+export const iconsCategories = [
+    { name: "Salary", icon: StarIcon },
+    { name: "Side Job", icon: HandCoinsIcon },
+    { name: "Bonus", icon: GiftIcon },
+    { name: "Refund", icon: CreditCardIcon },
+    { name: "Interest", icon: PercentIcon },
+    { name: "Funding", icon: HandshakeIcon },
+    { name: "Misc", icon: AsteriskIcon },
+    { name: "Housing", icon: HouseIcon },
+    { name: "Bills", icon: LightbulbIcon },
+    { name: "Transport", icon: CarIcon },
+    { name: "Groceries", icon: ShoppingCartIcon },
+    { name: "Dining", icon: UtensilsIcon },
+    { name: "Pets", icon: PawPrintIcon },
+    { name: "Coffee", icon: CoffeeIcon },
+    { name: "Entertainment", icon: ClapperboardIcon },
+    { name: "Health", icon: HospitalIcon },
+    { name: "Education", icon: GraduationCapIcon },
+    { name: "Shopping", icon: ShoppingBagIcon },
+    { name: "Emergency", icon: SirenIcon },
+    { name: "Clothing", icon: ShirtIcon },
+    { name: "Gifts", icon: GiftIcon },
+    { name: "Travel", icon: PlaneIcon },
+    { name: "Luxury", icon: GemIcon },
+    { name: "Social", icon: BeerIcon },
+    { name: "Subscriptions", icon: TvIcon },
+    { name: "Donations", icon: HeartIcon },
+    { name: "Self-care", icon: SproutIcon },
+    { name: "Fees", icon: CreditCardIcon }
+];
