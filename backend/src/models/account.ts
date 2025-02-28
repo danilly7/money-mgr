@@ -42,6 +42,12 @@ Account.init(
         modelName: 'Account',
         tableName: 'accounts',
         timestamps: false,
+        indexes: [
+            {
+                unique: true,
+                fields: ['name', 'user_id'], //unicidad por nombre y usuario
+            },
+        ],
     }
 );
 

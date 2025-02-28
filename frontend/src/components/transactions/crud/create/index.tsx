@@ -74,7 +74,7 @@ const NewTransactionForm = () => {
         };
 
         try {
-            if (amount > account!.balance) {
+            if (isExpense && account && amount > account.balance) {
                 setErrorMessage("Sorry, not enough money in this account. Try a different one.");
                 return;
             }

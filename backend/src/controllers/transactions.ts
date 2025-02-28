@@ -152,17 +152,17 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
             res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
             return;
         }
-        
-        if (amount > account.balance) {
-            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
-            return;
-        }
 
         const category = await Category.findByPk(category_id);
         if (!category) {
             res.status(400).json({ msg: 'Category not found' });
             return;
-        }    
+        }
+
+        if (category.type === 'expense' && amount > account.balance) {
+            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
+            return;
+        }
 
         const transaction = await Transaction.create({ amount, account_id, category_id, date, comment });
 
@@ -248,16 +248,17 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         const newAmount = amount || oldAmount;
 
         let updatedBalance = account.balance;
+
         if (oldCategory?.type === 'income') {
-            updatedBalance -= oldAmount;
+            updatedBalance -= oldAmount; //restar el monto antiguo si era un ingreso
         } else if (oldCategory?.type === 'expense') {
-            updatedBalance += oldAmount;
+            updatedBalance += oldAmount; //sumar el monto antiguo si era un gasto
         }
 
         if (newCategory?.type === 'income') {
-            updatedBalance += newAmount;
+            updatedBalance += newAmount; //sumar el nuevo monto si es un ingreso
         } else if (newCategory?.type === 'expense') {
-            updatedBalance -= newAmount;
+            updatedBalance -= newAmount; //restar el nuevo monto si es un gasto
         }
 
         await account.update({ balance: updatedBalance });
