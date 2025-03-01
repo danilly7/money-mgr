@@ -4,7 +4,7 @@ import BalanceBox from "../../components/ui/balance-box";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
 
 const Accounts = () => {
-    const { visibleBalance } = useVisibleBalance();
+    const { visibleBalance, refetch } = useVisibleBalance();
 
     return (
         <>
@@ -13,7 +13,7 @@ const Accounts = () => {
             </div>
             <BalanceBox balance={visibleBalance} />
             <div className="p-4">
-                <AccountsList />
+            <AccountsList refetchBalance={refetch} />
             </div>
             <div className="flex justify-center my-6">
                 <PlusButton to="/accounts/newaccount" />
