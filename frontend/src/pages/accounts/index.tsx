@@ -13,7 +13,7 @@ const Accounts = () => {
             </div>
             <BalanceBox balance={visibleBalance} />
             <div className="p-4">
-            <AccountsList refetchBalance={refetch} />
+                <AccountsList refetchBalance={refetch} />
             </div>
             <div className="flex justify-center my-6">
                 <PlusButton to="/accounts/newaccount" />

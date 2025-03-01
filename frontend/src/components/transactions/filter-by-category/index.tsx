@@ -145,7 +145,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
         })
       ) : (
         <div className="text-center text-lg sm:text-xl font-semibold text-gray-500">
-          No categories available
+          No data yet
         </div>
       )}
     </div>
