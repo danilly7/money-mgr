@@ -47,7 +47,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     };
 
     const handleCreateAccount = () => {
-        navigate('/accounts');
+        navigate('/accounts/newaccount');
     };
 
     return (

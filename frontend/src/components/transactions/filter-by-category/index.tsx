@@ -105,7 +105,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
 
   if (error) {
     if (error.message.includes("404")) {
-      return <div className="text-center text-xl font-semibold text-gray-500 mt-8">Start adding a transaction!</div>;
+      return <div className="text-center text-xl font-semibold text-gray-500 mt-8">Start by adding a transaction!</div>;
     }
     return <div className="text-center text-xl font-semibold text-red-500 mt-8">Error loading transactions.</div>;
   }
