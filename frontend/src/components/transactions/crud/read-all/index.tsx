@@ -95,11 +95,14 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
     }
 
     if (error) {
+        if (error.message.includes("404")) {
+            return <div className="text-center py-8 text-gray-500">Don't be shy and add a transaction!</div>;
+        }
         return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
     }
 
     if (filteredTransactions.length === 0) {
-        return <div className="text-center py-8 text-gray-500">No transactions yet</div>;
+        return <div className="text-center py-8 text-gray-500">No transactions yet, start now!</div>;
     }
 
     const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

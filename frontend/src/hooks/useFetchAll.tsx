@@ -44,6 +44,11 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
       }
 
       if (!response.ok) {
+        //si la respuesta es 404 (no hay datos), no lanzamos un error
+        if (response.status === 404) {
+          setData({ data: [] });
+          return;
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 

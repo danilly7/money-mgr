@@ -128,7 +128,7 @@ const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
           );
         })
       ) : (
-        <div className="text-center text-xl font-semibold text-gray-500">No accounts yet</div>
+        <div className="text-center text-xl font-semibold text-gray-500 mt-8">Add a new account!</div>
       )}
     </>
   );

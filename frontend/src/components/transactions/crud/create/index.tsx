@@ -124,7 +124,7 @@ const NewTransactionForm = () => {
                 )}
 
                 <div className="flex flex-col mt-2">
-                <AccountSelector
+                    <AccountSelector
                         selectedAccountId={accountId}
                         onAccountChange={setAccountId}
                     />
