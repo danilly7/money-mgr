@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useCategories } from '../../../../context/categories-context';
 import { AsteriskIcon } from '../../../ui/icons/AsteriskIcon';
 import { formattedDate } from '../../../../utils/formattedDate';
@@ -23,7 +23,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
 
     useEffect(() => { //esto no borrar, es para que haga refetch después de venir de otra página  
         refetch();
-      }, [location, refetch]);
+    }, [location, refetch]);
 
     //aquí no he podido hacer un custom hook pq es un mapeo abajo y me saltaba la consola si lo usaba dentro
     const { data: accountsData } = useFetchAll<Account>(apiAccounts, "accounts", true);
@@ -95,11 +95,14 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
     }
 
     if (error) {
+        if (error.message.includes("404")) {
+            return <div className="text-center py-8 text-gray-500">Don't be shy and add a transaction!</div>;
+        }
         return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
     }
 
     if (filteredTransactions.length === 0) {
-        return <div className="text-center py-8 text-gray-500">No transactions yet</div>;
+        return <div className="text-center py-8 text-gray-500">No transactions yet, start now!</div>;
     }
 
     const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

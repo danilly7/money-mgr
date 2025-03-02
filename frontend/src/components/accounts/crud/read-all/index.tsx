@@ -4,13 +4,19 @@ import { EyeIcon } from '../../../ui/icons/EyeIcon';
 import { formattedNumbers } from '../../../../utils/formattedNumbers';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useFetchAllAccounts from '../../../../hooks/useFetchAllAccounts';
+import { useUpdateAccount } from '../../../../hooks/useUpdateAccount';
 
-const AccountsList: React.FC = () => {
+interface AccountsListProps {
+  refetchBalance: () => void;
+}
+
+const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
   const { accounts, loading, refetchAccounts } = useFetchAllAccounts();
+  const { updateAccount, loading: updateLoading, error } = useUpdateAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => { //esto no borrar, es para que haga refetch después de venir de otra página  
+  useEffect(() => { // Esto no borrar, es para que haga refetch después de venir de otra página  
     refetchAccounts();
   }, [location, refetchAccounts]);
 
@@ -19,6 +25,31 @@ const AccountsList: React.FC = () => {
       navigate(`/accounts/acc/${accountId}`);
     } else {
       console.log("Error: accountId is undefined", accountId);
+    }
+  };
+
+  const handleVisibilityToggle = async (accountId: number, currentVisibility: boolean) => {
+    const newVisibility = !currentVisibility;
+
+    const accountToUpdate = accounts.find(account => account.id === accountId);
+
+    if (!accountToUpdate) {
+      console.error('Account not found');
+      return;
+    }
+
+    const updatedAccount = {
+      ...accountToUpdate,
+      visibility: newVisibility,
+    };
+
+    try {
+      await updateAccount(accountId, updatedAccount);
+
+      refetchAccounts();
+      refetchBalance();
+    } catch (error) {
+      console.error('Failed to update visibility:', error);
     }
   };
 
@@ -42,6 +73,12 @@ const AccountsList: React.FC = () => {
         </div>
       </div>
 
+      {error && (
+        <div className="text-center text-red-500">
+          Error: {error.message}
+        </div>
+      )}
+
       {accounts.length > 0 ? (
         accounts.map((account, index) => {
           const accountId = account.id ?? null;
@@ -62,11 +99,23 @@ const AccountsList: React.FC = () => {
                 <p className="text-xl font-bold text-black truncate">{account.name}</p>
               </div>
 
-              <div className="flex items-center justify-center w-1/3">
-                {account.visibility ? (
-                  <EyeIcon className="text-black" />
+              <div
+                className="flex items-center justify-center w-1/3"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (typeof accountId === 'number') {
+                    handleVisibilityToggle(accountId, account.visibility);
+                  }
+                }}
+              >
+                {updateLoading ? (
+                  <p>Updating...</p>
                 ) : (
-                  <EyeClosedIcon className="text-black" />
+                  account.visibility ? (
+                    <EyeIcon className="text-black" />
+                  ) : (
+                    <EyeClosedIcon className="text-black" />
+                  )
                 )}
               </div>
 
@@ -79,7 +128,7 @@ const AccountsList: React.FC = () => {
           );
         })
       ) : (
-        <div className="text-center text-xl font-semibold text-gray-500">No accounts available</div>
+        <div className="text-center text-xl font-semibold text-gray-500 mt-8">Add a new account!</div>
       )}
     </>
   );

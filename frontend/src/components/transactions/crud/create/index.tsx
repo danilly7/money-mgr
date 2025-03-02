@@ -74,7 +74,7 @@ const NewTransactionForm = () => {
         };
 
         try {
-            if (amount > account!.balance) {
+            if (isExpense && account && amount > account.balance) {
                 setErrorMessage("Sorry, not enough money in this account. Try a different one.");
                 return;
             }
@@ -124,7 +124,7 @@ const NewTransactionForm = () => {
                 )}
 
                 <div className="flex flex-col mt-2">
-                <AccountSelector
+                    <AccountSelector
                         selectedAccountId={accountId}
                         onAccountChange={setAccountId}
                     />

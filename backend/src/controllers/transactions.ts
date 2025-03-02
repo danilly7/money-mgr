@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import models from '../models';
+import { sequelize } from '../db/connection';
 
 const { Transaction, Category, Account } = models;
 
@@ -152,26 +153,27 @@ export const postTransaction = async (req: Request, res: Response): Promise<void
             res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
             return;
         }
-        
-        if (amount > account.balance) {
-            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
-            return;
-        }
 
         const category = await Category.findByPk(category_id);
         if (!category) {
             res.status(400).json({ msg: 'Category not found' });
             return;
-        }    
+        }
+
+        if (category.type === 'expense' && amount > account.balance) {
+            res.status(400).json({ msg: 'Amount cannot be higher than the money available in the account' });
+            return;
+        }
 
         const transaction = await Transaction.create({ amount, account_id, category_id, date, comment });
 
-        //logica suma-resta:
-        let updatedBalance = account.balance;
+        const currentBalance = parseFloat(account.balance.toString());
+        let updatedBalance = currentBalance;
+
         if (category.type === 'income') {
-            updatedBalance += amount; //sumamos para ingresos
+            updatedBalance = parseFloat((currentBalance + amount).toFixed(2));
         } else if (category.type === 'expense') {
-            updatedBalance -= amount; //restamos para gastos
+            updatedBalance = parseFloat((currentBalance - amount).toFixed(2));
         }
 
         await account.update({ balance: updatedBalance });
@@ -211,7 +213,6 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-        //logica old-new:
         const oldCategory = await Category.findByPk(transaction.category_id);
         const oldAmount = transaction.amount;
 
@@ -247,17 +248,18 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         const newCategory = category_id ? await Category.findByPk(category_id) : oldCategory;
         const newAmount = amount || oldAmount;
 
-        let updatedBalance = account.balance;
+        let updatedBalance = parseFloat(account.balance.toString());
+
         if (oldCategory?.type === 'income') {
-            updatedBalance -= oldAmount;
+            updatedBalance = parseFloat((updatedBalance - oldAmount).toFixed(2));
         } else if (oldCategory?.type === 'expense') {
-            updatedBalance += oldAmount;
+            updatedBalance = parseFloat((updatedBalance + oldAmount).toFixed(2));
         }
 
         if (newCategory?.type === 'income') {
-            updatedBalance += newAmount;
+            updatedBalance = parseFloat((updatedBalance + newAmount).toFixed(2));
         } else if (newCategory?.type === 'expense') {
-            updatedBalance -= newAmount;
+            updatedBalance = parseFloat((updatedBalance - newAmount).toFixed(2));
         }
 
         await account.update({ balance: updatedBalance });
@@ -278,10 +280,13 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
         return;
     }
 
+    const t = await sequelize.transaction();
+
     try {
-        const transaction = await Transaction.findByPk(id);
+        const transaction = await Transaction.findByPk(id, { transaction: t });
 
         if (!transaction) {
+            await t.rollback();
             res.status(404).json({ msg: `Transaction with id ${id} not found` });
             return;
         }
@@ -290,27 +295,34 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
 
         const account = await Account.findOne({
             where: { id: account_id, user_id },
+            transaction: t,
         });
 
         if (!account) {
+            await t.rollback();
             res.status(403).json({ msg: `Unauthorized: Account with id ${account_id} does not belong to you` });
             return;
         }
 
-        const category = await Category.findByPk(transaction.category_id);
+        const category = await Category.findByPk(transaction.category_id, { transaction: t });
 
-        let updatedBalance = account.balance;
+        let updatedBalance = parseFloat(account.balance.toString());
+        const transactionAmount = parseFloat(transaction.amount.toString());
+
         if (category?.type === 'income') {
-            updatedBalance -= transaction.amount; //revertir ingreso
+            updatedBalance = parseFloat((updatedBalance - transactionAmount).toFixed(2)); 
         } else if (category?.type === 'expense') {
-            updatedBalance += transaction.amount; //revertir gasto
+            updatedBalance = parseFloat((updatedBalance + transactionAmount).toFixed(2)); 
         }
 
-        await account.update({ balance: updatedBalance });
-        await transaction.destroy();
+        await account.update({ balance: updatedBalance }, { transaction: t });
+        await transaction.destroy({ transaction: t });
+
+        await t.commit(); 
 
         res.json({ msg: 'Transaction deleted successfully' });
     } catch (error) {
+        await t.rollback(); 
         console.error(error);
         res.status(500).json({ msg: 'Ups, there was an error when trying to delete the transaction' });
     }

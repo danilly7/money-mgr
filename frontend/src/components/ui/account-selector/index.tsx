@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import useFetchAllAccounts from "../../../hooks/useFetchAllAccounts";
 import { Account } from "../../accounts/interface-account";
+import { useNavigate } from "react-router-dom";
 
 interface AccountSelectorProps {
     selectedAccountId: number | null;
@@ -15,6 +16,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const accountSelectorRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const account = accounts.find((a) => a.id === selectedAccountId) || null;
@@ -42,6 +44,10 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         setSelectedAccount(account);
         onAccountChange(account.id!);
         setIsEditing(false);
+    };
+
+    const handleCreateAccount = () => {
+        navigate('/accounts/newaccount');
     };
 
     return (
@@ -74,7 +80,15 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                             </div>
                         ))
                     ) : (
-                        <p className="text-center p-4">No accounts found.</p>
+                        <div className="flex flex-col items-center p-4">
+                            <p className="text-center mb-4">No accounts found.</p>
+                            <button
+                                className="bg-personalizedPink font-bold text-white px-4 py-2 rounded-lg hover:bg-personalizedPinkDark transition-colors"
+                                onClick={handleCreateAccount}
+                            >
+                                Create a new account
+                            </button>
+                        </div>
                     )}
                 </div>
             )}

@@ -6,16 +6,16 @@ export interface Transaction {
     comment?: string;
     date: Date;
 
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 
-    category: {
+    category?: {
         id_category: number;
         name: string;
         type: "income" | "expense";
     };
 
-    account: {
+    account?: {
         id: number;
         name: string;
         balance: number;
