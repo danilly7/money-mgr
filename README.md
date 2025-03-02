@@ -1,16 +1,33 @@
-﻿# SPRING 9 - Project: Moneymgr
+﻿# SPRINT 9 - Project: Moneymgr
 ## About
 
-**Moneymgr** is a simple yet powerful application designed to help you manage your money efficiently. With an intuitive interface, you can track your income, expenses, and balances with ease.
+**Moneymgr** is a simple yet powerful application designed to help you manage your money efficiently. With an intuitive interface, you can track your income, expenses and balances with ease.
 
 <br>
 
 ## Application
 
-Here is a snippet of the application:
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/330ed2ce-2be5-4e42-85a6-c82d4cf8b550" width="250" />
+  <img src="https://github.com/user-attachments/assets/e2abbb7f-5219-4acd-b5f1-e7c339dd0563" width="250" />
+  <img src="https://github.com/user-attachments/assets/51e07bc7-8dd1-4298-a3c6-9afd00156b4e" width="250" />
+  <img src="https://github.com/user-attachments/assets/4ebe6a36-f0fc-4208-9ad9-f640f5a49bcb" width="249" />
+</p>
 
-photos
-video
+<p align="center">
+  <em>Here are snippets of the application in mobile mode.</em>
+</p>
+
+<br>
+
+<p align="center">
+  <a href="https://youtu.be/v4LD0aTYUHM">
+    <img src="https://img.youtube.com/vi/v4LD0aTYUHM/0.jpg" alt="Watch the video" />
+  </a>
+</p>
+<p align="center">
+  <em>And here is a small demo of Moneymgr.</em>
+</p>
 
 <br>
 
