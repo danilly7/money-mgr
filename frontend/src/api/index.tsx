@@ -1,9 +1,9 @@
-export const apiUsers = "http://localhost:3000/api/users";
+export const apiUsers = `${process.env.REACT_APP_API_URL}/api/users`;
 
-export const apiAccounts = 'http://localhost:3000/api/accounts';
+export const apiAccounts = `${process.env.REACT_APP_API_URL}/api/accounts`;
 
-export const apiCategories = 'http://localhost:3000/api/categories';
+export const apiCategories = `${process.env.REACT_APP_API_URL}/api/categories`;
 
-export const apiTransactions = "http://localhost:3000/api/transactions";
+export const apiTransactions = `${process.env.REACT_APP_API_URL}/api/transactions`;
 
-export const apiTransfers = "http://localhost:3000/api/transfers";
+export const apiTransfers = `${process.env.REACT_APP_API_URL}/api/transfers`;
