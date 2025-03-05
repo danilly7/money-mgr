@@ -32,7 +32,7 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
             'Authorization': `Bearer ${newToken}`,
           };
 
-          const retryResponse = await fetchRetry(url, 2000, 2, { headers: retryHeaders });
+          const retryResponse = await fetchRetry(url, 2000, 1, { headers: retryHeaders });
 
           if (!retryResponse.ok) {
             throw new Error(`HTTP error! status: ${retryResponse.status}`);
