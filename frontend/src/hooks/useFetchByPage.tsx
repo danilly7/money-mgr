@@ -7,6 +7,9 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const [hasMore, setHasMore] = useState(true);
+    const [retryCount, setRetryCount] = useState(0); //mis apis van lentas, es para no dar error tan rápido
+    const maxRetries = 3;
+    const retryDelay = 1000; 
 
     const fetchData = useCallback(async () => {
         if (authLoading) return;
@@ -77,11 +80,18 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 }));
             }
         } catch (error) {
-            setError(error instanceof Error ? error : new Error("Unknown error occurred"));
+            if (retryCount < maxRetries) {
+                setTimeout(() => {
+                    setRetryCount(retryCount + 1);
+                    fetchData();
+                }, retryDelay);
+            } else {
+                setError(error instanceof Error ? error : new Error("Unknown error occurred"));
+            }
         } finally {
             setLoading(false);
         }
-    }, [url, page, useToken, dataKey, token, authLoading, refreshToken]);
+    }, [url, page, useToken, dataKey, token, authLoading, refreshToken, retryCount]);
 
     useEffect(() => {
         fetchData();

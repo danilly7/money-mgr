@@ -7,6 +7,9 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
   const [data, setData] = useState<{ data: T[] }>({ data: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0); //retries pq mi api va lenta y el mensaje de error muy rápido
+  const maxRetries = 3;
+  const retryDelay = 1000;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -55,11 +58,18 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
       const json = await response.json();
       setData({ data: json[dataField] ?? [] });
     } catch (error) {
-      setError(error instanceof Error ? error : new Error("Unknown error occurred"));
+      if (retryCount < maxRetries) {
+        setTimeout(() => {
+          setRetryCount(retryCount + 1);
+          fetchData();
+        }, retryDelay);
+      } else {
+        setError(error instanceof Error ? error : new Error("Unknown error occurred"));
+      }
     } finally {
       setLoading(false);
     }
-  }, [url, dataField, useToken, token, refreshToken]);
+  }, [url, dataField, useToken, token, refreshToken, retryCount]);
 
   useEffect(() => {
     fetchData();
