@@ -67,12 +67,12 @@ const TransactionDetails: React.FC = () => {
 
                 <div className="flex justify-between items-center mt-2">
                     <p className="text-xl font-semibold">Created:</p>
-                    <p className="text-lg">{formattedDate(new Date(transaction.createdAt))}</p>
+                    <p className="text-lg">{formattedDate(new Date(transaction.createdAt || new Date()))}</p>
                 </div>
                 {transaction.updatedAt !== transaction.createdAt && (
                     <div className="flex justify-between items-center mt-2">
                         <p className="text-xl font-semibold">Updated:</p>
-                        <p className="text-lg">{formattedDate(new Date(transaction.updatedAt))}</p>
+                        <p className="text-lg">{formattedDate(new Date(transaction.updatedAt || new Date()))}</p>
                     </div>
                 )}
             </div>
