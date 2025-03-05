@@ -55,7 +55,7 @@ const ViewOfTransactions = () => {
         <TransactionList isExpense={isExpense} timeframe={timeframe} />
       </div>
       <div className="flex flex-row justify-center mb-7">
-        <AddButton to="/transactions/newtransaction" />
+      <AddButton to={`/transactions/newtransaction?timeframe=Day&isExpense=${isExpense}`} />
       </div>
     </>
   );

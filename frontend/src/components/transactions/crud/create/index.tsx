@@ -3,7 +3,7 @@ import AmountBox from "../../../ui/amount-box";
 import { CheckButton } from "../../../ui/check-btn";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { useAuth } from "../../../../context/auth-context";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ModalMisc } from "../../../modal misc";
 import { useAddTransaction } from "../../../../hooks/useAddTransaction";
 import SwitchExpenseIncome from "../../../ui/switch-expense-income";
@@ -17,13 +17,17 @@ const NewTransactionForm = () => {
     const { addTransaction } = useAddTransaction();
     const { userId } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const queryParams = new URLSearchParams(location.search);
+    const initialIsExpense = queryParams.get("isExpense") === "true";
 
     const [amount, setAmount] = useState<number>(0);
     const [comment, setComment] = useState<string>("");
     const [date, setDate] = useState<Date>(new Date());
     const [categoryId, setCategoryId] = useState<number | null>(null);
     const [accountId, setAccountId] = useState<number | null>(null);
-    const [isExpense, setIsExpense] = useState<boolean>(true);
+    const [isExpense, setIsExpense] = useState<boolean>(initialIsExpense);
 
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -107,7 +111,7 @@ const NewTransactionForm = () => {
 
     const handleModalClose = () => {
         setIsModalOpen(false);
-        navigate("/transactions");
+        navigate(`/transactions?timeframe=Month&isExpense=${isExpense}`);
     };
 
     return (
