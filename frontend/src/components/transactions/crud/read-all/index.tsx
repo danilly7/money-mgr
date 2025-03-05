@@ -42,38 +42,39 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return categories.find((category) => category.id === categoryId);
     };
 
-    const filterByTimeframe = (transactionDate: Date) => {
+    const filterByTimeframe = (transactionDate: Date | string) => {
         const today = new Date();
-
+        const parsedDate = new Date(transactionDate);
+    
         switch (timeframe) {
             case "Day":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfDay(today),
                     end: endOfDay(today),
                 });
-
+    
             case "Week":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfWeek(today),
                     end: endOfWeek(today),
                 });
-
+    
             case "Month":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfMonth(today),
                     end: endOfMonth(today),
                 });
-
+    
             case "Year":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfYear(today),
                     end: endOfYear(today),
                 });
-
+    
             default:
                 return false;
         }
-    };
+    };    
 
     const filteredTransactions = transactions.filter((transaction) => {
         if (!transaction.date) return false;

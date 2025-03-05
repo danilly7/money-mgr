@@ -22,30 +22,31 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
   const location = useLocation();
   const navigate = useNavigate();
 
-  const filterByTimeframe = useCallback((date: Date) => {
+  const filterByTimeframe = useCallback((transactionDate: Date | string) => {
     const today = new Date();
+    const parsedDate = new Date(transactionDate);
 
     switch (timeframe) {
       case "Day":
-        return isWithinInterval(date, {
+        return isWithinInterval(parsedDate, {
           start: startOfDay(today),
           end: endOfDay(today),
         });
 
       case "Week":
-        return isWithinInterval(date, {
+        return isWithinInterval(parsedDate, {
           start: startOfWeek(today),
           end: endOfWeek(today),
         });
 
       case "Month":
-        return isWithinInterval(date, {
+        return isWithinInterval(parsedDate, {
           start: startOfMonth(today),
           end: endOfMonth(today),
         });
 
       case "Year":
-        return isWithinInterval(date, {
+        return isWithinInterval(parsedDate, {
           start: startOfYear(today),
           end: endOfYear(today),
         });
