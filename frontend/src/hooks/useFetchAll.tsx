@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
+import { fetchRetry } from '../utils/fetchRetry';
 
 // OJO que en mi caso el dataField es el nombre de las tablas que están en plural
 export function useFetchAll<T>(url: string, dataField: string = 'data', useToken: boolean = false) {
@@ -7,9 +8,6 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
   const [data, setData] = useState<{ data: T[] }>({ data: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [retryCount, setRetryCount] = useState(0); //retries pq mi api va lenta y el mensaje de error muy rápido
-  const maxRetries = 3;
-  const retryDelay = 1000;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -22,7 +20,7 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
     }
 
     try {
-      const response = await fetch(url, { headers });
+      const response = await fetchRetry(url, 2000, 1, { headers });
 
       if (response.status === 401 && useToken) {
         console.warn("Token expired, getting a new one...");
@@ -34,7 +32,7 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
             'Authorization': `Bearer ${newToken}`,
           };
 
-          const retryResponse = await fetch(url, { headers: retryHeaders });
+          const retryResponse = await fetchRetry(url, 2000, 2, { headers: retryHeaders });
 
           if (!retryResponse.ok) {
             throw new Error(`HTTP error! status: ${retryResponse.status}`);
@@ -47,7 +45,6 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
       }
 
       if (!response.ok) {
-        //si la respuesta es 404 (no hay datos), no lanzamos un error
         if (response.status === 404) {
           setData({ data: [] });
           return;
@@ -57,31 +54,17 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
 
       const json = await response.json();
       setData({ data: json[dataField] ?? [] });
-      setRetryCount(0);
 
     } catch (error) {
-      if (retryCount < maxRetries) {
-        setRetryCount((prev) => prev + 1); 
-      } else {
-        setError(error instanceof Error ? error : new Error("Unknown error occurred"));
-      }
+      setError(error instanceof Error ? error : new Error("Unknown error occurred"));
     } finally {
       setLoading(false);
     }
-  }, [url, dataField, useToken, token, refreshToken, retryCount]);
+  }, [url, dataField, useToken, token, refreshToken]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-  
-  useEffect(() => { //manejo de reintentos con `useEffect`
-    if (retryCount > 0 && retryCount <= maxRetries) {
-      const timer = setTimeout(() => {
-        fetchData();
-      }, retryDelay);
-      return () => clearTimeout(timer); //limpiar timeout si el componente se desmonta
-    }
-  }, [retryCount, fetchData]);
 
   return { data, loading, error, refetch: fetchData };
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
+import { fetchRetry } from '../utils/fetchRetry';
 
 export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string) {
     const { token, loading: authLoading, refreshToken } = useAuth();
@@ -7,9 +8,6 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const [hasMore, setHasMore] = useState(true);
-    const [retryCount, setRetryCount] = useState(0); //mis apis van lentas, es para no dar error tan rápido
-    const maxRetries = 3;
-    const retryDelay = 1000;
 
     const fetchData = useCallback(async () => {
         if (authLoading) return;
@@ -24,7 +22,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
+            const response = await fetchRetry(`${url}?page=${page ?? 1}`, 2000, 1, { headers });
 
             if (response.status === 401 && useToken) {
                 console.warn("Token expired, getting a new one...");
@@ -36,7 +34,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                         'Authorization': `Bearer ${newToken}`,
                     };
 
-                    const retryResponse = await fetch(`${url}?page=${page ?? 1}`, { headers: retryHeaders });
+                    const retryResponse = await fetchRetry(`${url}?page=${page ?? 1}`, 2000, 1, { headers: retryHeaders });
 
                     if (!retryResponse.ok) {
                         throw new Error(`HTTP error! status: ${retryResponse.status}`);
@@ -46,19 +44,22 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                     const dataFromResponse = retryJson[dataKey] || [];
                     setHasMore(retryJson.currentPage < retryJson.totalPages || !!retryJson.next);
 
-                    if (page === 1) {
-                        setData({
-                            data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                            next: retryJson.next || null,
-                        });
-                    } else {
-                        setData((prevData) => ({
-                            data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                            next: retryJson.next || null,
-                        }));
+                    if (JSON.stringify(dataFromResponse) !== JSON.stringify(data.data)) {
+                        if (page === 1) {
+                            setData({
+                                data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                                next: retryJson.next || null,
+                            });
+                        } else {
+                            setData((prevData) => ({
+                                data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                                next: retryJson.next || null,
+                            }));
+                        }
+
+                        sessionStorage.setItem(dataKey, JSON.stringify(dataFromResponse));
                     }
 
-                    setRetryCount(0);
                     return;
                 }
             }
@@ -71,45 +72,44 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
             const dataFromResponse = json[dataKey] || [];
             setHasMore(json.currentPage < json.totalPages || !!json.next);
 
-            if (page === 1) {
-                setData({
-                    data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                    next: json.next || null,
-                });
-            } else {
-                setData((prevData) => ({
-                    data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                    next: json.next || null,
-                }));
-            }
+            if (JSON.stringify(dataFromResponse) !== JSON.stringify(data.data)) {
+                if (page === 1) {
+                    setData({
+                        data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                        next: json.next || null,
+                    });
+                } else {
+                    setData((prevData) => ({
+                        data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
+                        next: json.next || null,
+                    }));
+                }
 
-            setRetryCount(0);
+                sessionStorage.setItem(dataKey, JSON.stringify(dataFromResponse));
+            }
 
         } catch (error) {
             setError(error instanceof Error ? error : new Error("Unknown error occurred"));
         } finally {
             setLoading(false);
         }
-    }, [url, page, useToken, dataKey, token, authLoading, refreshToken]);
+    }, [url, page, useToken, dataKey, token, authLoading, refreshToken, data.data]);
 
     useEffect(() => {
-        if (retryCount > 0 && retryCount <= maxRetries) {
-            const timer = setTimeout(() => {
-                fetchData();
-            }, retryDelay);
-            return () => clearTimeout(timer);
+        const storedData = sessionStorage.getItem(dataKey);
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            setData({ data: parsedData });
+            setLoading(false); 
+        } else {
+            fetchData();
         }
-    }, [retryCount, fetchData]);
-
-    useEffect(() => {
-        setRetryCount(0);
-        fetchData();
-    }, [fetchData]);
+    }, [dataKey, fetchData]);
 
     const refetch = useCallback(() => {
-        setRetryCount(0);
+        sessionStorage.removeItem(dataKey);
         fetchData();
-    }, [fetchData]);
+    }, [fetchData, dataKey]);
 
     return { data, loading, error, hasMore, refetch };
 };

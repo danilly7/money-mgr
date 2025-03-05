@@ -24,10 +24,10 @@ const TransactionsContext = createContext<TransactionsContextType | undefined>(u
 
 export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [page, setPage] = useState(1);
-  const [timeframe, setTimeframe] = useState<'Day' | 'Week' | 'Month' | 'Year'>('Week');
+  const [timeframe, setTimeframe] = useState<'Day' | 'Week' | 'Month' | 'Year'>('Month');
   const [isExpense, setIsExpense] = useState(true);
 
-  const { data: fetchedTransactions, loading, error, hasMore, refetch } = useFetchByPage<Transaction>(
+  const { data: fetchedTransactions = { data: [] }, loading, error, hasMore, refetch } = useFetchByPage<Transaction>(
     apiTransactions,
     page,
     true,
@@ -36,93 +36,63 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const { categories } = useCategories();
 
+  const getTimeframeRange = useCallback((date: Date, timeframe: 'Day' | 'Week' | 'Month' | 'Year') => {
+    const startFuncs = { Day: startOfDay, Week: startOfWeek, Month: startOfMonth, Year: startOfYear };
+    const endFuncs = { Day: endOfDay, Week: endOfWeek, Month: endOfMonth, Year: endOfYear };
+    return { start: startFuncs[timeframe](date), end: endFuncs[timeframe](date) };
+  }, []);
+
   useEffect(() => {
     setPage(1);
     refetch();
   }, [timeframe, refetch]);
 
-  const getStartOfTimeframe = (date: Date, timeframe: 'Day' | 'Week' | 'Month' | 'Year') => {
-    switch (timeframe) {
-      case 'Day':
-        return startOfDay(date);
-      case 'Week':
-        return startOfWeek(date);
-      case 'Month':
-        return startOfMonth(date);
-      case 'Year':
-        return startOfYear(date);
-      default:
-        return date;
+  useEffect(() => {
+    if (!loading && fetchedTransactions.data.length > 0) {
+      sessionStorage.setItem('transactions', JSON.stringify(fetchedTransactions.data));
     }
-  };
-
-  const getEndOfTimeframe = (date: Date, timeframe: 'Day' | 'Week' | 'Month' | 'Year') => {
-    switch (timeframe) {
-      case 'Day':
-        return endOfDay(date);
-      case 'Week':
-        return endOfWeek(date);
-      case 'Month':
-        return endOfMonth(date);
-      case 'Year':
-        return endOfYear(date);
-      default:
-        return date;
-    }
-  };
+  }, [fetchedTransactions.data, loading]);
 
   const transactions = useMemo(() => {
+    if (loading) return JSON.parse(sessionStorage.getItem('transactions') || '[]');
+
     const today = new Date();
-
-    const filterByTimeframe = (date: Date) => {
-      return isWithinInterval(date, {
-        start: getStartOfTimeframe(today, timeframe),
-        end: getEndOfTimeframe(today, timeframe),
-      });
-    };
-
-    return fetchedTransactions.data?.filter((transaction) => filterByTimeframe(transaction.date)) ?? [];
-  }, [fetchedTransactions.data, timeframe]);
+    const { start, end } = getTimeframeRange(today, timeframe);
+    
+    return fetchedTransactions.data.filter((transaction) =>
+      isWithinInterval(new Date(transaction.date), { start, end })
+    );
+  }, [fetchedTransactions.data, timeframe, loading, getTimeframeRange]);
 
   const { totalExpense, totalIncome } = useMemo(() => {
-    let totalExpense = 0;
-    let totalIncome = 0;
-
-    transactions.forEach((transaction) => {
-      const category = categories.find((cat) => cat.id === transaction.category_id);
-      if (category) {
-        if (category.type === 'expense') {
-          totalExpense += Number(transaction.amount);
-        } else if (category.type === 'income') {
-          totalIncome += Number(transaction.amount);
+    return transactions.reduce(
+      (totals: { totalExpense: number; totalIncome: number }, transaction: Transaction) => {
+        const category = categories.find((cat) => cat.id === transaction.category_id);
+        if (category?.type === 'expense') {
+          totals.totalExpense += Number(transaction.amount);
+        } else if (category?.type === 'income') {
+          totals.totalIncome += Number(transaction.amount);
         }
-      }
-    });
-
-    return { totalExpense, totalIncome };
-  }, [transactions, categories]);
+        return totals;
+      },
+      { totalExpense: 0, totalIncome: 0 }
+    );
+  }, [transactions, categories]);  
 
   const loadMore = useCallback(() => {
-    if (hasMore) {
-      setPage((prevPage) => prevPage + 1);
-    }
+    if (hasMore) setPage((prev) => prev + 1);
   }, [hasMore]);
 
   useEffect(() => {
-    if (transactions.length > 0) {
-      const today = new Date();
-      const oldestTransactionDate = new Date(transactions[transactions.length - 1].date);
-
-      const isOldestTransactionOutsideTimeframe = !isWithinInterval(oldestTransactionDate, {
-        start: getStartOfTimeframe(today, timeframe),
-        end: getEndOfTimeframe(today, timeframe),
-      });
-
-      if (isOldestTransactionOutsideTimeframe && hasMore) {
+    if (!loading && transactions.length > 0) {
+      const oldestTransactionDate = new Date(transactions.at(-1)?.date ?? '');
+      const { start, end } = getTimeframeRange(new Date(), timeframe);
+      
+      if (!isWithinInterval(oldestTransactionDate, { start, end }) && hasMore) {
         loadMore();
       }
     }
-  }, [transactions, timeframe, hasMore, loadMore]);
+  }, [transactions, timeframe, hasMore, loadMore, loading, getTimeframeRange]);
 
   return (
     <TransactionsContext.Provider
