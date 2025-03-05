@@ -2,12 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PlusIcon } from "../icons/PlusIcon";
 
-interface PlusButtonProps {
+interface AddButtonProps {
   to: string;
   className?: string;
 }
 
-const PlusButton: React.FC<PlusButtonProps> = ({ to, className = "" }) => {
+const AddButton: React.FC<AddButtonProps> = ({ to, className = "" }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -27,4 +27,4 @@ const PlusButton: React.FC<PlusButtonProps> = ({ to, className = "" }) => {
   );
 };
 
-export default PlusButton;
+export default AddButton;
