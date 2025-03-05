@@ -91,6 +91,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return category.type === "income";
     });
 
+    const uniqueTransactions = filteredTransactions.filter( //filtraje de duplicados, importante.
+        (transaction, index, self) =>
+            index === self.findIndex((t) => t.id === transaction.id)
+    );
+
+    const sortedTransactions = [...uniqueTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
     if (loading && transactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">Loading...</div>;
     }
@@ -102,11 +109,9 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
     }
 
-    if (filteredTransactions.length === 0) {
+    if (sortedTransactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">No transactions yet, start now!</div>;
     }
-
-    const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
         <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-xl w-full
