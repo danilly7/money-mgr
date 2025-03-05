@@ -72,7 +72,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                 });
     
             default:
-                return false;
+                return true; //si no hay timeframe devuelve todas
         }
     };    
 

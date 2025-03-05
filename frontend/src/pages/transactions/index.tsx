@@ -1,25 +1,30 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 import { BackButton } from "../../components/ui/back-btn";
 import TransactionList from "../../components/transactions/crud/read-all";
 import AddButton from "../../components/ui/add-button";
+import { useTransactions } from "../../context/transactions-context";
 
 const ViewOfTransactions = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [timeframe, setTimeframe] = useState<"Day" | "Week" | "Month" | "Year">("Month");
-  const [isExpense, setIsExpense] = useState(true);
+  const { timeframe, setTimeframe, isExpense, setIsExpense } = useTransactions();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const timeframeParam = queryParams.get("timeframe") as "Day" | "Week" | "Month" | "Year";
     const isExpenseParam = queryParams.get("isExpense") === "true";
 
-    if (timeframeParam) setTimeframe(timeframeParam);
-    setIsExpense(isExpenseParam);
-  }, [location.search]);
+    if (timeframeParam && timeframeParam !== timeframe) {
+      setTimeframe(timeframeParam);
+    }
+
+    if (isExpenseParam !== isExpense) {
+      setIsExpense(isExpenseParam);
+    }
+  }, [location.search, timeframe, isExpense, setTimeframe, setIsExpense]);
 
   const handleTimeframeChange = (newTimeframe: "Day" | "Week" | "Month" | "Year") => {
     setTimeframe(newTimeframe);

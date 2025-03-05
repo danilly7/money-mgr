@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
 import { useFetchByPage } from '../../hooks/useFetchByPage';
 import { Transaction } from '../../components/transactions/interface-transaction';
 import { apiTransactions } from '../../api';
@@ -16,6 +16,8 @@ interface TransactionsContextType {
   totalExpense: number;
   totalIncome: number;
   refetch: () => void;
+  isExpense: boolean;
+  setIsExpense: Dispatch<SetStateAction<boolean>>;
 }
 
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ const TransactionsContext = createContext<TransactionsContextType | undefined>(u
 export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [page, setPage] = useState(1);
   const [timeframe, setTimeframe] = useState<'Day' | 'Week' | 'Month' | 'Year'>('Week');
+  const [isExpense, setIsExpense] = useState(true);
 
   const { data: fetchedTransactions, loading, error, hasMore, refetch } = useFetchByPage<Transaction>(
     apiTransactions,
@@ -134,6 +137,8 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         totalExpense,
         totalIncome,
         refetch,
+        isExpense,
+        setIsExpense
       }}
     >
       {children}

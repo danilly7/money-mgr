@@ -52,7 +52,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
         });
 
       default:
-        return false;
+        return true; //si no hay timeframe devuelve todas
     }
   }, [timeframe]);
 
