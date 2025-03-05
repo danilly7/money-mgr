@@ -7,7 +7,7 @@ interface PlusButtonProps {
   className?: string;
 }
 
-export const PlusButton: React.FC<PlusButtonProps> = ({ to, className = "" }) => {
+const PlusButton: React.FC<PlusButtonProps> = ({ to, className = "" }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -26,3 +26,5 @@ export const PlusButton: React.FC<PlusButtonProps> = ({ to, className = "" }) =>
     </div>
   );
 };
+
+export default PlusButton;
