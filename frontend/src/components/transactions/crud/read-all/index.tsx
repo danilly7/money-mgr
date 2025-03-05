@@ -7,7 +7,6 @@ import { useTransactions } from '../../../../context/transactions-context';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
-import { LoadMoreButton } from '../../../ui/load-more-btn';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface TransactionListProps {
@@ -17,7 +16,7 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
-    const { transactions, loading, error, hasMore, loadMore, refetch } = useTransactions();
+    const { transactions, loading, error, refetch } = useTransactions();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -45,36 +44,36 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
     const filterByTimeframe = (transactionDate: Date | string) => {
         const today = new Date();
         const parsedDate = new Date(transactionDate);
-    
+
         switch (timeframe) {
             case "Day":
                 return isWithinInterval(parsedDate, {
                     start: startOfDay(today),
                     end: endOfDay(today),
                 });
-    
+
             case "Week":
                 return isWithinInterval(parsedDate, {
                     start: startOfWeek(today),
                     end: endOfWeek(today),
                 });
-    
+
             case "Month":
                 return isWithinInterval(parsedDate, {
                     start: startOfMonth(today),
                     end: endOfMonth(today),
                 });
-    
+
             case "Year":
                 return isWithinInterval(parsedDate, {
                     start: startOfYear(today),
                     end: endOfYear(today),
                 });
-    
+
             default:
                 return true; //si no hay timeframe devuelve todas
         }
-    };    
+    };
 
     const filteredTransactions = transactions.filter((transaction) => {
         if (!transaction.date) return false;
@@ -166,14 +165,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                     </div>
                 );
             })}
-
-            {hasMore && (
-                <div className="bg-white w-full flex justify-center">
-                    <div className="p-4 w-[95%] flex justify-center border-t-2 border-gray-300">
-                        <LoadMoreButton onClick={loadMore} />
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
