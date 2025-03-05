@@ -57,12 +57,11 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
 
       const json = await response.json();
       setData({ data: json[dataField] ?? [] });
+      setRetryCount(0);
+
     } catch (error) {
       if (retryCount < maxRetries) {
-        setTimeout(() => {
-          setRetryCount(retryCount + 1);
-          fetchData();
-        }, retryDelay);
+        setRetryCount((prev) => prev + 1); 
       } else {
         setError(error instanceof Error ? error : new Error("Unknown error occurred"));
       }
@@ -74,6 +73,15 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  
+  useEffect(() => { //manejo de reintentos con `useEffect`
+    if (retryCount > 0 && retryCount <= maxRetries) {
+      const timer = setTimeout(() => {
+        fetchData();
+      }, retryDelay);
+      return () => clearTimeout(timer); //limpiar timeout si el componente se desmonta
+    }
+  }, [retryCount, fetchData]);
 
   return { data, loading, error, refetch: fetchData };
 };

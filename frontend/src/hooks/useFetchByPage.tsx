@@ -9,12 +9,14 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
     const [hasMore, setHasMore] = useState(true);
     const [retryCount, setRetryCount] = useState(0); //mis apis van lentas, es para no dar error tan rápido
     const maxRetries = 3;
-    const retryDelay = 1000; 
+    const retryDelay = 1000;
 
     const fetchData = useCallback(async () => {
         if (authLoading) return;
 
         setLoading(true);
+        setError(null);
+
         try {
             const headers: HeadersInit = { 'Content-Type': 'application/json' };
 
@@ -56,6 +58,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                         }));
                     }
 
+                    setRetryCount(0);
                     return;
                 }
             }
@@ -79,25 +82,32 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                     next: json.next || null,
                 }));
             }
+
+            setRetryCount(0);
+
         } catch (error) {
-            if (retryCount < maxRetries) {
-                setTimeout(() => {
-                    setRetryCount(retryCount + 1);
-                    fetchData();
-                }, retryDelay);
-            } else {
-                setError(error instanceof Error ? error : new Error("Unknown error occurred"));
-            }
+            setError(error instanceof Error ? error : new Error("Unknown error occurred"));
         } finally {
             setLoading(false);
         }
-    }, [url, page, useToken, dataKey, token, authLoading, refreshToken, retryCount]);
+    }, [url, page, useToken, dataKey, token, authLoading, refreshToken]);
 
     useEffect(() => {
+        if (retryCount > 0 && retryCount <= maxRetries) {
+            const timer = setTimeout(() => {
+                fetchData();
+            }, retryDelay);
+            return () => clearTimeout(timer);
+        }
+    }, [retryCount, fetchData]);
+
+    useEffect(() => {
+        setRetryCount(0);
         fetchData();
     }, [fetchData]);
 
     const refetch = useCallback(() => {
+        setRetryCount(0);
         fetchData();
     }, [fetchData]);
 
