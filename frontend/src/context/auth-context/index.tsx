@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
-  const [userIdLoading, setUserIdLoading] = useState(true); 
+  const [userIdLoading, setUserIdLoading] = useState(true);
 
   const fetchToken = useCallback(async (user: User) => {
     try {
@@ -52,6 +52,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }, [currentUser]);
 
+  const fetchUserId = useCallback(async (uid: string) => {
+    const maxRetries = 3; // Número máximo de intentos
+    let retries = 0;
+    let success = false;
+
+    while (retries < maxRetries && !success) {
+      try {
+        const response = await fetch(`${apiUsers}`);
+        if (!response.ok) throw new Error("Error fetching user ID");
+
+        const data = await response.json();
+        const user = data.users.find((u: UserDB) => u.uid === uid);
+
+        if (user) {
+          setUserId(user.id); //este es id pq en la respuesta de la api es id
+          success = true;
+        } else {
+          throw new Error("User not found");
+        }
+      } catch (error) {
+        retries += 1;
+        if (retries === maxRetries) {
+          console.error("Failed to fetch user ID after multiple attempts:", error);
+          throw new Error("User not found after multiple attempts");
+        } else {
+          // Esperar un tiempo antes de reintentar
+          console.log(`Retrying... attempt ${retries + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // 1 segundo de espera
+        }
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
@@ -71,27 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return unsubscribe;
-  }, [fetchToken]);
-
-  const fetchUserId = async (uid: string) => {
-    try {
-      const response = await fetch(`${apiUsers}`);
-      if (!response.ok) throw new Error("Error fetching user ID");
-
-      const data = await response.json();
-      const user = data.users.find((u: UserDB) => u.uid === uid);
-
-      if (user) {
-        setUserId(user.id); //este es id pq en la respuesta de la api es id
-      } else {
-        throw new Error("User not found");
-      }
-    } catch (error) {
-      console.error("Failed to fetch user ID:", error);
-    } finally {
-      setUserIdLoading(false);
-    }
-  };
+  }, [fetchToken, fetchUserId]);
 
   const logout = async () => {
     try {
@@ -100,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(null);
       setUserIdLoading(false);
     } catch (error) {
-        console.log('Error loging out:', error);
+      console.log('Error loging out:', error);
     }
   };
 
