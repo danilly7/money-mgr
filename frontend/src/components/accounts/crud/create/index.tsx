@@ -39,10 +39,12 @@ const NewAccountForm = () => {
 
         //validación números negativos no hace falta pq el mismo AmountBox lo hace solo.
 
-        if (!userId) {
-            setErrorMessage("User not authenticated.");
+        if (userId === null) { //el get del user id tardaaa mucho por eso esto.
+            setErrorMessage("User data is still loading. Please wait.");
             return;
         }
+
+        console.log(userId);
 
         setLoading(true);
 
