@@ -4,6 +4,7 @@ import { Transaction } from '../../components/transactions/interface-transaction
 import { apiTransactions } from '../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { useCategories } from '../categories-context';
+import { useAuth } from '../auth-context';
 
 interface TransactionsContextType {
   transactions: Transaction[];
@@ -23,6 +24,8 @@ interface TransactionsContextType {
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
 
 export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { userId } = useAuth();
+
   const [page, setPage] = useState(1);
   const [timeframe, setTimeframe] = useState<'Day' | 'Week' | 'Month' | 'Year'>('Month');
   const [isExpense, setIsExpense] = useState(true);
@@ -48,21 +51,23 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [timeframe, refetch]);
 
   useEffect(() => {
-    if (!loading && fetchedTransactions.data.length > 0) {
-      sessionStorage.setItem('transactions', JSON.stringify(fetchedTransactions.data));
+    if (!loading && fetchedTransactions.data.length > 0 && userId) {
+      sessionStorage.setItem(`transactions_${userId}`, JSON.stringify(fetchedTransactions.data));
     }
-  }, [fetchedTransactions.data, loading]);
+  }, [fetchedTransactions.data, loading, userId]);
 
   const transactions = useMemo(() => {
-    if (loading) return JSON.parse(sessionStorage.getItem('transactions') || '[]');
+    if (!userId) return [];
+
+    if (loading) return JSON.parse(sessionStorage.getItem(`transactions_${userId}`) || '[]');
 
     const today = new Date();
     const { start, end } = getTimeframeRange(today, timeframe);
-    
+
     return fetchedTransactions.data.filter((transaction) =>
       isWithinInterval(new Date(transaction.date), { start, end })
     );
-  }, [fetchedTransactions.data, timeframe, loading, getTimeframeRange]);
+  }, [fetchedTransactions.data, timeframe, loading, getTimeframeRange, userId]);
 
   const { totalExpense, totalIncome } = useMemo(() => {
     return transactions.reduce(
@@ -77,7 +82,7 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       },
       { totalExpense: 0, totalIncome: 0 }
     );
-  }, [transactions, categories]);  
+  }, [transactions, categories]);
 
   const loadMore = useCallback(() => {
     if (hasMore) setPage((prev) => prev + 1);
@@ -87,7 +92,7 @@ export const TransactionsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (!loading && transactions.length > 0) {
       const oldestTransactionDate = new Date(transactions.at(-1)?.date ?? '');
       const { start, end } = getTimeframeRange(new Date(), timeframe);
-      
+
       if (!isWithinInterval(oldestTransactionDate, { start, end }) && hasMore) {
         loadMore();
       }
