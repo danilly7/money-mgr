@@ -11,7 +11,7 @@ import { useAddAccount } from "../../../../hooks/useAddAccount";
 
 const NewAccountForm = () => {
     const { addAccount } = useAddAccount();
-    const { userId } = useAuth();
+    const { userId, userIdLoading } = useAuth();
     const navigate = useNavigate();
     const [amount, setAmount] = useState<number>(0);
     const [name, setName] = useState<string>("");
@@ -39,8 +39,13 @@ const NewAccountForm = () => {
 
         //validación números negativos no hace falta pq el mismo AmountBox lo hace solo.
 
-        if (userId === null) { //el get del user id tardaaa mucho por eso esto.
+        if (userIdLoading) {
             setErrorMessage("User data is still loading. Please wait.");
+            return;
+        }
+
+        if (userId === null) {
+            setErrorMessage("User ID not found. Try again.");
             return;
         }
 
@@ -87,6 +92,8 @@ const NewAccountForm = () => {
 
     return (
         <div className="relative bg-white p-3 border-4 border-black rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto">
+            {userIdLoading && <p className="text-gray-500">Loading user data...</p>}
+
             <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
                 <div className="flex flex-col">
                     {errorMessage && (

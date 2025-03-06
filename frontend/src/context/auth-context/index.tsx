@@ -9,6 +9,7 @@ interface AuthContextType {
   userId: number | null;
   userLoggedIn: boolean;
   loading: boolean;
+  userIdLoading: boolean;
   token: string | null;
   refreshToken: () => Promise<string | null>;
   logout: () => Promise<void>;
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [userIdLoading, setUserIdLoading] = useState(true); 
 
   const fetchToken = useCallback(async (user: User) => {
     try {
@@ -54,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       setUserLoggedIn(!!user);
+      setUserIdLoading(true);
 
       if (user) {
         await fetchUserId(user.uid);
@@ -61,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUserId(null);
         setToken(null);
+        setUserIdLoading(false);
       }
 
       setLoading(false);
@@ -84,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Failed to fetch user ID:", error);
+    } finally {
+      setUserIdLoading(false);
     }
   };
 
@@ -92,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       setUserId(null); //limpiamos al hacer logout
       setToken(null);
+      setUserIdLoading(false);
     } catch (error) {
         console.log('Error loging out:', error);
     }
@@ -105,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     token,
     refreshToken,
     logout,
+    userIdLoading
   };
 
   return (
