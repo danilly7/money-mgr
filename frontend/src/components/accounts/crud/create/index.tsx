@@ -11,7 +11,7 @@ import { useAddAccount } from "../../../../hooks/useAddAccount";
 
 const NewAccountForm = () => {
     const { addAccount } = useAddAccount();
-    const { userId, userIdLoading } = useAuth();
+    const { userId, loading:userIdLoading } = useAuth();
     const navigate = useNavigate();
     const [amount, setAmount] = useState<number>(0);
     const [name, setName] = useState<string>("");
