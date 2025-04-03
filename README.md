@@ -1,4 +1,4 @@
-﻿# SPRINT 9 - Project: Moneymgr
+﻿# Moneymgr
 ## About
 
 **Moneymgr** is a simple yet powerful application designed to help you manage your money efficiently. With an intuitive interface, you can track your income, expenses and balances with ease.
