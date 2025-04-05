@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { PlusIcon } from "../icons/PlusIcon";
 
-export const PlusButton = ({ to, className = "" }: { to: string; className?: string }) => {
+export const AddButton = ({ to, className = "" }: { to: string; className?: string }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
