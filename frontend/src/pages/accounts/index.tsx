@@ -1,4 +1,4 @@
-import { PlusButton } from "../../components/ui/Add-btn";
+import { AddButton } from "../../components/ui/add-btn";
 import AccountsList from "../../components/accounts/crud/read-all";
 import BalanceBox from "../../components/ui/balance-box";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
@@ -16,7 +16,7 @@ const Accounts = () => {
                 <AccountsList refetchBalance={refetch} />
             </div>
             <div className="flex justify-center my-6">
-                <PlusButton to="/accounts/newaccount" />
+                <AddButton to="/accounts/newaccount" />
             </div>
         </>
     );

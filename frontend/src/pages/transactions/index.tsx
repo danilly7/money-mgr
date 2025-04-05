@@ -4,7 +4,7 @@ import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 import { BackButton } from "../../components/ui/back-btn";
 import TransactionList from "../../components/transactions/crud/read-all";
-import { PlusButton } from "../../components/ui/Add-btn";
+import { AddButton } from "../../components/ui/add-btn";
 
 const ViewOfTransactions = () => {
   const location = useLocation();
@@ -50,7 +50,7 @@ const ViewOfTransactions = () => {
         <TransactionList isExpense={isExpense} timeframe={timeframe} />
       </div>
       <div className="flex flex-row justify-center mb-7">
-        <PlusButton to="/transactions/newtransaction" />
+        <AddButton to="/transactions/newtransaction" />
       </div>
     </>
   );

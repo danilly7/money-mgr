@@ -3,7 +3,7 @@ import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import BalanceBox from "../../components/ui/balance-box";
 import ExpenseIncomeToggle from "../../components/ui/expense-income-toggle";
 import { SearchButton } from "../../components/ui/search-btn";
-import { AddButton } from "../../components/ui/Add-btn";
+import { AddButton } from "../../components/ui/add-btn";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
 import { useTransactions } from "../../context/transactions-context";
 import TransactionsByCategory from "../../components/transactions/filter-by-category";
