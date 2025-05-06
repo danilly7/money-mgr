@@ -116,7 +116,7 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
 
   return (
     <div className="mt-6">
-      <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 bg-slate-300 border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 gap-x-4 my-2">
+      <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 bg-gray-300 border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 gap-x-4 my-2">
         <div className="flex items-center justify-start w-1/2">
           <p className="text-lg sm:text-xl font-bold text-black truncate">Category</p>
         </div>
@@ -131,22 +131,20 @@ const TransactionsByCategory: React.FC<TransactionsByCategoryProps> = ({ isExpen
         return (
           <div
             key={category.categoryName || `category-${index}`}
-            className={`relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 ${isExpense ? 'bg-red-300' : 'bg-green-300'
-              } border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl mb-2 gap-x-4 cursor-pointer`}
+            className={`relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl h-16 bg-gray-300 border-4 border-black rounded-2xl flex items-center justify-between text-black p-4 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl mb-2 gap-x-4 cursor-pointer`}
             onClick={handleCategoryClick}
           >
             <div className="flex items-center justify-start w-1/2">
-              <IconComponent className="w-6 h-6 mr-2" />
-              <p className="text-lg sm:text-xl font-bold text-black truncate">
+              <IconComponent className={`w-6 h-6 mr-2 ${isExpense ? 'text-red-600' : 'text-green-600'}`} />
+              <p className={`text-lg sm:text-xl font-bold ${isExpense ? 'text-red-600' : 'text-green-600'} truncate`}>
                 {category.categoryName}
               </p>
             </div>
 
-            <div className="flex items-center justify-end w-1/2">
-              <span className="text-lg sm:text-xl font-bold text-black truncate">
-                {formattedNumbers(category.total)} €
-              </span>
-            </div>
+            <span className={`text-lg sm:text-xl font-bold ${isExpense ? 'text-red-600' : 'text-green-600'} truncate`}>
+              {formattedNumbers(category.total)} €
+            </span>
+
           </div>
         );
       })}

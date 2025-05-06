@@ -36,7 +36,7 @@ const NameBox: React.FC<NameBoxProps> = ({ initialName, onNameChange }) => {
     return (
         <div className="flex items-start justify-center py-2">
             <div
-                className="relative w-[28rem] h-36 bg-[#4ECDC4] border-4 border-black rounded-2xl flex items-start justify-center text-black p-8 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer"
+                className="relative w-[28rem] h-36 bg-gray-300 border-4 border-black rounded-2xl flex items-start justify-center text-black p-8 transition-all duration-300 overflow-hidden hover:scale-105 hover:shadow-xl cursor-pointer"
                 onClick={handleClick}
             >
                 <div className="flex flex-col items-center justify-center text-center">

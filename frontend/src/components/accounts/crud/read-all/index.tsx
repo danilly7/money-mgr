@@ -59,7 +59,7 @@ const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
 
   return (
     <>
-      <div className="relative max-w-xl mx-auto h-22 bg-personalizedPink border-4 border-black rounded-2xl flex items-center text-black p-4 mb-2">
+      <div className="relative max-w-xl mx-auto h-22 bg-slate-300 border-4 border-black rounded-2xl flex items-center text-black p-4 mb-2">
         <div className="flex items-center justify-start w-1/3">
           <p className="text-xl font-bold text-black">Account</p>
         </div>
@@ -96,7 +96,10 @@ const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
               }}
             >
               <div className="flex items-center justify-start w-1/3">
-                <p className="text-xl font-bold text-black truncate">{account.name}</p>
+                <p className={`text-xl font-bold truncate ${account.visibility ? 'text-[#9d4eddd7]' : 'text-black'}`}>
+                  {account.name}
+                </p>
+
               </div>
 
               <div
@@ -112,7 +115,7 @@ const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
                   <p>Updating...</p>
                 ) : (
                   account.visibility ? (
-                    <EyeIcon className="text-black" />
+                    <EyeIcon className="text-[#9d4eddd7]" />
                   ) : (
                     <EyeClosedIcon className="text-black" />
                   )
@@ -120,7 +123,7 @@ const AccountsList: React.FC<AccountsListProps> = ({ refetchBalance }) => {
               </div>
 
               <div className="flex items-center justify-end w-1/3">
-                <span className="text-xl font-bold text-black">
+                <span className={`text-xl font-bold truncate ${account.visibility ? 'text-[#9d4eddd7]' : 'text-black'}`}>
                   {formattedNumbers(account.balance)} €
                 </span>
               </div>

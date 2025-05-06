@@ -2,7 +2,6 @@ import React, { ReactNode, createContext, useContext } from 'react';
 import { apiCategories } from '../../api';
 import { useFetchAll } from '../../hooks/useFetchAll';
 import { Category } from '../../components/categories/interface-category';
-import { colors } from '../../utils/colors';
 import { iconsCategories } from '../../utils/iconsCategories';
 import { AsteriskIcon } from '../../components/ui/icons/AsteriskIcon';
 
@@ -21,12 +20,11 @@ const CategoriesContext = createContext<CategoriesContextType | undefined>(undef
 export const CategoriesProvider: React.FC<CategoriesProviderProps> = ({ children }) => {
     const { data, loading, error } = useFetchAll<Category>(apiCategories, 'categories', false);
 
-    const categoriesWithIconsAndColors = data?.data?.map((category, index) => {
+    const categoriesWithIconsAndColors = data?.data?.map((category) => {
         const matchingIcon = iconsCategories.find((icon) => icon.name === category.name);
 
         return { 
             ...category,
-            color: colors[index % colors.length],
             icon: matchingIcon ? matchingIcon.icon : AsteriskIcon, //fallback si no hay icono
         };
     }) || [];

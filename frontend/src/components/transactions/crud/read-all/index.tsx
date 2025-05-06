@@ -124,7 +124,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                 }
 
                 const Icon = category.icon || AsteriskIcon;
-                const iconColor = category.color && category.color.startsWith('#') ? category.color : `#${category.color || '000000'}`;
 
                 return (
                     <div
@@ -134,10 +133,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                     >
                         <div className="flex justify-between items-center w-full">
                             <div className="flex items-center space-x-3 w-2/3">
-                                <div
-                                    className="w-10 h-10 flex justify-center items-center rounded-full"
-                                    style={{ backgroundColor: iconColor }}
-                                >
+                                <div className="w-10 h-10 flex justify-center items-center rounded-full">
                                     <Icon className="w-6 h-6 text-black" />
                                 </div>
                                 <span className="font-semibold text-gray-700 text-lg">{transaction.amount} €</span>
