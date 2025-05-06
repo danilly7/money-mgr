@@ -51,7 +51,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     return (
         <div className="relative flex flex-col items-center" ref={categorySelectorRef}>
             <button
-                className="w-full sm:w-[28rem] h-20 bg-[#4ECDC4] border-4 border-black rounded-2xl text-black font-bold text-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all overflow-hidden"
+                className="w-full sm:w-[28rem] h-20 bg-gray-300 border-4 border-black rounded-2xl text-black font-bold text-lg flex items-center justify-center cursor-pointer hover:scale-105 transition-all overflow-hidden"
                 onClick={handleClick}
             >
                 {selectedCategory ? (

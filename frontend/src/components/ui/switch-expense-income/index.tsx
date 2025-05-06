@@ -22,7 +22,7 @@ const SwitchExpenseIncome: React.FC<SwitchExpenseIncomeProps> = ({ isExpense, se
       <div className="relative w-[28rem] h-16 bg-transparent border-4 border-black rounded-2xl flex">
         <button
           className={`h-full flex items-center justify-center text-2xl transition-all duration-300 px-4 relative 
-            ${isExpense ? 'bg-personalizedPink text-black font-semibold w-full rounded-l-xl' : 'bg-gray-800 text-gray-200 w-1/2 rounded-l-xl'}`}
+            ${isExpense ? 'bg-personalizedRed text-black font-semibold w-full rounded-l-xl' : 'bg-gray-800 text-gray-200 w-1/2 rounded-l-xl'}`}
           onClick={handleClickExpense}
         >
           Expense

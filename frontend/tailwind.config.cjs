@@ -11,6 +11,7 @@ module.exports = {
         personalizedOrange: "#FDAF5D",
         personalizedPurple: "#967EFB",
         personalizedPink: "#D669CB",
+        personalizedRed: "#FF6B6B",
       },
     },
   },

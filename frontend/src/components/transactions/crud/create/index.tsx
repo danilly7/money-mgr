@@ -112,7 +112,7 @@ const NewTransactionForm = () => {
 
     return (
         <div className={`relative bg-white p-3 border-4 rounded-lg shadow-lg my-4 overflow-hidden max-w-lg mx-auto 
-            ${isExpense ? 'border-personalizedPink' : 'border-personalizedGreen'}`}
+            ${isExpense ? 'border-personalizedRed' : 'border-personalizedGreen'}`}
         >
             <SwitchExpenseIncome isExpense={isExpense} setIsExpense={setIsExpense} />
 

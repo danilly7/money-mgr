@@ -35,7 +35,7 @@ export const DateBox: React.FC<DateBoxProps> = ({ initialDate, onDateChange }) =
   return (
     <div className="relative flex flex-col items-center w-full">
       <button
-        className="w-full sm:w-[28rem] md:w-[28rem] h-20 bg-[#4ECDC4] border-4 border-black rounded-2xl text-2xl font-bold flex items-center justify-center cursor-pointer hover:scale-105 transition-all"
+        className="w-full sm:w-[28rem] md:w-[28rem] h-20 bg-gray-300 border-4 border-black rounded-2xl text-2xl font-bold flex items-center justify-center cursor-pointer hover:scale-105 transition-all"
         onClick={handleClick}
       >
         <span className="text-black mr-4 text-xl">Date: </span>

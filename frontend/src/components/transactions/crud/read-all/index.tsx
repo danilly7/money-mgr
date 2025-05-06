@@ -109,7 +109,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
 
     return (
         <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-xl w-full
-            ${isExpense ? 'border-personalizedPink' : 'border-personalizedGreen'}
+            ${isExpense ? 'border-personalizedRed' : 'border-personalizedGreen'}
         `}>
             {sortedTransactions.map((transaction, index) => {
                 const category = getCategoryDetails(transaction.category_id);
