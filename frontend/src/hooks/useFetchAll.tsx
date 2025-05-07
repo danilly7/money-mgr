@@ -3,12 +3,14 @@ import { useAuth } from '../context/auth-context';
 
 // OJO que en mi caso el dataField es el nombre de las tablas que están en plural
 export function useFetchAll<T>(url: string, dataField: string = 'data', useToken: boolean = false) {
-  const { token, refreshToken } = useAuth();
+  const { token, refreshToken, loading: authLoading } = useAuth();
   const [data, setData] = useState<{ data: T[] }>({ data: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (useToken && !token) return; // No token available, do not fetch data
+
     setLoading(true);
     setError(null);
 
@@ -22,7 +24,7 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
       const response = await fetch(url, { headers });
 
       if (response.status === 401 && useToken) {
-        console.warn("Token expired, getting a new one...");
+        console.warn("Token expired or missing, trying to refresh...");
         const newToken = await refreshToken();
 
         if (newToken) {
@@ -62,8 +64,10 @@ export function useFetchAll<T>(url: string, dataField: string = 'data', useToken
   }, [url, dataField, useToken, token, refreshToken]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!authLoading && (!useToken || token)) {
+      fetchData();
+    }
+  }, [fetchData, authLoading, useToken, token]); // Fetch data when auth loading is done and token is available
 
   return { data, loading, error, refetch: fetchData };
 };

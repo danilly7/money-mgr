@@ -36,11 +36,14 @@ const Register = () => {
                     displayName: name,
                 });
 
+                //ahora pediremos el token para la API → sino me salta error 401, pq va más rápido que el token
+                const idToken = await user.getIdToken();
+
                 const response = await fetch(apiUsers, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        //no token para register
+                        Authorization: `Bearer ${idToken}`,
                     },
                     body: JSON.stringify({
                         uid: user.uid,
