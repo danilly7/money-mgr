@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
 
-export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string) {
+export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string = 'data') {
     const { token, loading: authLoading, refreshToken } = useAuth();
     const [data, setData] = useState<{ data: T[]; next?: string | null }>({ data: [] });
     const [loading, setLoading] = useState(true);
@@ -9,87 +9,82 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
     const [hasMore, setHasMore] = useState(true);
 
     const fetchData = useCallback(async () => {
-        if (authLoading) return;
+        if (useToken && !token) return;
 
         setLoading(true);
-        try {
-            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        setError(null);
 
-            if (useToken && token) {
-                headers['Authorization'] = `Bearer ${token}`;
+        const fetchPage = async (authToken?: string | null) => {
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (useToken && authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
             }
 
             const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
 
             if (response.status === 401 && useToken) {
-                console.warn("Token expired, getting a new one...");
-                const newToken = await refreshToken();
-
-                if (newToken) {
-                    const retryHeaders: HeadersInit = {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${newToken}`,
-                    };
-
-                    const retryResponse = await fetch(`${url}?page=${page ?? 1}`, { headers: retryHeaders });
-
-                    if (!retryResponse.ok) {
-                        throw new Error(`HTTP error! status: ${retryResponse.status}`);
-                    }
-
-                    const retryJson = await retryResponse.json();
-                    const dataFromResponse = retryJson[dataKey] || [];
-                    setHasMore(retryJson.currentPage < retryJson.totalPages || !!retryJson.next);
-
-                    if (page === 1) {
-                        setData({
-                            data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                            next: retryJson.next || null,
-                        });
-                    } else {
-                        setData((prevData) => ({
-                            data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                            next: retryJson.next || null,
-                        }));
-                    }
-
-                    return;
-                }
+                throw new Error('401');
             }
 
             if (!response.ok) {
+                //si el status es 404, comprobamos si es un error por "usuario nuevo"
+                if (response.status === 404) {
+                    const json = await response.json();
+                    if (json.message && json.message === "User not found") {
+                        //no lanzamos error, simplemente tratamos esto como "usuario nuevo"
+                        setData({ data: [] });
+                        setHasMore(false); //no hay más datos que cargar
+                        return;
+                    }
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const json = await response.json();
-            const dataFromResponse = json[dataKey] || [];
-            setHasMore(json.currentPage < json.totalPages || !!json.next);
+            const items = json[dataKey] ?? [];
+            const next = json.next || null;
+            const isMore = json.currentPage < json.totalPages || !!next;
 
-            if (page === 1) {
-                setData({
-                    data: [...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                    next: json.next || null,
-                });
+            setHasMore(isMore);
+
+            setData((prev) => ({
+                data: page === 1 ? [...items] : [...prev.data, ...items],
+                next,
+            }));
+        };
+
+        try {
+            await fetchPage(token);
+        } catch (err) {
+            if (err instanceof Error) {
+                if (err.message === '401' && useToken) {
+                    console.warn('Token expired, refreshing...');
+                    const newToken = await refreshToken();
+                    if (!newToken) {
+                        setError(new Error('Failed to refresh token'));
+                        return;
+                    }
+                    try {
+                        await fetchPage(newToken);
+                    } catch (retryError) {
+                        setError(retryError instanceof Error ? retryError : new Error('Unknown retry error'));
+                    }
+                } else {
+                    setError(err);
+                }
             } else {
-                setData((prevData) => ({
-                    data: [...prevData.data, ...(Array.isArray(dataFromResponse) ? dataFromResponse : [])],
-                    next: json.next || null,
-                }));
+                setError(new Error('Unknown error occurred'));
             }
-        } catch (error) {
-            setError(error instanceof Error ? error : new Error("Unknown error occurred"));
         } finally {
             setLoading(false);
         }
-    }, [url, page, useToken, dataKey, token, authLoading, refreshToken]);
+    }, [url, page, dataKey, useToken, token, refreshToken]);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        if (!authLoading && (!useToken || token)) {
+            fetchData();
+        }
+    }, [fetchData, authLoading, useToken, token]);
 
-    const refetch = useCallback(() => {
-        fetchData();
-    }, [fetchData]);
-
-    return { data, loading, error, hasMore, refetch };
+    return { data, loading, error, hasMore, refetch: fetchData };
 };
