@@ -12,6 +12,7 @@ interface AuthContextType {
   token: string | null;
   refreshToken: () => Promise<string | null>;
   logout: () => Promise<void>;
+  error: string | null;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchToken = useCallback(async (user: User) => {
     try {
@@ -31,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error fetching token:", error);
       setToken(null);
+      setError("Failed to fetch token");
       return null;
     }
   }, []);
@@ -44,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error refreshing token:", error);
         setToken(null);
+        setError("Failed to refresh token");
         return null;
       }
     }
@@ -75,15 +79,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) throw new Error("Error fetching user ID");
 
       const data = await response.json();
-      const user = data.users.find((u: UserDB) => u.uid === uid);
 
-      if (user) {
-        setUserId(user.id); //este es id pq en la respuesta de la api es id
+      if (data.users && Array.isArray(data.users)) {
+        const user = data.users.find((u: UserDB) => u.uid === uid);
+
+        if (user) {
+          setUserId(user.id); //este es id pq en la respuesta de la api es id
+        } else {
+          throw new Error("User not found");
+        }
       } else {
-        throw new Error("User not found");
+        throw new Error("Invalid API response");
       }
     } catch (error) {
       console.error("Failed to fetch user ID:", error);
+      setError("Failed to fetch user ID");
     }
   };
 
@@ -93,7 +103,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserId(null); //limpiamos al hacer logout
       setToken(null);
     } catch (error) {
-        console.log('Error loging out:', error);
+      console.log('Error loging out:', error);
+      setError("Failed to log out");
     }
   };
 
@@ -105,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     token,
     refreshToken,
     logout,
+    error,
   };
 
   return (
