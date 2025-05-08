@@ -110,7 +110,7 @@ const Register = () => {
         <div className="flex items-center justify-center min-h-screen text-black text-center p-8">
             <div className="w-full max-w-md mx-4">
                 <div className="p-4 mb-6 flex justify-center">
-                    <Link to='/welcome'>
+                    <Link to='/intro'>
                         <img
                             src="/logo.png"
                             alt="Logo"
@@ -164,7 +164,7 @@ const Register = () => {
                     </form>
                     <p className="text-center mt-4">
                         Already have an account?{" "}
-                        <Link to="/welcome/login" className="text-white font-semibold hover:underline">
+                        <Link to="/intro/login" className="text-white font-semibold hover:underline">
                             Login
                         </Link>
                     </p>
