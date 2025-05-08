@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, ReactNode, useCallback } from "
 import { auth } from "../../firebase/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { apiUsers } from "../../api";
-import { UserDB } from "../../components/welcome/interface-user";
+import { UserDB } from "../../components/intro/interface-user";
 
 interface AuthContextType {
   currentUser: User | null;

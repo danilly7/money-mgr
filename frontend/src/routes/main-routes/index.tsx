@@ -5,7 +5,7 @@ import { categoryRoutes } from './category-routes';
 import { transactionRoutes } from './transaction-routes';
 import { userRoutes } from './user-routes';
 
-const RequireAuth = lazy(() => import('../../components/welcome/required-auth'));
+const RequireAuth = lazy(() => import('../../components/intro/required-auth'));
 const MainLayout = lazy(() => import('../../layouts/main-layout'));
 const Home = lazy(() => import('../../pages/home'));
 
