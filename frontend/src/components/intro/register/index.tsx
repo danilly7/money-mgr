@@ -74,6 +74,7 @@ const Register = () => {
                         if (found) {
                             userCreated = true;
                             clearInterval(interval); //detener el intervalo cuando se confirme
+                            navigate("/intro/welcome");
                         }
                     }
 
@@ -83,7 +84,7 @@ const Register = () => {
                         if (!userCreated) {
                             throw new Error("User was created in Firebase but not found in backend");
                         }
-                        navigate("/"); //redirigir después de la verificación
+                        navigate("/intro/welcome"); //redirigir después de la verificación
                     }
                 }, 1000); //revisar cada 1 segundo
             } catch (err: unknown) {
@@ -102,8 +103,10 @@ const Register = () => {
         return <Spinner />;
     }
 
+    //redirige si el usuario ya está logueado (por ejemplo, si entra manualmente a /intro/register)
+    //caso especial, pq la redirección ya se hace arriba.
     if (userLoggedIn) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/intro/welcome" replace />;
     }
 
     return (

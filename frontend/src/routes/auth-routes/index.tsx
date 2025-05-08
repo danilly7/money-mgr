@@ -5,6 +5,7 @@ const AuthLayout = lazy(() => import('../../layouts/auth-layout'));
 const Intro = lazy(() => import('../../pages/intro'));
 const Login = lazy(() => import('../../components/intro/login'));
 const Register = lazy(() => import('../../components/intro/register'));
+const Welcome = lazy(() => import('../../components/intro/welcome'));
 
 export const authRoutes: RouteObject = {
   path: '/intro',
@@ -13,5 +14,6 @@ export const authRoutes: RouteObject = {
     { index: true, element: <Intro /> },
     { path: 'login', element: <Login /> },
     { path: 'register', element: <Register /> },
+    { path: 'welcome', element: <Welcome /> },
   ],
 };
