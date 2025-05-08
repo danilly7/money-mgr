@@ -56,7 +56,36 @@ const Register = () => {
                     throw new Error("Failed to update user data");
                 }
 
-                navigate("/");
+                console.log("Esperando antes de navegar...");
+
+                //Verificamos que el usuario este creado en la API
+                let attempts = 0;
+                let userCreated = false;
+                const interval = setInterval(async () => {
+                    const checkResponse = await fetch(apiUsers, {
+                        headers: {
+                            Authorization: `Bearer ${idToken}`,
+                        },
+                    });
+
+                    if (checkResponse.ok) {
+                        const data = await checkResponse.json();
+                        const found = data.users.find((u: { uid: string }) => u.uid === user.uid);
+                        if (found) {
+                            userCreated = true;
+                            clearInterval(interval); //detener el intervalo cuando se confirme
+                        }
+                    }
+
+                    attempts++;
+                    if (attempts >= 5 || userCreated) {
+                        clearInterval(interval); //detener el intervalo después de 5 intentos
+                        if (!userCreated) {
+                            throw new Error("User was created in Firebase but not found in backend");
+                        }
+                        navigate("/"); //redirigir después de la verificación
+                    }
+                }, 1000); //revisar cada 1 segundo
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     setErrorMessage(err.message);
