@@ -54,26 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }, [currentUser]);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      setUserLoggedIn(!!user);
-
-      if (user) {
-        await fetchUserId(user.uid);
-        await fetchToken(user);
-      } else {
-        setUserId(null);
-        setToken(null);
-      }
-
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, [fetchToken]);
-
-  const fetchUserId = async (uid: string) => {
+  const fetchUserId = useCallback(async (uid: string, attempts = 5) => {
     try {
       const response = await fetch(`${apiUsers}`);
       if (!response.ok) throw new Error("Error fetching user ID");
@@ -92,10 +73,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid API response");
       }
     } catch (error) {
-      console.error("Failed to fetch user ID:", error);
+      if (attempts > 1) {
+        console.log(`Attempt failed, retrying... You have ${attempts - 1} of 5 attempts left.`);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return fetchUserId(uid, attempts - 1);
+      }
+
+      console.error("Failed to fetch user ID after multiple attempts:", error);
       setError("Failed to fetch user ID");
     }
-  };
+  }, []); //el useCallback asegura que fetchUserId no cambie a menos que sea necesario
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      setUserLoggedIn(!!user);
+
+      if (user) {
+        await fetchUserId(user.uid);
+        await fetchToken(user);
+      } else {
+        setUserId(null);
+        setToken(null);
+      }
+
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, [fetchToken, fetchUserId]);
 
   const logout = async () => {
     try {

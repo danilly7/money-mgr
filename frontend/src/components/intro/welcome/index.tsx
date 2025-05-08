@@ -1,9 +1,22 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "../../../context/auth-context";
 
 const Welcome = () => {
-  const [hovered, setHovered] = useState(false);
+  const { userLoggedIn, currentUser } = useAuth();
   const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
+
+  //verifica que el usuario esté completamente registrado y logueado
+  useEffect(() => {
+    if (!userLoggedIn || !currentUser?.uid) {
+      navigate("/intro/register");
+    }
+  }, [userLoggedIn, currentUser, navigate]);
+
+  if (!userLoggedIn || !currentUser?.uid) {
+    return <Navigate to="/intro/register" replace />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-black text-center p-8">
