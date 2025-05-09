@@ -12,7 +12,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     selectedAccountId,
     onAccountChange,
 }) => {
-    const { accounts, loading, error } = useFetchAllAccounts();
+    const { accounts, error } = useFetchAllAccounts();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const accountSelectorRef = useRef<HTMLDivElement | null>(null);
@@ -65,21 +65,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
 
             {isEditing && (
                 <div className="absolute top-14 left-1/2 transform -translate-x-1/2 w-full sm:w-56 bg-white border-4 border-black rounded-lg shadow-lg max-h-60 overflow-y-auto z-20">
-                    {loading ? (
-                        <p className="text-center p-4">Loading accounts...</p>
-                    ) : error ? (
-                        <p className="text-center p-4 text-red-500">Error loading accounts.</p>
-                    ) : accounts.length > 0 ? (
-                        accounts.map((account) => (
-                            <div
-                                key={account.id}
-                                className="flex items-center gap-4 p-3 hover:bg-gray-200 cursor-pointer"
-                                onClick={() => handleAccountSelect(account)}
-                            >
-                                <span className="text-lg font-semibold">{account.name}</span>
-                            </div>
-                        ))
-                    ) : (
+                    {accounts.length === 0 ? (
                         <div className="flex flex-col items-center p-4">
                             <p className="text-center mb-4">No accounts found.</p>
                             <button
@@ -89,6 +75,18 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
                                 Create a new account
                             </button>
                         </div>
+                    ) : error ? (
+                        <p className="text-center p-4 text-red-500">Error loading accounts.</p>
+                    ) : (
+                        accounts.map((account) => (
+                            <div
+                                key={account.id}
+                                className="flex items-center gap-4 p-3 hover:bg-gray-200 cursor-pointer"
+                                onClick={() => handleAccountSelect(account)}
+                            >
+                                <span className="text-lg font-semibold">{account.name}</span>
+                            </div>
+                        ))
                     )}
                 </div>
             )}

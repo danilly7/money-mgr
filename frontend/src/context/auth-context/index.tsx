@@ -9,6 +9,7 @@ interface AuthContextType {
   userId: number | null;
   userLoggedIn: boolean;
   loading: boolean;
+  userIdLoading: boolean;
   token: string | null;
   refreshToken: () => Promise<string | null>;
   logout: () => Promise<void>;
@@ -88,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       setUserLoggedIn(!!user);
+      setUserIdLoading(true);
 
       if (user) {
         await fetchUserId(user.uid);
@@ -95,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUserId(null);
         setToken(null);
+        setUserIdLoading(false);
       }
 
       setLoading(false);
@@ -108,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signOut(auth);
       setUserId(null); //limpiamos al hacer logout
       setToken(null);
+      setUserIdLoading(false);
     } catch (error) {
       console.log('Error loging out:', error);
       setError("Failed to log out");

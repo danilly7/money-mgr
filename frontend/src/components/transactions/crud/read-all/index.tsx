@@ -7,7 +7,6 @@ import { useTransactions } from '../../../../context/transactions-context';
 import { Account } from '../../../accounts/interface-account';
 import { apiAccounts } from '../../../../api';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isWithinInterval, startOfDay, endOfDay } from "date-fns";
-import { LoadMoreButton } from '../../../ui/load-more-btn';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface TransactionListProps {
@@ -17,7 +16,7 @@ interface TransactionListProps {
 
 const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe }) => {
     const { categories } = useCategories();
-    const { transactions, loading, error, hasMore, loadMore, refetch } = useTransactions();
+    const { transactions, loading, error, refetch } = useTransactions();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -42,36 +41,37 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return categories.find((category) => category.id === categoryId);
     };
 
-    const filterByTimeframe = (transactionDate: Date) => {
+    const filterByTimeframe = (transactionDate: Date | string) => {
         const today = new Date();
+        const parsedDate = new Date(transactionDate);
 
         switch (timeframe) {
             case "Day":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfDay(today),
                     end: endOfDay(today),
                 });
 
             case "Week":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfWeek(today),
                     end: endOfWeek(today),
                 });
 
             case "Month":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfMonth(today),
                     end: endOfMonth(today),
                 });
 
             case "Year":
-                return isWithinInterval(transactionDate, {
+                return isWithinInterval(parsedDate, {
                     start: startOfYear(today),
                     end: endOfYear(today),
                 });
 
             default:
-                return false;
+                return true; //si no hay timeframe devuelve todas
         }
     };
 
@@ -90,6 +90,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return category.type === "income";
     });
 
+    const uniqueTransactions = filteredTransactions.filter( //filtraje de duplicados, importante.
+        (transaction, index, self) =>
+            index === self.findIndex((t) => t.id === transaction.id)
+    );
+
+    const sortedTransactions = [...uniqueTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
     if (loading && transactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">Loading...</div>;
     }
@@ -101,11 +108,9 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
         return <div className="text-center py-8 text-red-500">Error: {error.message}</div>;
     }
 
-    if (filteredTransactions.length === 0) {
+    if (sortedTransactions.length === 0) {
         return <div className="text-center py-8 text-gray-500">No transactions yet, start now!</div>;
     }
-
-    const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
         <div className={`relative flex flex-col items-center mx-auto my-8 border-4 overflow-hidden rounded-lg shadow-lg max-w-xl w-full
@@ -156,14 +161,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ isExpense, timeframe 
                     </div>
                 );
             })}
-
-            {hasMore && (
-                <div className="bg-white w-full flex justify-center">
-                    <div className="p-4 w-[95%] flex justify-center border-t-2 border-gray-300">
-                        <LoadMoreButton onClick={loadMore} />
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

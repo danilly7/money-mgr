@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import BalanceBox from "../../components/ui/balance-box";
 import ExpenseIncomeToggle from "../../components/ui/expense-income-toggle";
 import { SearchButton } from "../../components/ui/search-btn";
+
 import { AddButton } from "../../components/ui/add-btn";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
 import { useTransactions } from "../../context/transactions-context";
@@ -14,7 +15,7 @@ const Home = () => {
     const [isExpense, setIsExpense] = useState(true);
 
     return (
-        <>
+        <Suspense fallback={<Spinner />}>
             <SwitchTimeframe timeframe={timeframe} setTimeframe={setTimeframe} />
             <BalanceBox balance={visibleBalance} />
 
@@ -27,11 +28,11 @@ const Home = () => {
 
             <TransactionsByCategory isExpense={isExpense} />
 
-            <div className="flex flex-row justify-center space-x-10 m-6">
+           <div className="flex flex-row justify-center space-x-10 m-6">
                 <SearchButton to="/transactions" timeframe={timeframe} isExpense={isExpense} />
                 <AddButton to="transactions/newtransaction" />
             </div>
-        </>
+        </Suspense>
     );
 };
 

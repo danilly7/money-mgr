@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/auth-context';
+import { fetchRetry } from '../utils/fetchRetry';
 
 export function useFetchByPage<T>(url: string, page: number, useToken: boolean = false, dataKey: string = 'data') {
     const { token, loading: authLoading, refreshToken } = useAuth();
@@ -20,7 +21,7 @@ export function useFetchByPage<T>(url: string, page: number, useToken: boolean =
                 headers['Authorization'] = `Bearer ${authToken}`;
             }
 
-            const response = await fetch(`${url}?page=${page ?? 1}`, { headers });
+            const response = await fetchRetry(`${url}?page=${page ?? 1}`, 2000, 1, { headers });
 
             if (response.status === 401 && useToken) {
                 throw new Error('401');
