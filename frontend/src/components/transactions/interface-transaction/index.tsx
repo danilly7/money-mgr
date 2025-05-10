@@ -21,3 +21,11 @@ export interface Transaction {
         balance: number;
     };
 };
+
+export interface TransactionCreate {
+    category_id: number;
+    account_id: number;
+    amount: number;
+    comment?: string;
+    date: Date;
+}
