@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }, [currentUser]);
 
-  const fetchUserId = useCallback(async (uid: string, attempts = 5) => {
+  const fetchUserId = useCallback(async (uid: string, attempts = 10) => {
     try {
       const response = await fetch(`${apiUsers}`);
       if (!response.ok) throw new Error("Error fetching user ID");
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       if (attempts > 1) {
-        console.log(`Attempt failed, retrying... You have ${attempts - 1} of 5 attempts left.`);
+        console.log(`Attempt failed, retrying... You have ${attempts - 1} of 10 attempts left.`);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return fetchUserId(uid, attempts - 1);
       }
