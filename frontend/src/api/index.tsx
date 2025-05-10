@@ -1,9 +1,9 @@
-export const apiUsers = "http://localhost:3000/api/users";
+export const apiUsers = import.meta.env.VITE_API_USERS;
 
-export const apiAccounts = 'http://localhost:3000/api/accounts';
+export const apiAccounts = import.meta.env.VITE_API_ACCOUNTS;
 
-export const apiCategories = 'http://localhost:3000/api/categories';
+export const apiCategories = import.meta.env.VITE_API_CATEGORIES;
 
-export const apiTransactions = "http://localhost:3000/api/transactions";
+export const apiTransactions = import.meta.env.VITE_API_TRANSACTIONS;
 
-export const apiTransfers = "http://localhost:3000/api/transfers";
+export const apiTransfers = import.meta.env.VITE_API_TRANSFERS;
