@@ -4,7 +4,7 @@ import SwitchTimeframe from "../../components/ui/switch-time-frame";
 import SwitchExpenseIncome from "../../components/ui/switch-expense-income";
 import { BackButton } from "../../components/ui/back-btn";
 import TransactionList from "../../components/transactions/crud/read-all";
-import { AddButton } from "../../components/ui/add-btn";
+import { AddButton } from "../../components/ui/addnew-btn";
 
 const ViewOfTransactions = () => {
   const location = useLocation();

@@ -1,4 +1,4 @@
-import { AddButton } from "../../components/ui/add-btn";
+import { AddButton } from "../../components/ui/addnew-btn";
 import AccountsList from "../../components/accounts/crud/read-all";
 import BalanceBox from "../../components/ui/balance-box";
 import useVisibleBalance from "../../hooks/useVisibleBalance";
