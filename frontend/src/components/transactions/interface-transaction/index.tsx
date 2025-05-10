@@ -6,8 +6,8 @@ export interface Transaction {
     comment?: string;
     date: Date;
 
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt: string;
+    updatedAt: string;
 
     category?: {
         id_category: number;
