@@ -4,13 +4,22 @@ import dotenv from 'dotenv';
 //Carga variables de entorno, el .env
 dotenv.config();
 
-//Configuración de Sequelize para manejar la conexión a la bbdd
+function getEnvVar(...names: string[]): string | undefined {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  return undefined;
+}
+
+//Configuración de Sequelize para manejar la conexión a la bbdd de manera FLEXIBLE
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'default_db',
-  process.env.DB_USER || 'default_user',
-  process.env.DB_PASS || '',
+  getEnvVar('DB_NAME', 'MYSQLDATABASE') || 'default_db',
+  getEnvVar('DB_USER', 'MYSQLUSER') || 'default_user',
+  getEnvVar('DB_PASS', 'MYSQLPASSWORD') || '',
   {
-    host: process.env.DB_HOST || 'localhost',
+    host: getEnvVar('DB_HOST', 'MYSQLHOST') || 'localhost',
+    port: Number(getEnvVar('DB_PORT', 'MYSQLPORT') || '3306'),
     dialect: (process.env.DB_DIALECT as any) || 'mysql',
     logging: process.env.NODE_ENV === 'development' ? console.log : false, //solo habilitar logging en desarrollo
     timezone: '+01:00', //hora Barcelona, esto es para las fechas de transactions y transfers. Evitamos problemas a medianoche
@@ -21,12 +30,12 @@ const sequelize = new Sequelize(
 const syncroModel = async () => {
   try {
     console.log('Syncing models with the database...');
-    await sequelize.sync({ force: false }); 
+    await sequelize.sync({ force: false });
     /* OJO IMPORTANTE:
       - "alter: true": Modifica las tablas existentes sin borrar datos.  
       - "force: true": Borra todas las tablas y las vuelve a crear.
     */
-    
+
     console.log('Models synchronized successfully.');
   } catch (error) {
     console.error('Unable to sync models:', error);
@@ -37,7 +46,7 @@ const syncroModel = async () => {
 const testConnection = async () => {
   try {
     console.log('Attempting to authenticate with the database...');
-    
+
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
     //si la conexión es correcta, sincroniza los modelos
