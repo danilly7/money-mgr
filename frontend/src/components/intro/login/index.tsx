@@ -46,56 +46,58 @@ const Login = () => {
 
     const handleGoogleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isSigningIn) {
-            setIsSigningIn(true);
-            setErrorMessage("");
-            try {
-                const userCredential = await doSignInWithGoogle();
-                const user = userCredential.user;
+        setErrorMessage("");
 
-                const response = await fetch(`${apiUsers}/${user.uid}`, {
-                    method: "GET",
+        if (isSigningIn) return;
+
+        try {
+            //el popup debe lanzarse directamente desde la acción del usuario, sin setState antes
+            const userCredential = await doSignInWithGoogle();
+            const user = userCredential.user;
+
+            setIsSigningIn(true);
+
+            if (!user?.uid) {
+                setErrorMessage("Invalid user ID");
+                return;
+            }
+
+            const response = await fetch(`${apiUsers}/${user.uid}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log(userData);
+            } else {
+                // Crear usuario si no está en la BBDD
+                const createResponse = await fetch(apiUsers, {
+                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({
+                        name: user.displayName,
+                        email: user.email,
+                        uid: user.uid,
+                    }),
                 });
-                //si da error 400 en consola, no estrés, significa que no está en mi bbdd
-                //y por lo tanto lo crearemos en la bbdd
 
-                if (user.uid) {
-                    if (response.ok) {
-                        const userData = await response.json();
-                        console.log(userData);
-                    } else {
-                        //aquí es dnd creamos al usuario
-                        const createResponse = await fetch(apiUsers, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                name: user.displayName,
-                                email: user.email,
-                                uid: user.uid,
-                            }),
-                        });
-
-                        if (!createResponse.ok) {
-                            throw new Error("Failed to create new user");
-                        }
-                    }
-                } else {
-                    setErrorMessage("Invalid user ID");
+                if (!createResponse.ok) {
+                    throw new Error("Failed to create new user");
                 }
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setErrorMessage(err.message);
-                } else {
-                    setErrorMessage("An unexpected error occurred.");
-                }
-            } finally {
-                setIsSigningIn(false);
             }
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setErrorMessage(err.message);
+            } else {
+                setErrorMessage("An unexpected error occurred.");
+            }
+        } finally {
+            setIsSigningIn(false);
         }
     };
 
