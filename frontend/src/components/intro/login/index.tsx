@@ -1,113 +1,28 @@
 import { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { doSignInWithEmailAndPassword, doSignInWithGoogle } from "../../../firebase/auth";
 import { useAuth } from "../../../context/auth-context";
-import { apiUsers } from "../../../api";
 import Spinner from "../../ui/spinner";
-
+import { useLogin } from "../../../hooks/useLogin";
 
 const Login = () => {
     const { userLoggedIn, loading } = useAuth();
+    const { signInWithEmail, signInWithGoogle, isSigningIn, errorMessage } = useLogin();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isSigningIn, setIsSigningIn] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSignIn = async (e: React.FormEvent) => {
+    const handleSignIn = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isSigningIn) {
-            setIsSigningIn(true);
-            setErrorMessage("");
-            try {
-                const userCredential = await doSignInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                const response = await fetch(`${apiUsers}/${user.uid}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to update user data");
-                }
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setErrorMessage(err.message);
-                } else {
-                    setErrorMessage("An unexpected error occurred.");
-                }
-            } finally {
-                setIsSigningIn(false);
-            }
-        }
+        signInWithEmail(email, password);
     };
 
-    const handleGoogleSignIn = async (e: React.FormEvent) => {
+    const handleGoogleSignIn = (e: React.FormEvent) => {
         e.preventDefault();
-        setErrorMessage("");
-
-        if (isSigningIn) return;
-
-        try {
-            //el popup debe lanzarse directamente desde la acción del usuario, sin setState antes
-            const userCredential = await doSignInWithGoogle();
-            const user = userCredential.user;
-
-            setIsSigningIn(true);
-
-            if (!user?.uid) {
-                setErrorMessage("Invalid user ID");
-                return;
-            }
-
-            const response = await fetch(`${apiUsers}/${user.uid}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (response.ok) {
-                const userData = await response.json();
-                console.log(userData);
-            } else {
-                // Crear usuario si no está en la BBDD
-                const createResponse = await fetch(apiUsers, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        name: user.displayName,
-                        email: user.email,
-                        uid: user.uid,
-                    }),
-                });
-
-                if (!createResponse.ok) {
-                    throw new Error("Failed to create new user");
-                }
-            }
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setErrorMessage(err.message);
-            } else {
-                setErrorMessage("An unexpected error occurred.");
-            }
-        } finally {
-            setIsSigningIn(false);
-        }
+        signInWithGoogle();
     };
 
-    if (loading) {
-        return <Spinner />;
-    }
-
-    if (userLoggedIn) {
-        return <Navigate to="/" />;
-    }
+    if (loading) return <Spinner />;
+    if (userLoggedIn) return <Navigate to="/" />;
 
     return (
         <div className="flex items-center justify-center min-h-screen text-black text-center p-8">
