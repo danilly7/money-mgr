@@ -3,6 +3,7 @@ import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "../../../context/auth-context";
 import Spinner from "../../ui/spinner";
 import { useLogin } from "../../../hooks/useLogin";
+import { PasswordVisibilityToggle } from "../../ui/password-visibility-toggle";
 
 const Login = () => {
     const { userLoggedIn, loading } = useAuth();
@@ -10,6 +11,7 @@ const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     const handleSignIn = (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,13 +48,21 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedOrange text-black"
                         />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedOrange text-black"
-                        />
+                        <div className="relative">
+                            <input
+                                type={passwordVisible ? "text" : "password"}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full p-3 pr-12 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedOrange text-black"
+                            />
+                            <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                <PasswordVisibilityToggle
+                                    isVisible={passwordVisible}
+                                    toggleVisibility={() => setPasswordVisible((v) => !v)}
+                                />
+                            </div>
+                        </div>
                         <button
                             type="submit"
                             disabled={isSigningIn}
