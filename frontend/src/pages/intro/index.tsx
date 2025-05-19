@@ -19,8 +19,9 @@ const Intro = () => {
                     Register
                 </Link>
             </div>
-            <p className="mt-12 text-lg">Mi casa es su casa</p>
-            <p className="text-lg">Welcome to <span className="text-personalizedPurple font-semibold">Moneymgr</span></p>
+            <p className="mt-12 text-xl">Welcome to <span className="text-personalizedPurple font-semibold">Moneymgr</span>🤗</p>
+            <p className="mt-8 text-lg">This is a budgeting tool to see how poor you are...</p>
+            <p className="mb-8 text-lg"> Mi casa, su casa — but first, identify yourself!</p>
             <img
                 src="/logo.png"
                 alt="Logo"
