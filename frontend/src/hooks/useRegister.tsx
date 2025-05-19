@@ -5,6 +5,7 @@ import { updateProfile, User } from "firebase/auth";
 import { apiUsers } from "../api";
 import { UserDB } from "../components/intro/interface-user";
 import { getFirebaseErrorMessage } from "../utils/firebaseErrors";
+import { FirebaseError } from "firebase/app";
 
 export const useRegister = () => {
     const navigate = useNavigate();
@@ -117,9 +118,11 @@ export const useRegister = () => {
             await verifyUserInBackend(idToken, userDB);
         } catch (err: unknown) {
             console.error('Error during registration:', err);
-            if (err instanceof Error) {
-                const friendlyMessage = getFirebaseErrorMessage(err.message) || err.message;
+            if (err instanceof FirebaseError) {
+                const friendlyMessage = getFirebaseErrorMessage(err.code, err.message);
                 setErrorMessage(friendlyMessage);
+            } else if (err instanceof Error) {
+                setErrorMessage(err.message);
             } else {
                 setErrorMessage("An unexpected error occurred.");
             }

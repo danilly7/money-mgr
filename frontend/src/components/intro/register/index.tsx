@@ -37,7 +37,7 @@ const Register = () => {
                 </div>
                 <div className="p-8 bg-personalizedGreen border-4 border-black rounded-lg shadow-lg">
                     <h2 className="text-3xl font-semibold text-black mb-6">Register</h2>
-                    {errorMessage && <p className="text-red-900 text-center mb-4">{errorMessage}</p>}
+                    {errorMessage && <p className="text-red-900 text-left mb-4 whitespace-pre-line">{errorMessage}</p>}
                     <form onSubmit={onSubmit} className="space-y-4">
                         <input
                             type="text"

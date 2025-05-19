@@ -68,7 +68,7 @@ const Login = () => {
                     >
                         Sign In with Google
                     </button>
-                    <p className="text-red-900 text-center mt-4">{errorMessage}</p>
+                    <p className="text-red-900 text-left mt-4 whitespace-pre-line">{errorMessage}</p>
                     <p className="text-center mt-6">
                         Don't have an account?{" "}
                         <Link to="/intro/register" className="text-white font-semibold hover:underline">
