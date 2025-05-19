@@ -3,6 +3,7 @@ import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "../../../context/auth-context";
 import Spinner from "../../ui/spinner";
 import { useRegister } from "../../../hooks/useRegister";
+import { PasswordVisibilityToggle } from "../../ui/password-visibility-toggle";
 
 const Register = () => {
     const { userLoggedIn, loading } = useAuth();
@@ -12,6 +13,10 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -55,22 +60,38 @@ const Register = () => {
                             required
                             className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
                         />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
-                        />
-                        <input
-                            type="password"
-                            placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            className="w-full p-3 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
-                        />
+                        <div className="relative">
+                            <input
+                                type={passwordVisible ? "text" : "password"}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full p-3 pr-12 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
+                            />
+                            <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                <PasswordVisibilityToggle
+                                    isVisible={passwordVisible}
+                                    toggleVisibility={() => setPasswordVisible((v) => !v)}
+                                />
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <input
+                                type={confirmPasswordVisible ? "text" : "password"}
+                                placeholder="Confirm Password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                className="w-full p-3 pr-12 border-4 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-personalizedPink text-black"
+                            />
+                            <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                                <PasswordVisibilityToggle
+                                    isVisible={confirmPasswordVisible}
+                                    toggleVisibility={() => setConfirmPasswordVisible(v => !v)}
+                                />
+                            </div>
+                        </div>
                         <button
                             type="submit"
                             disabled={isRegistering}
