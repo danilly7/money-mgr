@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../context/auth-context';
 import { apiTransactions } from '../api';
-import { Transaction } from '../components/transactions/interface-transaction';
+import { TransactionUpdate } from '../components/transactions/interface-transaction';
 
 export const useUpdateTransaction = () => {
     const { token, refreshToken } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const updateTransaction = async (id: number, updatedFields: Partial<Transaction>) => {
+    const updateTransaction = async (id: number, updatedFields: TransactionUpdate) => {
         setLoading(true);
         setError(null);
 

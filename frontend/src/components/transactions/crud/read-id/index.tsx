@@ -1,17 +1,35 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useFetchTransaction } from "../../../../hooks/useFetchTransaction";
 import { CancelButton } from "../../../ui/cancel-btn";
 import { formattedDate } from "../../../../utils/formattedDate";
-import {ConfirmationDeleteTransactionModal} from "../delete-modal";
+import { ConfirmationDeleteTransactionModal } from "../delete-modal";
 import { useDeleteTransaction } from "../../../../hooks/useDeleteTransaction";
+import { TransactionEditModal } from "../update-modal";
+import { EditModalButton } from "../../../ui/edit-modal-btn";
 
 const TransactionDetails: React.FC = () => {
     const { transactionId } = useParams<{ transactionId: string }>();
     const { transaction, loading, error } = useFetchTransaction(Number(transactionId!));
     const { deleteTransaction } = useDeleteTransaction();
-    const navigate = useNavigate();
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+   
+     const [activeModal, setActiveModal] = useState<"edit" | "delete" | null>(null);
+
+    const handleOpenEditModal = () => setActiveModal("edit");
+    const handleCloseEditModal = () => setActiveModal(null);
+
+    const handleOpenDeleteModal = () => setActiveModal("delete");
+    const handleCloseDeleteModal = () => setActiveModal(null);
+
+    const handleDeleteTransaction = async () => {
+        if (!transactionId) return;
+
+        try {
+            await deleteTransaction(Number(transactionId));
+        } catch (error) {
+            console.error("Failed to delete transaction:", error);
+        }
+    };
 
     if (loading) {
         return <div className="text-center text-xl font-semibold">Loading...</div>;
@@ -24,17 +42,6 @@ const TransactionDetails: React.FC = () => {
     if (!transaction) {
         return <div className="text-center text-xl font-semibold">Transaction not found</div>;
     }
-
-    const handleDeleteTransaction = async () => {
-        if (!transactionId) return;
-
-        try {
-            await deleteTransaction(Number(transactionId));
-            navigate("/transactions");
-        } catch (error) {
-            console.error("Failed to delete transaction:", error);
-        }
-    };
 
     return (
         <>
@@ -53,6 +60,7 @@ const TransactionDetails: React.FC = () => {
                     <p className="text-xl font-semibold">Category:</p>
                     <p className="text-lg">{transaction.category?.name || "No category"}</p>
                 </div>
+
                 <div className="flex justify-between items-center mt-2">
                     <p className="text-xl font-semibold">Type:</p>
                     <p className="text-lg capitalize">
@@ -69,6 +77,7 @@ const TransactionDetails: React.FC = () => {
                     <p className="text-xl font-semibold">Created:</p>
                     <p className="text-lg">{formattedDate(new Date(transaction.createdAt))}</p>
                 </div>
+
                 {transaction.updatedAt !== transaction.createdAt && (
                     <div className="flex justify-between items-center mt-2">
                         <p className="text-xl font-semibold">Updated:</p>
@@ -76,14 +85,21 @@ const TransactionDetails: React.FC = () => {
                     </div>
                 )}
             </div>
-            
+
             <div className="flex flex-row justify-center space-x-10 m-6">
-                <CancelButton onClick={() => setIsDeleteModalOpen(true)} />
+                <EditModalButton onClick={handleOpenEditModal} />
+                <CancelButton onClick={handleOpenDeleteModal} />
             </div>
-            
+
+            <TransactionEditModal
+                isOpen={activeModal === "edit"}
+                onClose={handleCloseEditModal}
+                transactionId={Number(transactionId)}
+            />
+
             <ConfirmationDeleteTransactionModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
+                isOpen={activeModal === "delete"}
+                onClose={handleCloseDeleteModal}
                 onConfirm={handleDeleteTransaction}
             />
         </>

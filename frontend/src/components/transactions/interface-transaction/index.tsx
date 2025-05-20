@@ -29,3 +29,11 @@ export interface TransactionCreate {
     comment?: string;
     date: Date;
 }
+
+export interface TransactionUpdate {
+    category_id: number;
+    account_id: number;
+    amount: number;
+    comment?: string;
+    date: Date;
+}
