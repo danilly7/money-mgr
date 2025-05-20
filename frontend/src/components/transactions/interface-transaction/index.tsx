@@ -31,9 +31,16 @@ export interface TransactionCreate {
 }
 
 export interface TransactionUpdate {
-    category_id: number;
-    account_id: number;
-    amount: number;
-    comment?: string;
-    date: Date;
+    category_id?: number;
+    account_id?: number;
+    amount?: number;
+    comment?: string | null;
+    date?: Date | string;
+}
+
+export interface ApiError {
+    msg: string;
+    error?: unknown;
+    statusCode?: number;
+    stack?: string; 
 }

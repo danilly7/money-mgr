@@ -59,42 +59,51 @@ export const TransactionEditModal = ({
 
     const handleSubmit = async () => {
         if (amount <= 0) {
-            setErrorMessage("Amount must be greater than 00000.");
+            setErrorMessage("Amount must be greater than 0.");
             return;
         }
 
-        if (categoryId === null) {
-            setErrorMessage("Category is required.");
+         if (!categoryId) {
+            setErrorMessage("Please select a category.");
             return;
         }
 
-        if (accountId === null) {
-            setErrorMessage("Account is required.");
+        if (!accountId) {
+            setErrorMessage("Please select an account.");
+            return;
+        }
+
+        if (!date) {
+            setErrorMessage("Please select a valid date.");
             return;
         }
         
         setLoadingUpdate(true);
         setErrorMessage(null);
         
-        const updatedTransaction:TransactionUpdate = {
-            amount,
-            comment,
-            date,
-            category_id: categoryId!,
-            account_id: accountId!,
-        };
-        
         try {
+            const updatedTransaction: TransactionUpdate = {
+                amount: Number(amount),
+                comment: comment || undefined,
+                date: date,
+                category_id: Number(categoryId),
+                account_id: Number(accountId),
+            };
+
+            console.log('Sending update:', updatedTransaction);
+
             await updateTransaction(transactionId, updatedTransaction);
+            
             setModalMessage("Transaction updated successfully!");
             setIsModalOpen(true);
-            refetch();
+            await refetch();
         } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : "Failed to update transaction.");
+            const errorMsg = error instanceof Error ? error.message : "Update failed";
+            console.error('Update error details:', error);
+            setErrorMessage(errorMsg);
         } finally {
             setLoadingUpdate(false);
         }
-        console.log({ amount, categoryId, accountId });
     };
 
     const handleCancel = () => {
