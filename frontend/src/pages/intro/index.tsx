@@ -20,8 +20,8 @@ const Intro = () => {
                 </Link>
             </div>
             <p className="mt-12 text-xl">Welcome to <span className="text-personalizedPurple font-semibold">Moneymgr</span>🤗</p>
-            <p className="mt-8 text-lg">This is a budgeting tool to see how poor you are...</p>
-            <p className="mb-8 text-lg"> Mi casa es su casa — but first, identify yourself!</p>
+            <p className="mt-8 text-lg">Your personal budgeting buddy — let’s see just how much of a spendthrift you really are... 💸💸</p>
+            <p className="mb-8 text-lg">But before we dive in, tell us who you are!</p>
             <img
                 src="/logo.png"
                 alt="Logo"
