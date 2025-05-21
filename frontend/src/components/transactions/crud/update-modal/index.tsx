@@ -15,12 +15,14 @@ interface TransactionEditModalProps {
     isOpen: boolean;
     onClose: () => void;
     transactionId: number;
+    onTransactionUpdated: () => void;
 }
 
 export const TransactionEditModal = ({
     isOpen,
     onClose,
     transactionId,
+    onTransactionUpdated,
 }: TransactionEditModalProps) => {
     const { transaction, loading, error, refetch } = useFetchTransaction(transactionId);
     const { updateTransaction } = useUpdateTransaction();
@@ -46,16 +48,16 @@ export const TransactionEditModal = ({
     }, [errorMessage]);
 
     useEffect(() => {
-    if (transaction) {
-      setAmount(transaction.amount);
-      setComment(transaction.comment || "");
-      setDate(new Date(transaction.createdAt));
-      setAccountId(transaction.account?.id || null);
-      setCategoryId(transaction.category?.id_category || null);
-      setCategoryType(transaction.category?.type || "expense");
-      setErrorMessage(null);
-    }
-  }, [transaction]);
+        if (transaction) {
+            setAmount(transaction.amount);
+            setComment(transaction.comment || "");
+            setDate(new Date(transaction.createdAt));
+            setAccountId(transaction.account?.id || null);
+            setCategoryId(transaction.category?.id_category || null);
+            setCategoryType(transaction.category?.type || "expense");
+            setErrorMessage(null);
+        }
+    }, [transaction]);
 
     const handleSubmit = async () => {
         if (amount <= 0) {
@@ -63,7 +65,7 @@ export const TransactionEditModal = ({
             return;
         }
 
-         if (!categoryId) {
+        if (!categoryId) {
             setErrorMessage("Please select a category.");
             return;
         }
@@ -77,10 +79,10 @@ export const TransactionEditModal = ({
             setErrorMessage("Please select a valid date.");
             return;
         }
-        
+
         setLoadingUpdate(true);
         setErrorMessage(null);
-        
+
         try {
             const updatedTransaction: TransactionUpdate = {
                 amount: Number(amount),
@@ -93,10 +95,12 @@ export const TransactionEditModal = ({
             console.log('Sending update:', updatedTransaction);
 
             await updateTransaction(transactionId, updatedTransaction);
-            
-            setModalMessage("Transaction updated successfully!");
+            await refetch(); //esto hace que se vuelva a cargar la transaccion justo después de usar el modal
+            onTransactionUpdated();
             setIsModalOpen(true);
-            await refetch();
+            setModalMessage("Transaction updated successfully!");
+            onClose();
+
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : "Update failed";
             console.error('Update error details:', error);

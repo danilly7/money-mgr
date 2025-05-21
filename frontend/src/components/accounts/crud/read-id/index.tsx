@@ -63,12 +63,12 @@ const AccountDetails: React.FC = () => {
           <p className="text-lg">{account.name}</p>
         </div>
         <div className="flex justify-between items-center mt-2">
-          <p className="text-xl font-semibold">Visibility:</p>
-          <p className="text-lg">{account.visibility ? <EyeIcon /> : <EyeClosedIcon />}</p>
-        </div>
-        <div className="flex justify-between items-center mt-2">
           <p className="text-xl font-semibold">Balance:</p>
           <p className="text-lg">{account.balance} €</p>
+        </div>
+        <div className="flex justify-between items-center mt-2">
+          <p className="text-xl font-semibold">Visibility:</p>
+          <p className="text-lg">{account.visibility ? <EyeIcon /> : <EyeClosedIcon />}</p>
         </div>
       </div>
       <div className="flex flex-row justify-center space-x-10 m-6">
