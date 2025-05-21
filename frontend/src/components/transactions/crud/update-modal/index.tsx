@@ -92,8 +92,6 @@ export const TransactionEditModal = ({
                 account_id: Number(accountId),
             };
 
-            console.log('Sending update:', updatedTransaction);
-
             await updateTransaction(transactionId, updatedTransaction);
             await refetch(); //esto hace que se vuelva a cargar la transaccion justo después de usar el modal
             onTransactionUpdated();

@@ -1,18 +1,9 @@
 import { Request, Response } from 'express';
 import models from '../models';
 import { sequelize } from '../db/connection';
+import { adjustBalance } from '../utils/adjustBalance';
 
 const { Transaction, Category, Account } = models;
-
-function adjustBalance(balance: number, amount: number, type: 'income' | 'expense', operation: 'add' | 'subtract'): number {
-    if (type === 'income') {
-        return operation === 'add' ? balance + amount : balance - amount;
-    }
-    if (type === 'expense') {
-        return operation === 'add' ? balance - amount : balance + amount;
-    }
-    return balance;
-}
 
 export const getAllTransactions = async (req: Request, res: Response): Promise<void> => {
     const user_id = req.user?.id;
@@ -205,7 +196,6 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         return;
     }
 
-    // Verificar que al menos un campo válido para actualizar esté presente
     const hasValidUpdate = [amount, account_id, category_id, date, comment].some(
         field => field !== undefined && field !== null
     );
@@ -215,7 +205,6 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         return;
     }
 
-    // Validar amount solo si está presente en la solicitud
     if (amount !== undefined && (typeof amount !== 'number' || amount <= 0)) {
         res.status(400).json({ msg: 'Amount must be greater than 0' });
         return;
@@ -224,59 +213,67 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
     const t = await sequelize.transaction();
     try {
         const transaction = await Transaction.findByPk(id, { transaction: t });
-
         if (!transaction) {
             await t.rollback();
             res.status(404).json({ msg: `Transaction with id ${id} not found` });
             return;
         }
 
-         const oldAmount = transaction.amount;
+        const oldAccountId = transaction.account_id;
+        const oldAmount = parseFloat(transaction.amount.toString());
         const oldCategory = await Category.findByPk(transaction.category_id, { transaction: t });
 
-        const accountIdToUse = account_id ?? transaction.account_id;
-        const account = await Account.findOne({
-            where: { id: accountIdToUse, user_id },
+        const newAccountId = account_id ?? transaction.account_id;
+        const newAmount = amount !== undefined ? parseFloat(amount.toString()) : oldAmount;
+        const newCategoryId = category_id ?? transaction.category_id;
+
+        const newCategory = await Category.findByPk(newCategoryId, { transaction: t });
+
+        const oldAccount = await Account.findOne({
+            where: { id: oldAccountId, user_id },
             transaction: t,
         });
 
-        if (!account) {
-            await t.rollback();
-            res.status(403).json({
-                msg: `Unauthorized: Account with id ${accountIdToUse} does not belong to you`
+        const newAccount = oldAccountId === newAccountId
+            ? oldAccount
+            : await Account.findOne({
+                where: { id: newAccountId, user_id },
+                transaction: t,
             });
+
+        if (!oldAccount || !newAccount) {
+            await t.rollback();
+            res.status(403).json({ msg: 'One or both accounts do not belong to the user' });
             return;
         }
 
-        const newCategoryId = category_id ?? transaction.category_id;
-        const newCategory = await Category.findByPk(newCategoryId, { transaction: t });
-        const newAmount = amount ?? oldAmount;
-
-        if (newCategory?.type === 'expense' && newAmount > account.balance) {
+        if (newCategory?.type === 'expense' && newAmount > newAccount.balance) {
             await t.rollback();
             res.status(400).json({
-                msg: 'Amount cannot be higher than the money available in the account'
+                msg: 'Amount cannot be higher than the money available in the account',
             });
             return;
         }
 
-        let updatedBalance = parseFloat(account.balance.toString());
-
-        // Revertir la transacción anterior
+        // Revertir saldo de la cuenta antigua
         if (oldCategory) {
-            updatedBalance = adjustBalance(updatedBalance, oldAmount, oldCategory.type, 'subtract');
+            let oldBalance = parseFloat(oldAccount.balance.toString());
+            oldBalance = adjustBalance(oldBalance, oldAmount, oldCategory.type, 'subtract');
+            oldBalance = Math.round(oldBalance * 100) / 100;
+            await oldAccount.update({ balance: oldBalance }, { transaction: t });
         }
 
-        // Aplicar la nueva transacción
+        // Aplicar saldo a la cuenta nueva
         if (newCategory) {
-            updatedBalance = adjustBalance(updatedBalance, newAmount, newCategory.type, 'add');
+            let newBalance = parseFloat(newAccount.balance.toString());
+            newBalance = adjustBalance(newBalance, newAmount, newCategory.type, 'add');
+            newBalance = Math.round(newBalance * 100) / 100;
+            await newAccount.update({ balance: newBalance }, { transaction: t });
         }
 
-        // Actualizar cuenta y transacción
-        await account.update({ balance: updatedBalance }, { transaction: t });
-
+        // Actualizar transacción
         const updateData: Partial<typeof transaction> = {};
-        if (amount !== undefined) updateData.amount = amount;
+        if (amount !== undefined) updateData.amount = newAmount;
         if (account_id !== undefined) updateData.account_id = account_id;
         if (category_id !== undefined) updateData.category_id = category_id;
         if (date !== undefined) updateData.date = date;
@@ -288,9 +285,9 @@ export const updateTransaction = async (req: Request, res: Response): Promise<vo
         res.json(transaction);
     } catch (error) {
         await t.rollback();
-        console.error(error);
+        console.error('Update transaction error:', error);
         res.status(500).json({
-            msg: 'Ups, there was an error when trying to update the transaction'
+            msg: 'Ups, there was an error when trying to update the transaction',
         });
     }
 };
@@ -334,19 +331,19 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
         const transactionAmount = parseFloat(transaction.amount.toString());
 
         if (category?.type === 'income') {
-            updatedBalance = parseFloat((updatedBalance - transactionAmount).toFixed(2)); 
+            updatedBalance = parseFloat((updatedBalance - transactionAmount).toFixed(2));
         } else if (category?.type === 'expense') {
-            updatedBalance = parseFloat((updatedBalance + transactionAmount).toFixed(2)); 
+            updatedBalance = parseFloat((updatedBalance + transactionAmount).toFixed(2));
         }
 
         await account.update({ balance: updatedBalance }, { transaction: t });
         await transaction.destroy({ transaction: t });
 
-        await t.commit(); 
+        await t.commit();
 
         res.json({ msg: 'Transaction deleted successfully' });
     } catch (error) {
-        await t.rollback(); 
+        await t.rollback();
         console.error(error);
         res.status(500).json({ msg: 'Ups, there was an error when trying to delete the transaction' });
     }
