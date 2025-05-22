@@ -42,6 +42,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Home
@@ -50,6 +51,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/accounts'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Accounts
@@ -58,6 +60,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/categories'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             Categories
@@ -66,6 +69,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/user'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold pointer-events-none text-personalizedOrange' : undefined}
                         >
                             <UserIcon />
@@ -79,6 +83,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
@@ -88,6 +93,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/accounts'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
@@ -97,6 +103,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/categories'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
@@ -106,6 +113,7 @@ export const Header = () => {
                     <li>
                         <NavLink
                             to='/user'
+                            end
                             className={({ isActive }) => isActive ? 'font-semibold text-personalizedOrange' : undefined}
                             onClick={handleLinkClick}
                         >
