@@ -12,147 +12,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.syncroModel = exports.testConnection = exports.sequelize = void 0;
 const sequelize_1 = require("sequelize");
-const competitors_1 = __importDefault(require("../models/competitors"));
-const sequelize = new sequelize_1.Sequelize('revenue', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql'
-});
-const initializeCompetitorsData = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const count = yield competitors_1.default.count();
-        if (count === 0) {
-            console.log('No competitors found. Adding default competitors...');
-            yield competitors_1.default.bulkCreate([
-                {
-                    "id_competitor": 1,
-                    "name": "La Teca de l'Àvia",
-                    "address": "C/Degà de Bahí, 5",
-                    "distance": "-",
-                    "offers": "Daily menu during weekdays, and rotisserie chicken on Thursdays and weekends. Homemade food.",
-                    "price": "€",
-                    "hours": "Open every day except Sundays and Monday afternoons.",
-                    "color": "bg-yellow-100",
-                    "latitude": 41.3964,
-                    "longitude": 2.1845
-                },
-                {
-                    "id_competitor": 2,
-                    "name": "El Xamfrà d’en Xifré",
-                    "address": "C/ Mallorca, 554",
-                    "distance": "3 minutes",
-                    "offers": "Rotisserie chicken, roasted potatoes, croquettes, and cannelloni.",
-                    "price": "€",
-                    "hours": "Open for lunch service on Thursdays, Fridays, and weekends. Closed on other days.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.4040,
-                    "longitude": 2.1796
-                },
-                {
-                    "id_competitor": 3,
-                    "name": "El Rey del Pollo",
-                    "address": "C/ Degà de Bahí, 49",
-                    "distance": "2 minutes",
-                    "offers": "Daily menu during weekdays. They also make rotisserie chicken and sides.",
-                    "price": "€",
-                    "hours": "Open for lunch. Closed on Mondays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.3969,
-                    "longitude": 2.1870
-                },
-                {
-                    "id_competitor": 4,
-                    "name": "La Cuina de la Carme",
-                    "address": "C/ Muntanya, 47",
-                    "distance": "3 minutes",
-                    "offers": "Daily menu during weekdays and roast chicken. They also offer home delivery.",
-                    "price": "€",
-                    "hours": "Open until 5 PM. Closed on Tuesdays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.4082,
-                    "longitude": 2.1705
-                },
-                {
-                    "id_competitor": 5,
-                    "name": "El Ruedo restaurant",
-                    "address": "C/ Rosselló, 540",
-                    "distance": "4 minutes",
-                    "offers": "Peruvian restaurant, serves rotisserie chicken.",
-                    "price": "€€",
-                    "hours": "Primarily open for dinner service in the evenings. Closed on Tuesdays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.3961,
-                    "longitude": 2.1599
-                },
-                {
-                    "id_competitor": 6,
-                    "name": "Set de Llegums",
-                    "address": "C/ Rogent, 124",
-                    "distance": "3 minutes",
-                    "offers": "Primarily sells all types of legumes. Also offers croquettes, some ready-to-eat dishes, and bulk olives.",
-                    "price": "€",
-                    "hours": "Open Monday to Friday until 8:30 PM, and Saturdays until 2:30 PM. Closed on Sundays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.4275,
-                    "longitude": 2.1790
-                },
-                {
-                    "id_competitor": 7,
-                    "name": "Xarcuteries Bosch",
-                    "address": "C/ València, 558",
-                    "distance": "2 minutes",
-                    "offers": "Main activity is a delicatessen. Also offers ready-to-eat dishes and pre-seasoned dishes for cooking.",
-                    "price": "€€",
-                    "hours": "Open until late from Monday to Saturday. Closed on Sundays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.4069,
-                    "longitude": 2.1793
-                },
-                {
-                    "id_competitor": 8,
-                    "name": "Casa Tobella",
-                    "address": "C/ València, 555",
-                    "distance": "7 minutes",
-                    "offers": "Gourmet delicatessen. Also offers ready-to-eat dishes.",
-                    "price": "€€",
-                    "hours": "Open Monday to Friday. Fridays and Saturdays usually close a bit earlier, but open until 8:30 PM. Closed on Sundays.",
-                    "color": "bg-gray-100",
-                    "latitude": 41.4072,
-                    "longitude": 2.1775
-                },
-            ]);
-            console.log('Default competitors added successfully.');
-        }
-        else {
-            console.log('Competitors already exist in the database.');
-        }
+const dotenv_1 = __importDefault(require("dotenv"));
+//Carga variables de entorno, el .env
+dotenv_1.default.config();
+function getEnvVar(...names) {
+    for (const name of names) {
+        const value = process.env[name];
+        if (value)
+            return value;
     }
-    catch (error) {
-        console.error('Error initializing data:', error);
-    }
+    return undefined;
+}
+//Configuración de Sequelize para manejar la conexión a la bbdd de manera FLEXIBLE
+const sequelize = new sequelize_1.Sequelize(getEnvVar('DB_NAME', 'MYSQLDATABASE') || 'default_db', getEnvVar('DB_USER', 'MYSQLUSER') || 'default_user', getEnvVar('DB_PASS', 'MYSQLPASSWORD') || '', {
+    host: getEnvVar('DB_HOST', 'MYSQLHOST') || 'localhost',
+    port: Number(getEnvVar('DB_PORT', 'MYSQLPORT') || '3306'),
+    dialect: process.env.DB_DIALECT || 'mysql',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false, //solo habilitar logging en desarrollo
+    timezone: '+01:00', //hora Barcelona, esto es para las fechas de transactions y transfers. Evitamos problemas a medianoche
 });
+exports.sequelize = sequelize;
+//Sincronización de los modelos de Sequelize con la bbdd
 const syncroModel = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //sincroniza el modelo con la base de datos (crea la tabla si no existe)
-        //con "alter: true" se sincronizan las columnas y se crean/eliminan si fuera necesario
-        yield sequelize.sync({ force: false }).then(() => {
-            console.log('Modelos sincronizados con la base de datos');
-        });
-        yield initializeCompetitorsData();
+        console.log('Syncing models with the database...');
+        yield sequelize.sync({ force: false });
+        /* OJO IMPORTANTE:
+          - "alter: true": Modifica las tablas existentes sin borrar datos.
+          - "force: true": Borra todas las tablas y las vuelve a crear.
+        */
+        console.log('Models synchronized successfully.');
     }
     catch (error) {
-        console.error('Unable to connect to the database:', error);
+        console.error('Unable to sync models:', error);
     }
 });
+exports.syncroModel = syncroModel;
+//Comprueba la conexión a la bbdd
 const testConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log('Attempting to authenticate with the database...');
         yield sequelize.authenticate();
         console.log('Connection has been established successfully.');
+        //si la conexión es correcta, sincroniza los modelos
         yield syncroModel();
     }
     catch (error) {
         console.error('Unable to connect to the database:', error);
     }
 });
-exports.default = sequelize;
-testConnection();
+exports.testConnection = testConnection;

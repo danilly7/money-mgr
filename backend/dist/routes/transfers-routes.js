@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const transfers_1 = require("../controllers/transfers");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const transfersRouter = (0, express_1.Router)();
+transfersRouter.use(auth_middleware_1.authUser);
+transfersRouter.get("/", transfers_1.getAllTransfers);
+transfersRouter.get("/:id", transfers_1.getTransferById);
+transfersRouter.post("/", transfers_1.postTransfer);
+transfersRouter.put("/:id", transfers_1.updateTransfer);
+transfersRouter.delete("/:id", transfers_1.deleteTransfer);
+exports.default = transfersRouter;
