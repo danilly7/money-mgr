@@ -31,7 +31,7 @@ const User = () => {
             >
 
                 <UserIcon
-                    className="w-10 h-10 mx-auto mt-8 mb-4 
+                    className="!w-10 !h-10 mx-auto mt-8 mb-4 
                            text-personalizedPurple 
                            transition-colors duration-300"
                 />
