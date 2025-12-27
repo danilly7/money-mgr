@@ -1,4 +1,4 @@
-﻿# SPRINT 9 - Project: Moneymgr
+﻿# MONEYMGR
 ## About
 
 **Moneymgr** is a simple yet powerful application designed to help you manage your money efficiently. With an intuitive interface, you can track your income, expenses and balances with ease.
@@ -226,3 +226,4 @@ The authentication system is handled by Firebase. Follow these steps to set it u
 ## Author
 
 #### Danilly Condori Lerpido - [GitHub](https://github.com/danilly7)
+
