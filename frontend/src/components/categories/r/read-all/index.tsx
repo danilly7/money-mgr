@@ -31,24 +31,31 @@ export const CategoriesList: React.FC<CategoriesListProps> = ({ isExpense }) => 
                         <div
                             key={category.id}
                             className="group flex items-center justify-center 
-                                       w-32 h-32 lg:w-36 lg:h-36
-                                       rounded-full border-4 border-black text-center
-                                       transition-all duration-300 hover:rotate-3 hover:scale-110 hover:shadow-lg hover:bg-opacity-90"
-                            style={{ backgroundColor: "#e2e8f0", borderColor }}
+                            w-32 h-32 lg:w-36 lg:h-36
+                            rounded-full border-4 border-black text-center
+                            transition-all duration-300 hover:rotate-3 hover:scale-110 hover:shadow-lg hover:cursor-pointer"
+                            style={{
+                                backgroundColor: `${borderColor}44`,
+                                borderColor: 'black'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = borderColor;
+                                e.currentTarget.style.borderColor = 'black';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = `${borderColor}44`;
+                                e.currentTarget.style.borderColor = 'black';
+                            }}
                         >
                             <div className="flex flex-col items-center justify-center">
                                 <Icon
-                                    className={`w-7 h-7 lg:w-9 lg:h-9 transition-all duration-300 ${isExpense ? 'text-red-600' : 'text-green-600'
-                                        }`}
+                                    className={`w-7 h-7 lg:w-9 lg:h-9 transition-all duration-300`}
                                 />
-
                                 <strong
-                                    className={`text-sm lg:text-lg opacity-0 transition-all duration-300 group-hover:opacity-100 ${isExpense ? 'text-red-600' : 'text-green-600'
-                                        }`}
+                                    className="text-sm lg:text-lg opacity-0 transition-all duration-300 group-hover:opacity-100"
                                 >
                                     {category.name}
                                 </strong>
-
                             </div>
                         </div>
                     );
